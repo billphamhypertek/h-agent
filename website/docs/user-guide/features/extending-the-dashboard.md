@@ -17,7 +17,7 @@ All three are **drop-in at runtime**: no repo clone, no `npm run build`, no patc
 If you just want to use the dashboard, see [Web Dashboard](./web-dashboard). If you want to reskin the terminal CLI (not the web dashboard), see [Skins & Themes](./skins) — the CLI skin system is unrelated to dashboard themes.
 
 :::note How the pieces compose
-Themes and plugins are independent but synergistic. A theme can stand alone (just a YAML file). A plugin can stand alone (just a tab). Together they let you build a complete visual reskin with custom HUDs — the example `strike-freedom-cockpit` demo (lives in the `aether-example-plugins` companion repo — see [Combined theme + plugin demo](#combined-theme--plugin-demo) for install steps) does exactly that.
+Themes and plugins are independent but synergistic. A theme can stand alone (just a YAML file). A plugin can stand alone (just a tab). Together they let you build a complete visual reskin with custom HUDs.
 :::
 
 ---
@@ -46,7 +46,6 @@ Themes and plugins are independent but synergistic. A theme can stand alone (jus
   - [Backend API routes](#backend-api-routes)
   - [Custom CSS per plugin](#custom-css-per-plugin)
   - [Plugin discovery & reload](#plugin-discovery--reload)
-- [Combined theme + plugin demo](#combined-theme--plugin-demo)
 - [API reference](#api-reference)
 - [Troubleshooting](#troubleshooting)
 
@@ -697,8 +696,6 @@ Key points:
 - Multiple plugins can claim the same page-scoped slot. They render stacked in registration order.
 - Zero footprint when no plugin registers: the built-in page renders exactly as before.
 
-A reference plugin (`example-dashboard` in [`aether-example-plugins`](https://github.com/hypertek/aether-example-plugins/tree/main/example-dashboard)) ships a live demo that injects a banner into `sessions:top` — install it to see the pattern end-to-end.
-
 ### Slot-only plugins (`tab.hidden`)
 
 When `tab.hidden: true`, the plugin registers its component (for direct URL visits) and any slots, but never adds a tab to the navigation. Used by plugins that only exist to inject into slots — a header crest, a sidebar HUD, an overlay.
@@ -829,38 +826,6 @@ curl http://127.0.0.1:9119/api/dashboard/plugins/rescan
 Plugins have up to **2 seconds** after their script loads to call `register()`. After that the dashboard stops waiting and finishes initial render. If a plugin later registers, it still appears — the nav is reactive.
 
 If a plugin's script fails to load (404, syntax error, exception during IIFE), the dashboard logs a warning to the browser console and continues without it.
-
----
-
-## Combined theme + plugin demo
-
-The [`strike-freedom-cockpit`](https://github.com/hypertek/aether-example-plugins/tree/main/strike-freedom-cockpit) plugin (companion repo `aether-example-plugins`) is a complete reskin demo. It pairs a theme YAML with a slot-only plugin to produce a cockpit-style HUD without forking the dashboard.
-
-**What it demonstrates:**
-
-- A full theme using palette, typography, `fontUrl`, `layoutVariant: cockpit`, `assets`, `componentStyles` (notched card corners, gradient backgrounds), `colorOverrides`, and `customCSS` (scanline overlay).
-- A slot-only plugin (`tab.hidden: true`) that registers into three slots:
-  - `sidebar` — an MS-STATUS panel with live telemetry bars driven by `SDK.api.getStatus()`.
-  - `header-left` — a faction crest that reads `--theme-asset-crest` from the active theme.
-  - `footer-right` — a custom tagline replacing the default org line.
-- The plugin reads theme-supplied artwork via CSS vars, so swapping themes changes the hero/crest without plugin code changes.
-
-**Install:**
-
-```bash
-git clone https://github.com/hypertek/aether-example-plugins.git
-
-# Theme
-cp aether-example-plugins/strike-freedom-cockpit/theme/strike-freedom.yaml \
-   ~/.aether/dashboard-themes/
-
-# Plugin
-cp -r aether-example-plugins/strike-freedom-cockpit ~/.aether/plugins/
-```
-
-Open the dashboard, pick **Strike Freedom** from the theme switcher. The cockpit sidebar appears, the crest shows in the header, the tagline replaces the footer. Switch back to **AETHER Teal** and the plugin remains installed but invisible (the `sidebar` slot only renders under the `cockpit` layout variant).
-
-Read the plugin source (`strike-freedom-cockpit/dashboard/dist/index.js` in the companion repo) to see how it reads CSS vars, guards against older dashboards without slot support, and registers three slots from one bundle.
 
 ---
 
