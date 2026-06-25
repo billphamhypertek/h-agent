@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-06-25T09:14:00+07:00",
+  "greetingName": "Bình",
+  "priorities": [
+    { "id": "p1", "title": "3 email cần bạn trả lời — 1 từ khách hàng Hypertek", "severity": "info" },
+    { "id": "p2", "title": "Deal 'Website ACME' đã chờ phản hồi 2 ngày", "severity": "info" },
+    { "id": "p3", "title": "Server h-workspace: CPU 82% — cao bất thường", "severity": "warn" },
+    { "id": "p4", "title": "2 deadline hôm nay: PR #214, báo giá VinFast", "severity": "info" }
+  ],
+  "servers": [
+    { "name": "hypertekvn", "status": "ok", "cpu": 21 },
+    { "name": "h-workspace", "status": "warn", "cpu": 82 }
+  ],
+  "bento": {
+    "deals": { "active": 5, "valueLabel": "142M ₫", "sub": "1 cần follow-up" },
+    "calendar": { "count": 2, "next": "14:00 · call ACME" },
+    "agents": { "headline": "BMad story 4.2 — đang code", "sub": "3 subagent" }
+  },
+  "feed": [
+    { "time": "09:12", "text": "Đã quét 47 email mới" },
+    { "time": "09:08", "text": "Backup h-workspace hoàn tất" }
+  ],
+  "vitals": { "cpu": 82, "api": 34, "memory": 61 }
+}
