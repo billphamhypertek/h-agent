@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MorningBriefing",
+  "type": "object",
+  "required": ["generatedAt", "priorities", "servers", "bento", "feed", "vitals"],
+  "properties": {
+    "generatedAt": { "type": "string" },
+    "greetingName": { "type": "string" },
+    "priorities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "severity"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "enum": ["info", "warn", "error"] },
+          "sub": { "type": "string" }
+        }
+      }
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "cpu"],
+        "properties": {
+          "name": { "type": "string" },
+          "status": { "enum": ["ok", "warn", "error"] },
+          "cpu": { "type": "number" }
+        }
+      }
+    },
+    "bento": { "type": "object" },
+    "feed": { "type": "array", "items": { "type": "object", "required": ["time", "text"] } },
+    "vitals": {
+      "type": "object",
+      "required": ["cpu", "api", "memory"],
+      "properties": { "cpu": { "type": "number" }, "api": { "type": "number" }, "memory": { "type": "number" } }
+    }
+  }
+}
