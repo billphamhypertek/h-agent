@@ -3,6 +3,8 @@
  * Add new themes here — no code changes needed elsewhere.
  */
 
+import { AETHER } from '@/aether/ui/theme/tokens'
+
 import type { DesktopTheme, DesktopThemeTypography } from './types'
 
 // Color-emoji fonts to append to every stack as a last resort. None of the UI
@@ -278,7 +280,78 @@ export const slateTheme: DesktopTheme = {
   }
 }
 
+/** HyperTek spatial navy with holographic azure. Dual-mode: Arctic Glass (light) + Spatial Depth (dark). */
+export const aetherTheme: DesktopTheme = {
+  name: 'aether',
+  label: 'AETHER',
+  description: 'HyperTek spatial navy with holographic azure',
+  // Light = "Arctic Glass"
+  colors: {
+    background: '#eef4ff',
+    foreground: AETHER.lightInk,
+    card: '#ffffff',
+    cardForeground: AETHER.lightInk,
+    muted: '#dbe6fb',
+    mutedForeground: '#4d6694',
+    popover: '#ffffff',
+    popoverForeground: AETHER.lightInk,
+    primary: AETHER.navy,
+    primaryForeground: '#f4f8ff',
+    secondary: '#e2ecfe',
+    secondaryForeground: '#16335e',
+    accent: '#dbe9ff',
+    accentForeground: '#16335e',
+    border: 'rgba(7,57,125,.16)',
+    input: 'rgba(7,57,125,.22)',
+    ring: AETHER.lightAccent,
+    midground: AETHER.lightAccent,
+    composerRing: AETHER.lightAccent,
+    destructive: AETHER.error,
+    destructiveForeground: '#ffffff',
+    sidebarBackground: '#e6eefc',
+    sidebarBorder: 'rgba(7,57,125,.14)',
+    userBubble: '#dbe9ff',
+    userBubbleBorder: 'rgba(7,57,125,.2)'
+  },
+  // Dark = "Spatial Depth"
+  darkColors: {
+    background: AETHER.bg950,
+    foreground: AETHER.ink,
+    card: AETHER.panel,
+    cardForeground: AETHER.ink,
+    muted: AETHER.bg900,
+    mutedForeground: AETHER.dim,
+    popover: AETHER.panelHi,
+    popoverForeground: AETHER.ink,
+    primary: AETHER.navy,
+    primaryForeground: AETHER.ink,
+    secondary: AETHER.panel,
+    secondaryForeground: AETHER.ink,
+    accent: AETHER.azureBright,
+    accentForeground: AETHER.ink,
+    border: AETHER.hairline,
+    input: 'rgba(120,180,255,.22)',
+    ring: AETHER.azure,
+    midground: AETHER.azure,
+    midgroundForeground: AETHER.ink,
+    composerRing: AETHER.azure,
+    destructive: AETHER.error,
+    destructiveForeground: '#ffffff',
+    sidebarBackground: AETHER.bg900,
+    sidebarBorder: AETHER.hairline,
+    userBubble: 'rgba(74,163,255,.16)',
+    userBubbleBorder: 'rgba(120,210,255,.34)'
+  },
+  typography: {
+    fontSans: '"Be Vietnam Pro", system-ui, sans-serif',
+    fontMono: '"JetBrains Mono", ui-monospace, monospace',
+    fontUrl:
+      'https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap'
+  }
+}
+
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
+  aether: aetherTheme,
   nous: nousTheme,
   midnight: midnightTheme,
   ember: emberTheme,
