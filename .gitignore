@@ -106,10 +106,6 @@ config/mcporter.json
 
 hermes_cli/tui_dist/*
 hermes_cli/scripts/
-docs/superpowers/*
-# ...but keep brainstorming/design specs under version control.
-!docs/superpowers/specs/
-!docs/superpowers/specs/**
 # Visual-companion brainstorm scratch (mockups, server state) — not artifacts.
 .superpowers/
 # Working directory for the Hermes Agent's session state (~/.hermes/ at runtime;

@@ -263,6 +263,12 @@ hermes-agent/
 `gateway.log` when running the gateway. Profile-aware via `get_hermes_home()`.
 Browse with `hermes logs [--follow] [--level ...] [--session ...]`.
 
+**Plans & specs:** implementation plans → `docs/plans/`, design specs →
+`docs/specs/`. Do **not** write to `docs/superpowers/plans` or
+`docs/superpowers/specs` — the external superpowers `writing-plans` /
+`brainstorming` skills default to those paths, but in this repo that default is
+overridden to the unprefixed `docs/plans` / `docs/specs`.
+
 ## TypeScript Style
 
 Applies to TypeScript across Hermes: desktop, TUI, website, and future TS packages.
