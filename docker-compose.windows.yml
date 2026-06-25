@@ -11,7 +11,7 @@
 #
 services:
   gateway:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether
     restart: unless-stopped
     volumes:
@@ -22,7 +22,7 @@ services:
     command: ["gateway", "run"]
 
   dashboard:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether-dashboard
     restart: unless-stopped
     depends_on:

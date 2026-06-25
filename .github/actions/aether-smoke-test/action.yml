@@ -8,7 +8,7 @@ description: >
 
 inputs:
   image:
-    description: Fully-qualified image tag (e.g. nousresearch/aether-agent:test)
+    description: Fully-qualified image tag (e.g. hypertek/aether-agent:test)
     required: true
 
 runs:

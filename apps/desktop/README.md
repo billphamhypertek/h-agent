@@ -110,7 +110,7 @@ rm "$HOME/.aether/aether-agent/.aether-bootstrap-complete"
 # Rebuild a broken Python venv
 rm -rf "$HOME/.aether/aether-agent/venv"
 # Reset a stuck macOS microphone prompt (macOS only)
-tccutil reset Microphone com.nousresearch.aether
+tccutil reset Microphone vn.hypertek.aether
 ```
 
 **Windows (PowerShell):**

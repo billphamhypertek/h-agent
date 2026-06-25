@@ -404,7 +404,7 @@ def detect_install_method(project_root: Optional[Path] = None) -> str:
     The supported installs self-identify via the code-scoped stamp:
       - the curl installer (scripts/install.sh, the README/website install
         command) git-clones the repo and stamps ``git`` next to the code;
-      - the published ``nousresearch/aether-agent`` image bakes a ``docker``
+      - the published ``hypertek/aether-agent`` image bakes a ``docker``
         stamp into ``/opt/aether`` at build time.
     An unsupported manual install dropped into a container (no stamp) falls
     through to the ``.git``/pip checks and behaves like any off-path install.
@@ -510,7 +510,7 @@ def recommended_update_command_for_method(method: str) -> str:
     if method == "homebrew":
         return "brew upgrade aether-agent"
     if method == "docker":
-        return "docker pull nousresearch/aether-agent:latest"
+        return "docker pull hypertek/aether-agent:latest"
     if method == "pip":
         if is_uv_tool_install():
             return "uv tool upgrade aether-agent"
@@ -548,23 +548,23 @@ def recommended_update_command() -> str:
 _DOCKER_UPDATE_MESSAGE = """\
 ✗ ``aether update`` doesn't apply inside the Docker container.
 
-AETHER runs as a published image (nousresearch/aether-agent), not a
+AETHER runs as a published image (hypertek/aether-agent), not a
 git checkout — the container has no working tree to pull into.  Update by
 pulling a fresh image and restarting your container instead:
 
-  docker pull nousresearch/aether-agent:latest
+  docker pull hypertek/aether-agent:latest
   # then restart whatever started the container, e.g.:
   docker compose up -d --force-recreate aether-agent
   # or, for ad-hoc runs, exit the current container and `docker run` again
 
 Verify the new version after restart:
-  docker run --rm nousresearch/aether-agent:latest --version
+  docker run --rm hypertek/aether-agent:latest --version
 
 Notes:
   • If you pinned a specific tag (e.g. ``:v0.14.0``) the ``:latest`` tag
     won't move your container — pull the newer tag you actually want, or
     switch to ``:latest`` / ``:main`` for rolling updates.  See available
-    tags at https://hub.docker.com/r/nousresearch/aether-agent/tags
+    tags at https://hub.docker.com/r/hypertek/aether-agent/tags
   • Your config and session history live under ``$AETHER_HOME`` (``/opt/data``
     in the container, typically bind-mounted from the host) and persist
     across image upgrades — re-pulling doesn't lose any state.

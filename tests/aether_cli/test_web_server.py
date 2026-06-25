@@ -1049,7 +1049,7 @@ class TestWebServerEndpoints:
         assert data["name"] == "aether-update"
         assert data["pid"] is None
         assert data["error"] == "docker_update_unsupported"
-        assert "docker pull nousresearch/aether-agent:latest" in data["message"]
+        assert "docker pull hypertek/aether-agent:latest" in data["message"]
         assert spawned is False
 
         status = self.client.get("/api/actions/aether-update/status")
@@ -1058,7 +1058,7 @@ class TestWebServerEndpoints:
         assert status_data["running"] is False
         assert status_data["exit_code"] == 1
         assert status_data["pid"] is None
-        assert any("docker pull nousresearch/aether-agent:latest" in line for line in status_data["lines"])
+        assert any("docker pull hypertek/aether-agent:latest" in line for line in status_data["lines"])
 
     def test_update_aether_returns_managed_runtime_guidance_without_spawning(self, monkeypatch):
         import aether_cli.web_server as web_server

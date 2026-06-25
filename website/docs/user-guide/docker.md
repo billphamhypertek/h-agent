@@ -34,7 +34,7 @@ result before hitting Enter.
 mkdir -p ~/.aether
 docker run -it --rm \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent setup
+  hypertek/aether-agent setup
 ```
 
 This drops you into the setup wizard, which will prompt you for your API keys and write them to `~/.aether/.env`. You only need to do this once. It is highly recommended to set up a chat system for the gateway to work with at this point.
@@ -53,7 +53,7 @@ docker run -d \
   --restart unless-stopped \
   -v ~/.aether:/opt/data \
   -p 8642:8642 \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 Port 8642 exposes the gateway's [OpenAI-compatible API server](./features/api-server.md) and health endpoint. It's optional if you only use chat platforms (Telegram, Discord, etc.), but required if you want the dashboard or external tools to reach the gateway.
@@ -94,7 +94,7 @@ docker run -d \
   -e API_SERVER_HOST=0.0.0.0 \
   -e API_SERVER_KEY="$(openssl rand -hex 32)" \
   -e API_SERVER_CORS_ORIGINS='*' \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 Opening any port on an internet facing machine is a security risk. You should not do it unless you understand the risks.
@@ -111,7 +111,7 @@ docker run -d \
   -p 8642:8642 \
   -p 9119:9119 \
   -e AETHER_DASHBOARD=1 \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 The dashboard is supervised by s6 — if it crashes, `s6-supervise` restarts it automatically after a short backoff. Dashboard stdout/stderr is forwarded to `docker logs <container>` (no prefix; the gateway's own output now lives in a per-profile s6-log file — see [Where the logs go](#where-the-logs-go) below — so the two streams don't clash).
@@ -153,7 +153,7 @@ To open an interactive chat session against a running data directory:
 ```sh
 docker run -it --rm \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent
+  hypertek/aether-agent
 ```
 
 Or if you have already opened a terminal in your running container (via Docker Desktop for instance), just run:
@@ -279,7 +279,7 @@ In those cases, declare one service per profile with distinct `container_name`, 
 ```yaml
 services:
   aether-work:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether-work
     restart: unless-stopped
     command: gateway run
@@ -289,7 +289,7 @@ services:
       - ~/.aether-work:/opt/data
 
   aether-personal:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether-personal
     restart: unless-stopped
     command: gateway run
@@ -326,7 +326,7 @@ docker run -it --rm \
   -v ~/.aether:/opt/data \
   -e ANTHROPIC_API_KEY="sk-ant-..." \
   -e OPENAI_API_KEY="sk-..." \
-  nousresearch/aether-agent
+  hypertek/aether-agent
 ```
 
 Direct `-e` flags override values from `.env`. This is useful for CI/CD or secrets-manager integrations where you don't want keys on disk.
@@ -342,7 +342,7 @@ For persistent deployment with both the gateway and dashboard, a `docker-compose
 ```yaml
 services:
   aether:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether
     restart: unless-stopped
     command: gateway run
@@ -397,7 +397,7 @@ ctl.!default {
 Then build a small derived image with the ALSA PulseAudio plugin installed:
 
 ```dockerfile title="Dockerfile.audio"
-FROM nousresearch/aether-agent:latest
+FROM hypertek/aether-agent:latest
 
 USER root
 RUN apt-get update \
@@ -464,7 +464,7 @@ docker run -d \
   --restart unless-stopped \
   --memory=4g --cpus=2 \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 ## What the Dockerfile does
@@ -534,13 +534,13 @@ When a migration is needed, AETHER writes timestamped backups next to
 `config.yaml` and `.env` first.
 
 ```sh
-docker pull nousresearch/aether-agent:latest
+docker pull hypertek/aether-agent:latest
 docker rm -f aether
 docker run -d \
   --name aether \
   --restart unless-stopped \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 Or with Docker Compose:
@@ -577,10 +577,10 @@ This is a good fit for tools that are quick to install and used occasionally. Fo
 
 ### Durable installs — build a derived image
 
-When a tool must be available immediately on every container start with no re-install delay, build a new image that inherits from `nousresearch/aether-agent` and installs the tool in a layer:
+When a tool must be available immediately on every container start with no re-install delay, build a new image that inherits from `hypertek/aether-agent` and installs the tool in a layer:
 
 ```dockerfile
-FROM nousresearch/aether-agent:latest
+FROM hypertek/aether-agent:latest
 
 USER root
 RUN apt-get update \
@@ -601,7 +601,7 @@ docker run -d \
   my-aether:latest gateway run
 ```
 
-The entrypoint script and `/opt/data` semantics are inherited unchanged, so the rest of this page still applies. Remember to rebuild the image when pulling a newer upstream `nousresearch/aether-agent`.
+The entrypoint script and `/opt/data` semantics are inherited unchanged, so the rest of this page still applies. Remember to rebuild the image when pulling a newer upstream `hypertek/aether-agent`.
 
 ### Complex tools or multi-service stacks — run a sidecar container
 
@@ -610,7 +610,7 @@ For tools that bring their own service (a database, a web server, a queue, a hea
 ```yaml
 services:
   aether:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether
     restart: unless-stopped
     command: gateway run
@@ -668,7 +668,7 @@ services:
             - capabilities: [gpu]
 
   aether:
-    image: nousresearch/aether-agent:latest
+    image: hypertek/aether-agent:latest
     container_name: aether
     restart: unless-stopped
     command: gateway run
@@ -712,7 +712,7 @@ docker run -d \
   --name aether \
   -v ~/.aether:/opt/data \
   -p 8642:8642 \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 ```yaml
@@ -731,7 +731,7 @@ docker run -d \
   --name aether \
   --network host \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 ```yaml
@@ -795,7 +795,7 @@ docker run -d \
   --name aether \
   -e PUID=1000 -e PGID=10 \
   -v /volume1/docker/aether:/opt/data \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 `docker exec aether <cmd>` automatically drops to UID 10000 too — see [`docker exec` automatically drops to the `aether` user](#docker-exec-automatically-drops-to-the-aether-user) for details and the per-invocation opt-out.
@@ -809,7 +809,7 @@ docker run -d \
   --name aether \
   --shm-size=1g \
   -v ~/.aether:/opt/data \
-  nousresearch/aether-agent gateway run
+  hypertek/aether-agent gateway run
 ```
 
 ### Gateway not reconnecting after network issues
@@ -824,6 +824,6 @@ docker restart aether
 
 ```sh
 docker logs --tail 50 aether          # Recent logs
-docker run -it --rm nousresearch/aether-agent:latest version     # Verify version
+docker run -it --rm hypertek/aether-agent:latest version     # Verify version
 docker stats aether                    # Resource usage
 ```

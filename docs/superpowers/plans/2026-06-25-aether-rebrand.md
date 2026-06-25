@@ -586,7 +586,7 @@ Expected: `aether = "aether_cli.main:main"`, `aether-agent = "run_agent:main"`, 
 
 - [ ] **Step 2: Fix the desktop appId (engine leaves a reverse-domain artifact)**
 
-The engine rewrites `com.nousresearch.hermes` → `com.nousresearch.aether`, which is wrong for a HyperTek product. Read `apps/desktop/package.json`, find the two `appId` occurrences (top-level build config), and set them to `vn.hypertek.aether`.
+The engine rewrites `com.nousresearch.hermes` → `vn.hypertek.aether` for the HyperTek rebrand. Read `apps/desktop/package.json`, find the two `appId` occurrences (top-level build config), and set them to `vn.hypertek.aether`.
 
 Run to confirm: `grep -n '"appId": "vn.hypertek.aether"' apps/desktop/package.json`
 Expected: a match. Also confirm `grep -n '"productName": "AETHER"' apps/desktop/package.json` and `grep -n '"schemes"' -A2 apps/desktop/package.json` shows `"aether"`.

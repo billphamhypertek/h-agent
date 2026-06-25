@@ -37,7 +37,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  IMAGE_NAME: nousresearch/aether-agent
+  IMAGE_NAME: hypertek/aether-agent
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -242,8 +242,8 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}:test
           build-args: |
             AETHER_GIT_SHA=${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/nousresearch/aether-agent:buildcache-arm64
-          cache-to: type=registry,ref=ghcr.io/nousresearch/aether-agent:buildcache-arm64,mode=max
+          cache-from: type=registry,ref=ghcr.io/hypertek/aether-agent:buildcache-arm64
+          cache-to: type=registry,ref=ghcr.io/hypertek/aether-agent:buildcache-arm64,mode=max
 
       - name: Smoke test image
         if: github.event_name != 'pull_request'
@@ -271,8 +271,8 @@ jobs:
           build-args: |
             AETHER_GIT_SHA=${{ github.sha }}
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=ghcr.io/nousresearch/aether-agent:buildcache-arm64
-          cache-to: type=registry,ref=ghcr.io/nousresearch/aether-agent:buildcache-arm64,mode=max
+          cache-from: type=registry,ref=ghcr.io/hypertek/aether-agent:buildcache-arm64
+          cache-to: type=registry,ref=ghcr.io/hypertek/aether-agent:buildcache-arm64,mode=max
 
       - name: Export digest
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'release'

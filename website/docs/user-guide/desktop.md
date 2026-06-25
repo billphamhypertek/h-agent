@@ -237,7 +237,7 @@ rm "$HOME/.aether/aether-agent/.aether-bootstrap-complete"
 rm -rf "$HOME/.aether/aether-agent/venv"
 
 # Reset a stuck macOS microphone prompt
-tccutil reset Microphone com.nousresearch.aether
+tccutil reset Microphone vn.hypertek.aether
 ```
 
 ### "Build desktop app" stuck on Electron download
