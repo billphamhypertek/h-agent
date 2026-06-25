@@ -19,7 +19,7 @@ Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn
 ## 3. Quyết định kiến trúc
 
 **Giữ nguyên (không đụng):** Hermes Python backend, Electron shell, gateway/dashboard API, protocol layer.
-**Viết lại từ đầu:** toàn bộ **React renderer** trên canvas trắng, với design system AETHER mới. Renderer cũ chỉ dùng tham khảo logic/protocol.
+**Cách tiếp cận: HYBRID (đã chốt).** Viết mới phần "vỏ" — design system AETHER, app shell, 16 màn, Living Orb, hiệu ứng — trên canvas trắng; **tái dùng runtime đã tôi luyện** (gateway client, theme plumbing, chat streaming/tool-call, terminal, markdown, command palette, virtualization) bằng cách restyle thay vì viết lại. Đẹp như ý mà không phải giải lại bug streaming/tool-call. Chi tiết ở §3.3.
 
 ### 3.1 Mặt tiếp giáp backend ↔ renderer (đã khảo sát)
 
@@ -39,6 +39,20 @@ Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn
 3. **ui/** — design system AETHER (tokens, theme, components) + các route/màn hình. Mỗi màn = 1 route, state riêng, file mỏng.
 
 **Key files để nghiên cứu khi triển khai:** `apps/shared/src/json-rpc-gateway.ts`, `apps/desktop/electron/main.cjs` + `preload.cjs`, `apps/desktop/src/hermes.ts` (REST patterns hiện có), `web/src/lib/api.ts`, `tui_gateway/server.py` (RPC dispatch).
+
+### 3.3 Reuse vs Rebuild (đã chốt — hybrid)
+
+| Phần | Quyết định | Ghi chú |
+| --- | --- | --- |
+| Chat (streaming, tool-call) | **Reuse + restyle** | `@assistant-ui` runtime + `use-gateway-request` đã chắc; thay className/theme, không viết lại logic. |
+| Terminal | **Reuse** | xterm + node-pty (Electron); đổi ANSI palette sang brand. |
+| Markdown / code | **Reuse** | streamdown / shiki / katex; đổi theme. |
+| Command palette (⌘K) | **Reuse + restyle** | cmdk headless. |
+| Theme system (`src/themes`) | **Reuse + thêm preset AETHER** | Token/CSS-var; thêm preset navy/azure + dark/light vào `presets.ts`. |
+| Gateway client, virtualization, nanostores, dnd-kit | **Reuse** | Không dính UI. |
+| Window/overlay infra (`floating-hud.ts`, `electron/session-windows.cjs`) | **Reuse** | Cho HUD / overlay / ⌘K / voice. |
+| Living Orb + hiệu ứng cinematic | **Build mới** | Tái dùng pattern SVG parametric ở `components/ui/loader.tsx`; glassmorphism/glow thêm ở `styles.css` (`@layer utilities`). |
+| App shell, layout, 16 màn | **Build mới** | Phần "đẹp mới". |
 
 ## 4. Design System (ĐÃ CHỐT)
 
@@ -123,7 +137,7 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 ## 7. Data flow (lát đầu)
 
 - **Boot:** Electron resolve connection → renderer connect WS (`getGatewayWsUrl`) + REST `/status` → hiển thị boot checklist từ event/`getBootProgress` → vào HUD.
-- **HUD/Briefing:** subscribe session events + đọc các nguồn tổng hợp. **Lưu ý:** dữ liệu briefing (email/lịch/server/deal) đến từ **Hermes tools/skills/cron outputs/MCP**, không phải REST cố định — màn briefing *tiêu thụ output* của chúng. Cách nối chính xác (skill/cron nào feed dữ liệu gì) **quyết trong implementation plan**.
+- **HUD/Briefing (đã chốt cơ chế):** một skill `morning-briefing-aggregator` chạy bằng **cron** (vd 07:00) gọi các nguồn → ghi **artifact JSON có cấu trúc** → renderer đọc run mới nhất qua `/api/cron/jobs/<id>/runs` (hoặc thêm endpoint `/api/briefing/daily`). Nguồn **sẵn dùng**: email + lịch qua skill `google-workspace`; **server health** qua một skill mỏng bọc các skill có sẵn của user `hypertekvn-main-server-manage` / `h-workspace-server-manage` (xuất JSON); tasks + ngữ cảnh qua cron / `/api/sessions` / memory providers. **CRM/deals để sau** (Hermes chưa có native — chỉ Linear MCP). Cơ chế này cũng **an toàn prompt-cache** vì chạy trong session cron riêng.
 - **Chat:** gửi message qua WS → nhận `message.delta` (stream) + `tool.start/progress/complete` (render tool-call cards) + xử lý `approval/clarify/secret.request`.
 
 ## 8. Error / edge handling
@@ -131,6 +145,7 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 - Mất kết nối → reconnect backoff (shared client hỗ trợ) + overlay "paused"; remote/OAuth dùng `getGatewayWsUrl` mint ticket.
 - Boot failure → ErrorState + link log (`HERMES_HOME/logs/desktop.log`).
 - Interactive prompts (`approval/sudo/secret/clarify`) → modal/inline trong Chat.
+- **An toàn prompt-cache (cứng):** HUD/Briefing **KHÔNG** subscribe `message.delta` và **KHÔNG** poll hội thoại live; chỉ đọc artifact cron + event không-thuộc-hội-thoại + REST `/status`. Tránh re-trigger LLM làm hỏng cache. `prefers-reduced-motion` đã được hệ hiện tại xử lý (Web Animations API) → tái dùng.
 
 ## 9. Testing
 
@@ -142,8 +157,9 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 ## 10. Rủi ro & câu hỏi mở
 
 - **Ambient motion** ("dòng chảy"/Loki Sacred-Timeline cho nền/boot/orb) — TBD. (Nav-slide + page transition "Depth" đã chốt ở §4.6.)
-- **Nguồn dữ liệu Briefing** — cần xác định tool/skill/cron nào cung cấp email/lịch/server health → chốt trong plan.
-- **Reuse vs rebuild component phức tạp:** terminal (xterm) nên vendor lại; chat (@assistant-ui) — quyết trong plan có reuse hay tự dựng để khớp design system.
+- ✅ **Nguồn dữ liệu Briefing — ĐÃ CHỐT** (§7): email/lịch (`google-workspace`), server health (bọc các skill server-manage sẵn có), tasks/ngữ cảnh (cron/sessions/memory) qua cơ chế cron-artifact. CRM/deals để sau.
+- ✅ **Reuse vs rebuild — ĐÃ CHỐT** (§3.3): hybrid — reuse runtime (chat/terminal/markdown/⌘K/theme/gateway), build mới shell + 16 màn + orb + hiệu ứng.
+- **CRM/deals** — chưa có native; sẽ thêm (MCP HubSpot/Pipedrive hoặc store JSON) ở sub-project sau.
 - **Hiệu năng hiệu ứng điện ảnh** (glass blur, canvas, orb) trong Electron — đặt budget & guard, tôn trọng `prefers-reduced-motion`.
 
 ## 11. Tham chiếu
