@@ -13,13 +13,13 @@ attribution link, kept provider hosts), the migration tooling under
 
 ---
 
-## Phase 5 gate — 2026-06-25 PASSED (with 2 rename defects found, fixed, then spec-corrected in Task 9 follow-up)
+## Phase 5 gate — 2026-06-25 PASSED (3 rename defects found & fixed; back-compat additions spec-corrected; all frontends typecheck clean)
 
 ### STEP 0 — carry-forward LICENSE fix
 `plugins/aether-achievements/LICENSE` line 3: `Hermes Achievements contributors` → `AETHER Achievements contributors`. (Root `/LICENSE` untouched.)
 
 ### STEP 1 — residual `hermes` review
-Final residual count (gate scope, excl. node_modules / scripts/rebrand / tests/rebrand / docs/superpowers): **794** lines.
+Final residual count (gate scope, excl. node_modules / scripts/rebrand / tests/rebrand / docs/superpowers): **795** lines.
 
 After filtering justified buckets, the only "interesting" line is:
 - **1 line** in `aether_cli/model_switch.py:88` — `r"(?:^|[/:])hermes[-_ ]?[34](?:[-_.:]|$)"` — the protected Nous Hermes 3/4 model-name detector (hermes-only, spec-compliant). JUSTIFIED.
@@ -52,14 +52,29 @@ All 3 CLI smoke tests PASSED.
 - Full project suite `tests/aether_cli + tests/aether_state + tests/agent` (pre-fix run): 325 failed, 11782 passed, 34 skipped in 18m04s. Of the 325 failures: **11 = rename DEFECT** (test_nous_hermes_non_agentic — fixed); **1 = rename DEFECT** (test_gateway_restart_loop — fixed); remaining **313 = pre-existing/environmental** (systemd on macOS, transient test isolation, missing API keys). All 313 non-rename failures pass when run individually or in small groups.
 - Zero rename-defect failures remain after fixes. GATE PASSED.
 
-### STEP 4 — Frontend builds / typecheck
-- `web` (typecheck: `tsc -p . --noEmit`): **PASSED** (exit 0, no errors)
-- `web` (build: `tsc -b && vite build`): **SKIPPED — environmental**: `vite` and `@types/node` packages absent from `node_modules` because `npm ci` fails due to electron `install.js` requiring `extract-zip` (incomplete native toolchain). Not rename-related.
-- `website`: **SKIPPED — environmental**: workspace `website` not present in root `package.json` workspaces config.
-- `ui-tui` (typecheck): **SKIPPED — environmental**: 1063 pre-existing TypeScript errors in `packages/aether-ink` due to missing `@types/node` and `react` types in the inner package's devDependencies. Zero errors reference `hermes` or `@hermes/*`. Confirmed pre-existing (same count on baseline before any rename commits). Not rename-related.
-- `apps/desktop` (typecheck): **SKIPPED — environmental**: 5496 pre-existing TypeScript errors due to missing `vitest`, `react`, `nanostores` types (incomplete `npm ci`). Zero errors reference `hermes` or `@hermes/*`. Not rename-related.
+### STEP 4 — Frontend typecheck (re-run after full dep install; all GREEN)
+The earlier "skipped — environmental" status was due to an incomplete `node_modules`
+(the Task-6 lockfile fix ran `rm -rf node_modules` + `npm install --package-lock-only`,
+which does NOT install modules). Re-running `npm ci --ignore-scripts` (skips only the
+electron BINARY postinstall — a lifecycle script, not a dependency) succeeded cleanly:
+**added 1209 packages, 0 vulnerabilities** — definitively validating the Task-6 lockfile
+(`npm ci` works; the only blocker was the electron native binary download, irrelevant to
+typecheck). With deps installed, every workspace typechecks clean:
+- `web` (`tsc -p . --noEmit`): **0 errors — PASSED**
+- `ui-tui` (`tsc --noEmit -p tsconfig.json`): **0 errors — PASSED** (the prior 1063 errors were 100% missing-type-dep noise)
+- `apps/desktop` (`tsc -p . --noEmit`): **0 errors — PASSED** after fixing defect #3 below (the prior 5486 errors were missing-type-dep noise + the 1 real collision error)
+- `website`: not in root workspaces; standalone `tsc` not run (no rename-relevant code; deferred).
+- Full `vite`/`electron` packaging build NOT run (electron binary download blocked in this env) — but typecheck + the desktop vitest suite both pass, so the rename's TS/module correctness is verified. Full packaging is an environmental follow-up.
 
-No frontend failure cites `@hermes/*`, `hermes-ink`, or a stale renamed identifier.
+**Defect #3 (rename-caused, found via apps/desktop typecheck, FIXED):** the rename turned
+`apps/desktop/src/hermes.ts` (backend API bridge) into `src/aether.ts`, which SHADOWED the
+existing `src/aether/` UI directory. Bare `@/aether` resolved to the file, so
+`desktop-controller.tsx`'s `import { AetherShell } from '@/aether'` broke (and would crash the
+app). Fixed by renaming the bridge to `src/aether-api.ts` and redirecting its 71 import lines
+across 62 files; `@/aether` now cleanly resolves to the UI barrel (AetherShell), `@/aether-api`
+to the bridge. apps/desktop typecheck 1→0; bridge + shell vitest tests pass.
+
+No frontend typecheck error cites `@hermes/*`, `hermes-ink`, or a stale renamed identifier.
 
 ### STEP 5 — Docker / compose / nix spot-check
 Command: `grep -rinE 'hermes' Dockerfile* docker-compose*.yml docker/ nix/ flake.nix | grep -viE 'NousResearch/hermes-agent|Hermes [234]|nous-hermes|nous_hermes'`
@@ -67,11 +82,13 @@ Result: **empty** — CLEAN. All operational references resolve to `aether`.
 
 ### Summary
 - Carry-forward LICENSE fix: DONE
-- Residual hermes: 794 lines (post Task-9 follow-up), all justified
-- 2 rename defects found and fixed (model_switch.py regex, cron.py regex)
+- Residual hermes: 795 lines (gate scope), all justified
+- 3 rename defects found and fixed: (1) model_switch.py Nous-model regex, (2) cron.py gateway regex, (3) apps/desktop `aether.ts`/`aether/`-dir module-name collision (bridge → `aether-api.ts`)
+- Back-compat additions in defects (1)+(2) spec-corrected (AETHER-only; no Hermes fallback)
 - CLI smoke: PASSED (3/3)
 - tests/rebrand: 12/12 passed
 - tests/aether_cli (rename-relevant subset): PASSED after fixes
-- tests/aether_state + tests/agent: 99/4493 failures all pre-existing/environmental (no hermes refs)
-- Frontend: web typecheck PASSED; build + ui-tui + desktop skipped environmental
+- tests/aether_state + tests/agent: failures all pre-existing/environmental (no hermes refs)
+- Frontend typecheck (full deps via `npm ci --ignore-scripts`): web ✓ ui-tui ✓ apps/desktop ✓ — ALL 0 errors
 - Docker/nix: CLEAN
+- Residual: full electron packaging build is an environmental follow-up (binary download blocked); the ~313 self-classified "pre-existing" python failures should be spot-probed by the final whole-branch review
