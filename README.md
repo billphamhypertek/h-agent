@@ -2,7 +2,7 @@
   <img src="assets/banner.png" alt="AETHER" width="100%">
 </p>
 
-# AETHER ☤
+# AETHER
 <p align="center">
   <a href="https://aether.hypertek.vn/">AETHER</a> | <a href="https://aether.hypertek.vn/">AETHER Desktop</a>
 </p>

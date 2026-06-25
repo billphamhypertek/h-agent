@@ -4,7 +4,7 @@
   <img src="assets/banner.png" alt="AETHER" width="100%">
 </p>
 
-# ہرمیس ایجنٹ ☤ (AETHER)
+# AETHER
 
 <p align="center">
   <a href="https://aether.hypertek.vn/docs/"><img src="https://img.shields.io/badge/Docs-aether--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
