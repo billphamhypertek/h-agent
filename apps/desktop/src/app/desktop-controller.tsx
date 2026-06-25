@@ -1,19 +1,15 @@
 import { useStore } from '@nanostores/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
-import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { lazy, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-import { BootFailureOverlay } from '@/components/boot-failure-overlay'
-import { DesktopInstallOverlay } from '@/components/desktop-install-overlay'
-import { DesktopOnboardingOverlay } from '@/components/desktop-onboarding-overlay'
-import { GatewayConnectingOverlay } from '@/components/gateway-connecting-overlay'
-import { Pane, PaneMain } from '@/components/pane-shell'
-import { RemoteDisplayBanner } from '@/components/remote-display-banner'
+import { AetherShell } from '@/aether'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
 import { formatRefValue } from '../components/assistant-ui/directive-text'
-import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo, triggerCronJob } from '../hermes'
+import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo } from '../hermes'
 import { type ChatMessage, chatMessageText, preserveLocalAssistantErrors, toChatMessages } from '../lib/chat-messages'
 import { storedSessionIdForNotification } from '../lib/session-ids'
 import {
@@ -23,20 +19,13 @@ import {
   normalizeSessionSource
 } from '../lib/session-source'
 import { latestSessionTodos } from '../lib/todos'
-import { setCronFocusJobId, setCronJobs } from '../store/cron'
+import { setCronJobs } from '../store/cron'
 import {
   $panesFlipped,
   $pinnedSessionIds,
   $sessionsLimit,
   bumpSessionsLimit,
-  FILE_BROWSER_DEFAULT_WIDTH,
-  FILE_BROWSER_MAX_WIDTH,
-  FILE_BROWSER_MIN_WIDTH,
   pinSession,
-  PREVIEW_PANE_ID,
-  setSidebarOverlayMounted,
-  SIDEBAR_DEFAULT_WIDTH,
-  SIDEBAR_MAX_WIDTH,
   SIDEBAR_SESSIONS_PAGE_SIZE,
   unpinSession
 } from '../store/layout'
@@ -60,8 +49,8 @@ import {
   $gatewayState,
   $messages,
   $messagingSessions,
-  $resumeFailedSessionId,
   $resumeExhaustedSessionId,
+  $resumeFailedSessionId,
   $selectedStoredSessionId,
   $sessions,
   $workingSessionIds,
@@ -75,8 +64,6 @@ import {
   setCronSessions,
   setCurrentBranch,
   setCurrentCwd,
-  setCurrentModel,
-  setCurrentProvider,
   setMessages,
   setMessagingPlatformTotals,
   setMessagingSessions,
@@ -94,27 +81,12 @@ import { isSecondaryWindow } from '../store/windows'
 import { ChatView } from './chat'
 import { requestComposerFocus, requestComposerInsert } from './chat/composer/focus'
 import { useComposerActions } from './chat/hooks/use-composer-actions'
-import {
-  ChatPreviewRail,
-  PREVIEW_RAIL_MAX_WIDTH,
-  PREVIEW_RAIL_MIN_WIDTH,
-  PREVIEW_RAIL_PANE_WIDTH
-} from './chat/right-rail'
-import { ChatSidebar } from './chat/sidebar'
-import { CommandPalette } from './command-palette'
 import { useGatewayBoot } from './gateway/hooks/use-gateway-boot'
 import { useGatewayRequest } from './gateway/hooks/use-gateway-request'
 import { useKeybinds } from './hooks/use-keybinds'
 import { SIDEBAR_COLLAPSE_MEDIA_QUERY } from './layout-constants'
-import { ModelPickerOverlay } from './model-picker-overlay'
-import { ModelVisibilityOverlay } from './model-visibility-overlay'
-import { PetGenerateOverlay } from './pet-generate/pet-generate-overlay'
-import { RightSidebarPane } from './right-sidebar'
 import { $terminalTakeover } from './right-sidebar/store'
-import { PersistentTerminal, TerminalSlot } from './right-sidebar/terminal/persistent'
-import { CRON_ROUTE, NEW_CHAT_ROUTE, routeSessionId, sessionRoute, SETTINGS_ROUTE } from './routes'
-import { SessionPickerOverlay } from './session-picker-overlay'
-import { SessionSwitcher } from './session-switcher'
+import { routeSessionId, sessionRoute, SETTINGS_ROUTE } from './routes'
 import { useContextSuggestions } from './session/hooks/use-context-suggestions'
 import { useCwdActions } from './session/hooks/use-cwd-actions'
 import { useHermesConfig } from './session/hooks/use-hermes-config'
@@ -125,7 +97,6 @@ import { usePromptActions } from './session/hooks/use-prompt-actions'
 import { useRouteResume } from './session/hooks/use-route-resume'
 import { useSessionActions } from './session/hooks/use-session-actions'
 import { useSessionStateCache } from './session/hooks/use-session-state-cache'
-import { AppShell } from './shell/app-shell'
 import { useOverlayRouting } from './shell/hooks/use-overlay-routing'
 import { useStatusSnapshot } from './shell/hooks/use-status-snapshot'
 import { useStatusbarItems } from './shell/hooks/use-statusbar-items'
@@ -133,7 +104,6 @@ import { ModelMenuPanel } from './shell/model-menu-panel'
 import type { StatusbarItem } from './shell/statusbar-controls'
 import type { TitlebarTool } from './shell/titlebar-controls'
 import { useGroupRegistry } from './shell/use-group-registry'
-import { UpdatesOverlay } from './updates-overlay'
 
 const AgentsView = lazy(async () => ({ default: (await import('./agents')).AgentsView }))
 const ArtifactsView = lazy(async () => ({ default: (await import('./artifacts')).ArtifactsView }))
@@ -268,6 +238,24 @@ export function DesktopController() {
   })
 
   const { connectionRef, gatewayRef, requestGateway } = useGatewayRequest()
+
+  // First run paints AETHER/dark as the default appearance, then records that
+  // it did so — so a later explicit user theme choice is never overridden.
+  const { themeName, setTheme, setMode } = useTheme()
+  useEffect(() => {
+    const KEY = 'aether-default-applied'
+
+    if (localStorage.getItem(KEY)) {
+      return
+    }
+
+    if (themeName !== 'aether') {
+      setTheme('aether')
+      setMode('dark')
+    }
+
+    localStorage.setItem(KEY, '1')
+  }, [themeName, setTheme, setMode])
 
   useEffect(() => {
     window.hermesDesktop?.setPreviewShortcutActive?.(Boolean(chatOpen && (filePreviewTarget || previewTarget)))
@@ -977,117 +965,6 @@ export function DesktopController() {
     toggleCommandCenter
   })
 
-  const sidebar = (
-    <ChatSidebar
-      currentView={currentView}
-      onArchiveSession={sessionId => void archiveSession(sessionId)}
-      onDeleteSession={sessionId => void removeSession(sessionId)}
-      onLoadMoreMessaging={loadMoreMessagingForPlatform}
-      onLoadMoreProfileSessions={loadMoreSessionsForProfile}
-      onLoadMoreSessions={loadMoreSessions}
-      onManageCronJob={jobId => {
-        setCronFocusJobId(jobId)
-        navigate(CRON_ROUTE)
-      }}
-      onNavigate={selectSidebarItem}
-      onNewSessionInWorkspace={startSessionInWorkspace}
-      onResumeSession={sessionId => navigate(sessionRoute(sessionId))}
-      onTriggerCronJob={jobId => {
-        void triggerCronJob(jobId)
-          .then(() => refreshCronJobs())
-          .catch(() => undefined)
-      }}
-    />
-  )
-
-  // One PTY-backed terminal mounted forever; <TerminalSlot /> placeholders decide
-  // where it shows. Lives in main's stacking context (not the root overlay layer)
-  // so pane resize handles still paint above it. Toggling never rebuilds the shell.
-  const mainOverlays = (
-    <PersistentTerminal cwd={currentCwd} onAddSelectionToChat={composer.addTerminalSelectionAttachment} />
-  )
-
-  const overlays = (
-    <>
-      <RemoteDisplayBanner />
-      {!isSecondaryWindow() && <DesktopInstallOverlay />}
-      {!isSecondaryWindow() && (
-        <DesktopOnboardingOverlay
-          enabled={gatewayState === 'open'}
-          onCompleted={() => {
-            void refreshHermesConfig()
-            void refreshCurrentModel()
-            void queryClient.invalidateQueries({ queryKey: ['model-options'] })
-          }}
-          requestGateway={requestGateway}
-        />
-      )}
-      <ModelPickerOverlay gateway={gatewayRef.current || undefined} onSelect={selectModel} />
-      <SessionPickerOverlay onResume={resumeSession} />
-      <ModelVisibilityOverlay gateway={gatewayRef.current || undefined} onOpenProviders={openProviderSettings} />
-      <UpdatesOverlay />
-      <GatewayConnectingOverlay />
-      <BootFailureOverlay />
-      <CommandPalette />
-      <PetGenerateOverlay />
-      <SessionSwitcher />
-
-      {settingsOpen && (
-        <Suspense fallback={null}>
-          <SettingsView
-            gateway={gatewayRef.current}
-            onClose={closeOverlayToPreviousRoute}
-            onConfigSaved={() => {
-              void refreshHermesConfig()
-              void refreshCurrentModel()
-              void queryClient.invalidateQueries({ queryKey: ['model-options'] })
-            }}
-            onMainModelChanged={(provider, model) => {
-              setCurrentProvider(provider)
-              setCurrentModel(model)
-              updateModelOptionsCache(provider, model, true)
-              void refreshCurrentModel()
-              void queryClient.invalidateQueries({ queryKey: ['model-options'] })
-            }}
-          />
-        </Suspense>
-      )}
-
-      {commandCenterOpen && (
-        <Suspense fallback={null}>
-          <CommandCenterView
-            initialSection={commandCenterInitialSection}
-            onClose={closeOverlayToPreviousRoute}
-            onDeleteSession={removeSession}
-            onNavigateRoute={path => navigate(path)}
-            onOpenSession={sessionId => navigate(sessionRoute(sessionId))}
-          />
-        </Suspense>
-      )}
-
-      {agentsOpen && (
-        <Suspense fallback={null}>
-          <AgentsView onClose={closeOverlayToPreviousRoute} />
-        </Suspense>
-      )}
-
-      {cronOpen && (
-        <Suspense fallback={null}>
-          <CronView
-            onClose={closeOverlayToPreviousRoute}
-            onOpenSession={sessionId => navigate(sessionRoute(sessionId))}
-          />
-        </Suspense>
-      )}
-
-      {profilesOpen && (
-        <Suspense fallback={null}>
-          <ProfilesView onClose={closeOverlayToPreviousRoute} />
-        </Suspense>
-      )}
-    </>
-  )
-
   const chatView = (
     <ChatView
       gateway={gatewayRef.current}
@@ -1122,149 +999,5 @@ export function DesktopController() {
     />
   )
 
-  // Flipped layout mirrors the default: sessions sidebar → right, file
-  // browser + preview rail → left. Same panes, swapped sides.
-  const sidebarSide = panesFlipped ? 'right' : 'left'
-  const railSide = panesFlipped ? 'left' : 'right'
-
-  const previewPane = (
-    <Pane
-      disabled={!chatOpen || (!previewTarget && !filePreviewTarget)}
-      id={PREVIEW_PANE_ID}
-      key="preview"
-      maxWidth={PREVIEW_RAIL_MAX_WIDTH}
-      minWidth={PREVIEW_RAIL_MIN_WIDTH}
-      resizable
-      side={railSide}
-      width={PREVIEW_RAIL_PANE_WIDTH}
-    >
-      {chatOpen ? (
-        <ChatPreviewRail onRestartServer={restartPreviewServer} setTitlebarToolGroup={setTitlebarToolGroup} />
-      ) : null}
-    </Pane>
-  )
-
-  const fileBrowserPane = (
-    <Pane
-      defaultOpen={false}
-      disabled={!chatOpen}
-      forceCollapsed={narrowViewport}
-      hoverReveal
-      id="file-browser"
-      key="file-browser"
-      maxWidth={FILE_BROWSER_MAX_WIDTH}
-      minWidth={FILE_BROWSER_MIN_WIDTH}
-      resizable
-      side={railSide}
-      width={FILE_BROWSER_DEFAULT_WIDTH}
-    >
-      <RightSidebarPane
-        onActivateFile={path => composer.insertContextPathInlineRef(path)}
-        onActivateFolder={path => composer.insertContextPathInlineRef(path, true)}
-        onChangeCwd={changeSessionCwd}
-      />
-    </Pane>
-  )
-
-  const terminalPane = (
-    <Pane
-      defaultOpen
-      disabled={!terminalSidebarOpen}
-      divider
-      id="terminal-sidebar"
-      key="terminal-sidebar"
-      maxWidth="80vw"
-      minWidth="22vw"
-      resizable
-      side={railSide}
-      width="42vw"
-    >
-      <div className="relative flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-(--ui-editor-surface-background) pt-(--titlebar-height)">
-        <TerminalSlot />
-      </div>
-    </Pane>
-  )
-
-  return (
-    <AppShell
-      leftStatusbarItems={leftStatusbarItems}
-      leftTitlebarTools={titlebarToolGroups.flat.left}
-      mainOverlays={mainOverlays}
-      onOpenSettings={openSettings}
-      overlays={overlays}
-      previewPaneOpen={chatOpen && Boolean(previewTarget || filePreviewTarget)}
-      statusbarItems={statusbarItems}
-      terminalPaneOpen={terminalSidebarOpen}
-      titlebarTools={titlebarToolGroups.flat.right}
-    >
-      {!isSecondaryWindow() && (
-        <Pane
-          forceCollapsed={narrowViewport}
-          hoverReveal
-          id="chat-sidebar"
-          maxWidth={SIDEBAR_MAX_WIDTH}
-          minWidth={SIDEBAR_DEFAULT_WIDTH}
-          onOverlayActiveChange={setSidebarOverlayMounted}
-          resizable
-          side={sidebarSide}
-          width={`${SIDEBAR_DEFAULT_WIDTH}px`}
-        >
-          {sidebar}
-        </Pane>
-      )}
-      <PaneMain>
-        <Routes>
-          <Route element={chatView} index />
-          <Route element={chatView} path=":sessionId" />
-          <Route
-            element={
-              <Suspense fallback={null}>
-                <SkillsView setStatusbarItemGroup={setStatusbarItemGroup} />
-              </Suspense>
-            }
-            path="skills"
-          />
-          <Route
-            element={
-              <Suspense fallback={null}>
-                <MessagingView setStatusbarItemGroup={setStatusbarItemGroup} />
-              </Suspense>
-            }
-            path="messaging"
-          />
-          <Route
-            element={
-              <Suspense fallback={null}>
-                <ArtifactsView setStatusbarItemGroup={setStatusbarItemGroup} />
-              </Suspense>
-            }
-            path="artifacts"
-          />
-          <Route element={null} path="cron" />
-          <Route element={null} path="profiles" />
-          <Route element={null} path="settings" />
-          <Route element={null} path="command-center" />
-          <Route element={null} path="agents" />
-          <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="new" />
-          <Route element={<LegacySessionRedirect />} path="sessions/:sessionId" />
-          <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />
-        </Routes>
-      </PaneMain>
-      {/*
-        Order within a side maps to column order. Default (rail on the right):
-        main | terminal | preview | file-browser. Flipped (rail on the left):
-        mirror to file-browser | preview | terminal | main so terminal stays
-        adjacent to the chat.
-      */}
-      {panesFlipped ? fileBrowserPane : terminalPane}
-      {previewPane}
-      {panesFlipped ? terminalPane : fileBrowserPane}
-    </AppShell>
-  )
-}
-
-function LegacySessionRedirect() {
-  const { sessionId } = useParams()
-
-  return <Navigate replace to={sessionId ? sessionRoute(sessionId) : NEW_CHAT_ROUTE} />
+  return <AetherShell chatView={chatView} />
 }
