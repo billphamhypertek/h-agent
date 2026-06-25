@@ -10,7 +10,7 @@ import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
-import { BRIEF_ROUTE, HUD_ROUTE, NEW_CHAT_ROUTE } from '@/app/routes'
+import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, HUD_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, PROFILES_ROUTE } from '@/app/routes'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
@@ -44,8 +44,12 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<CommandCenter onCommandPalette={() => { /* wire ⌘K in a later slice */ }} />} path={HUD_ROUTE.slice(1)} />
               <Route element={<MorningBrief />} path={BRIEF_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Agents" />} path="agents" />
+              <Route element={<StubScreen title="Artifacts" />} path={ARTIFACTS_ROUTE.slice(1)} />
+              <Route element={<StubScreen title="Command Center" />} path={COMMAND_CENTER_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Cron" />} path="cron" />
               <Route element={<StubScreen title="Memory" />} path="memory" />
+              <Route element={<StubScreen title="Messaging" />} path={MESSAGING_ROUTE.slice(1)} />
+              <Route element={<StubScreen title="Profiles" />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Settings" />} path="settings" />
               <Route element={<StubScreen title="Skills" />} path="skills" />
               <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />

@@ -1,11 +1,10 @@
 import { useStore } from '@nanostores/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { lazy, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { AetherShell } from '@/aether'
 import { loadBriefing } from '@/aether/domain/briefing/briefing-store'
-import { useMediaQuery } from '@/hooks/use-media-query'
 import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
@@ -16,8 +15,7 @@ import { storedSessionIdForNotification } from '../lib/session-ids'
 import {
   isMessagingSource,
   LOCAL_SESSION_SOURCE_IDS,
-  MESSAGING_SESSION_SOURCE_IDS,
-  normalizeSessionSource
+  MESSAGING_SESSION_SOURCE_IDS
 } from '../lib/session-source'
 import { latestSessionTodos } from '../lib/todos'
 import { setCronJobs } from '../store/cron'
@@ -25,9 +23,7 @@ import {
   $panesFlipped,
   $pinnedSessionIds,
   $sessionsLimit,
-  bumpSessionsLimit,
   pinSession,
-  SIDEBAR_SESSIONS_PAGE_SIZE,
   unpinSession
 } from '../store/layout'
 import { respondToApprovalAction } from '../store/native-notifications'
@@ -49,7 +45,6 @@ import {
   $freshDraftReady,
   $gatewayState,
   $messages,
-  $messagingSessions,
   $resumeExhaustedSessionId,
   $resumeFailedSessionId,
   $selectedStoredSessionId,
@@ -63,10 +58,7 @@ import {
   setAwaitingResponse,
   setBusy,
   setCronSessions,
-  setCurrentBranch,
-  setCurrentCwd,
   setMessages,
-  setMessagingPlatformTotals,
   setMessagingSessions,
   setMessagingTruncated,
   setSessionProfileTotals,
@@ -85,9 +77,8 @@ import { useComposerActions } from './chat/hooks/use-composer-actions'
 import { useGatewayBoot } from './gateway/hooks/use-gateway-boot'
 import { useGatewayRequest } from './gateway/hooks/use-gateway-request'
 import { useKeybinds } from './hooks/use-keybinds'
-import { SIDEBAR_COLLAPSE_MEDIA_QUERY } from './layout-constants'
 import { $terminalTakeover } from './right-sidebar/store'
-import { routeSessionId, sessionRoute, SETTINGS_ROUTE } from './routes'
+import { routeSessionId, sessionRoute } from './routes'
 import { useContextSuggestions } from './session/hooks/use-context-suggestions'
 import { useCwdActions } from './session/hooks/use-cwd-actions'
 import { useHermesConfig } from './session/hooks/use-hermes-config'
@@ -103,17 +94,7 @@ import { useStatusSnapshot } from './shell/hooks/use-status-snapshot'
 import { useStatusbarItems } from './shell/hooks/use-statusbar-items'
 import { ModelMenuPanel } from './shell/model-menu-panel'
 import type { StatusbarItem } from './shell/statusbar-controls'
-import type { TitlebarTool } from './shell/titlebar-controls'
 import { useGroupRegistry } from './shell/use-group-registry'
-
-const AgentsView = lazy(async () => ({ default: (await import('./agents')).AgentsView }))
-const ArtifactsView = lazy(async () => ({ default: (await import('./artifacts')).ArtifactsView }))
-const CommandCenterView = lazy(async () => ({ default: (await import('./command-center')).CommandCenterView }))
-const CronView = lazy(async () => ({ default: (await import('./cron')).CronView }))
-const MessagingView = lazy(async () => ({ default: (await import('./messaging')).MessagingView }))
-const ProfilesView = lazy(async () => ({ default: (await import('./profiles')).ProfilesView }))
-const SettingsView = lazy(async () => ({ default: (await import('./settings')).SettingsView }))
-const SkillsView = lazy(async () => ({ default: (await import('./skills')).SkillsView }))
 
 // Latest cron-job sessions surfaced in the collapsed "Cron jobs" section. The
 // Cron sessions are written by a background scheduler tick (the desktop
@@ -188,10 +169,6 @@ export function DesktopController() {
   const terminalTakeover = useStore($terminalTakeover)
   const panesFlipped = useStore($panesFlipped)
   const profileScope = useStore($profileScope)
-  // Below SIDEBAR_COLLAPSE_BREAKPOINT_PX there's no room for a docked rail —
-  // collapse both sidebars (without touching their stored open state) so the
-  // hover-reveal overlay becomes the way in. Restores once it's wide again.
-  const narrowViewport = useMediaQuery(SIDEBAR_COLLAPSE_MEDIA_QUERY)
 
   const routedSessionId = routeSessionId(location.pathname)
   const routeToken = `${location.pathname}:${location.search}:${location.hash}`
@@ -214,12 +191,7 @@ export function DesktopController() {
     toggleCommandCenter
   } = useOverlayRouting()
 
-  const terminalSidebarOpen = chatOpen && terminalTakeover
-
-  const titlebarToolGroups = useGroupRegistry<TitlebarTool>()
   const statusbarItemGroups = useGroupRegistry<StatusbarItem>()
-  const setTitlebarToolGroup = titlebarToolGroups.set
-  const setStatusbarItemGroup = statusbarItemGroups.set
 
   const {
     activeSessionIdRef,
@@ -388,28 +360,6 @@ export function DesktopController() {
     }
   }, [])
 
-  // Page a single platform's section independently (mirrors the per-profile
-  // pager): fetch that source's next window and merge it back in place, leaving
-  // every other platform's rows untouched. Resolves the platform's exact total.
-  const loadMoreMessagingForPlatform = useCallback(async (platform: string) => {
-    const inPlatform = (s: SessionInfo) => normalizeSessionSource(s.source) === platform
-    const loaded = $messagingSessions.get().filter(inPlatform).length
-
-    const result = await listAllProfileSessions(loaded + SIDEBAR_SESSIONS_PAGE_SIZE, 1, 'exclude', 'recent', 'all', {
-      source: platform
-    })
-
-    const incoming = result.sessions.filter(s => normalizeSessionSource(s.source) === platform)
-
-    setMessagingSessions(prev => [
-      ...prev.filter(s => !inPlatform(s)),
-      ...mergeSessionPage(prev.filter(inPlatform), incoming, sessionsToKeep())
-    ])
-
-    const total = result.total ?? incoming.length
-    setMessagingPlatformTotals(prev => ({ ...prev, [platform]: Math.max(total, incoming.length) }))
-  }, [])
-
   // Cron *jobs* drive the sidebar "Cron jobs" section. Jobs are created
   // synchronously (agent tool call or the cron UI), so refreshing here right
   // after an agent turn surfaces a new job immediately; the interval poll keeps
@@ -465,11 +415,6 @@ export function DesktopController() {
     void refreshMessagingSessions()
   }, [profileScope, refreshCronSessions, refreshCronJobs, refreshMessagingSessions])
 
-  const loadMoreSessions = useCallback(() => {
-    bumpSessionsLimit()
-    void refreshSessions()
-  }, [refreshSessions])
-
   // Another window mutated the shared session list (e.g. a chat started in the
   // pop-out). Re-pull so the sidebar reflects it. Pop-outs have no sidebar, so
   // only real windows bother.
@@ -480,28 +425,6 @@ export function DesktopController() {
 
     return onSessionsChanged(() => void refreshSessions().catch(() => undefined))
   }, [refreshSessions])
-
-  // ALL-profiles view pages one profile at a time: fetch that profile's next
-  // page and merge it in place, leaving every other profile's rows untouched.
-  const loadMoreSessionsForProfile = useCallback(async (profile: string) => {
-    const key = normalizeProfileKey(profile)
-    const inKey = (s: SessionInfo) => normalizeProfileKey(s.profile) === key
-    const loaded = $sessions.get().filter(inKey).length
-
-    const result = await listAllProfileSessions(loaded + SIDEBAR_SESSIONS_PAGE_SIZE, 1, 'exclude', 'recent', key, {
-      excludeSources: SIDEBAR_EXCLUDED_SOURCES
-    })
-
-    const keep = sessionsToKeep(key)
-
-    setSessions(prev => [
-      ...prev.filter(s => !inKey(s)),
-      ...mergeSessionPage(prev.filter(inKey), result.sessions, keep)
-    ])
-
-    const total = result.profile_totals?.[key] ?? result.total ?? result.sessions.length
-    setSessionProfileTotals(prev => ({ ...prev, [key]: Math.max(total, result.sessions.length) }))
-  }, [])
 
   const toggleSelectedPin = useCallback(() => {
     const sessionId = $selectedStoredSessionId.get()
@@ -540,7 +463,7 @@ export function DesktopController() {
     [activeSessionIdRef, updateSessionState]
   )
 
-  const { changeSessionCwd, refreshProjectBranch } = useCwdActions({
+  const { refreshProjectBranch } = useCwdActions({
     activeSessionId,
     activeSessionIdRef,
     onSessionRuntimeInfo: updateActiveSessionRuntimeInfo,
@@ -557,10 +480,6 @@ export function DesktopController() {
     queryClient,
     requestGateway
   })
-
-  const openProviderSettings = useCallback(() => {
-    navigate(`${SETTINGS_ROUTE}?tab=providers`)
-  }, [navigate])
 
   const modelMenuContent = useMemo(
     () =>
@@ -643,7 +562,7 @@ export function DesktopController() {
     updateSessionState
   })
 
-  const { handleDesktopGatewayEvent, restartPreviewServer } = usePreviewRouting({
+  const { handleDesktopGatewayEvent } = usePreviewRouting({
     activeSessionIdRef,
     baseHandleGatewayEvent: handleGatewayEvent,
     currentCwd,
@@ -654,13 +573,10 @@ export function DesktopController() {
   })
 
   const {
-    archiveSession,
     branchCurrentSession,
     createBackendSessionForSend,
-    openSettings,
     removeSession,
     resumeSession,
-    selectSidebarItem,
     startFreshSessionDraft
   } = useSessionActions({
     activeSessionId,
@@ -782,29 +698,6 @@ export function DesktopController() {
       }))
     },
     [activeSessionIdRef, updateSessionState]
-  )
-
-  const startSessionInWorkspace = useCallback(
-    (path: null | string) => {
-      startFreshSessionDraft()
-
-      const target = path?.trim()
-
-      if (!target) {
-        return
-      }
-
-      // The next message creates the backend session in $currentCwd, so seed
-      // it (and the branch) from the workspace the user clicked the + on.
-      setCurrentCwd(target)
-      void requestGateway<{ branch?: string; cwd?: string }>('config.get', { key: 'project', cwd: target })
-        .then(info => {
-          setCurrentCwd(info.cwd || target)
-          setCurrentBranch(info.branch || '')
-        })
-        .catch(() => undefined)
-    },
-    [requestGateway, startFreshSessionDraft]
   )
 
   const handleSkinCommand = useSkinCommand()

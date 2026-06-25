@@ -236,10 +236,20 @@
 @keyframes ae-spin { to { transform: translate(-50%, -50%) rotateX(72deg) rotate(360deg); } }
 @keyframes ae-pulse { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
 
+[data-hermes-theme='aether'] [data-testid='ae-online-dot']::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--ae-ok);
+  animation: ae-pulse 2.2s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-hermes-theme='aether'] .ae-bloom,
   [data-hermes-theme='aether'] .ae-orb-stage,
   [data-hermes-theme='aether'] .ae-orb,
+  [data-hermes-theme='aether'] [data-testid='ae-online-dot']::after,
   [data-hermes-theme='aether'] .ae-orb-ring { animation: none !important; }
   [data-hermes-theme='aether'] .ae-nav-indicator,
   [data-hermes-theme='aether'] .ae-nav-edge { transition: none !important; }
