@@ -4,6 +4,7 @@ import { lazy, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { AetherShell } from '@/aether'
+import { loadBriefing } from '@/aether/domain/briefing/briefing-store'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
@@ -897,6 +898,7 @@ export function DesktopController() {
       void refreshCurrentModel()
       void refreshActiveProfile()
       void refreshSessions().catch(() => undefined)
+      void loadBriefing()
     }
   }, [gatewayState, refreshCurrentModel, refreshSessions])
 
