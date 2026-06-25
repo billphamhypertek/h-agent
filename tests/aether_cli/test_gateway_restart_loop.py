@@ -30,7 +30,7 @@ class TestGatewayLifecyclePattern:
         "aether gateway stop",
         "aether gateway start",
         "aether  gateway  restart",         # double spaces
-        "Hermez Gateway Restart".lower().replace("z", "s"),  # case handled
+        "Aether Gateway Restart".lower(),  # case handled
         "AETHER GATEWAY RESTART",           # uppercase
     ])
     def test_aether_gateway_commands(self, text):

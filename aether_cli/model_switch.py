@@ -85,7 +85,7 @@ _AETHER_MODEL_WARNING = (
 # Negative examples it must NOT match:
 #   aether-brain:qwen3-14b-ctx16k, qwen3:14b, claude-opus-4-6
 _NOUS_AETHER_NON_AGENTIC_RE = re.compile(
-    r"(?:^|[/:])(?:hermes|aether)[-_ ]?[34](?:[-_.:]|$)",
+    r"(?:^|[/:])hermes[-_ ]?[34](?:[-_.:]|$)",
     re.IGNORECASE,
 )
 

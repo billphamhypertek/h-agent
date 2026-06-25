@@ -13,16 +13,16 @@ attribution link, kept provider hosts), the migration tooling under
 
 ---
 
-## Phase 5 gate — 2026-06-25 PASSED (with 2 rename defects found and fixed)
+## Phase 5 gate — 2026-06-25 PASSED (with 2 rename defects found, fixed, then spec-corrected in Task 9 follow-up)
 
 ### STEP 0 — carry-forward LICENSE fix
 `plugins/aether-achievements/LICENSE` line 3: `Hermes Achievements contributors` → `AETHER Achievements contributors`. (Root `/LICENSE` untouched.)
 
 ### STEP 1 — residual `hermes` review
-Final residual count (gate scope, excl. node_modules / scripts/rebrand / tests/rebrand / docs/superpowers): **798** lines.
+Final residual count (gate scope, excl. node_modules / scripts/rebrand / tests/rebrand / docs/superpowers): **794** lines.
 
-After filtering justified buckets, the only "interesting" lines are:
-- **5 lines** in `aether_cli/cron.py` and `aether_cli/model_switch.py` — backward-compat `(?:hermes|aether)` patterns added as part of the 2 rename-defect fixes (see below). JUSTIFIED.
+After filtering justified buckets, the only "interesting" line is:
+- **1 line** in `aether_cli/model_switch.py:88` — `r"(?:^|[/:])hermes[-_ ]?[34](?:[-_.:]|$)"` — the protected Nous Hermes 3/4 model-name detector (hermes-only, spec-compliant). JUSTIFIED.
 - **1 line** in `apps/desktop/src/aether/ui/screens/boot-sequence.test.tsx:34` — attribution regex `/Forked from NousResearch\/hermes-agent/i`. JUSTIFIED.
 
 All other residuals are:
@@ -32,9 +32,9 @@ All other residuals are:
 - Third-party npm packages in lockfiles (`hermes-parser`, `hermes-estree`, Facebook `node_modules/hermes` engine)
 - 4 external community links (`HermesClaw`/`hermesclaw`) — flagged for Task 10
 
-**2 rename defects found and fixed:**
-1. `aether_cli/model_switch.py` `_NOUS_AETHER_NON_AGENTIC_RE`: regex was `(?:^|[/:])aether[-_ ]?[34](?:[-_.:]|$)` — missed external Nous Hermes model names (`hermes-3`, `hermes-4`, `NousResearch/Hermes-3-*`). Fixed to `(?:^|[/:])(?:hermes|aether)[-_ ]?[34](?:[-_.:]|$)`.
-2. `aether_cli/cron.py` `_GATEWAY_LIFECYCLE_PATTERNS`: regex only matched `aether gateway restart/stop/start` — missed legacy `hermes gateway ...` commands that should still be blocked. Fixed to `(?:hermes|aether)` in all 4 pattern arms.
+**Task 9 fixes (2 rename defects) then Task 9 follow-up (spec correction):**
+1. `aether_cli/cron.py` `_GATEWAY_LIFECYCLE_PATTERNS`: Task 9 wrongly added `(?:hermes|aether)` back-compat. Task 9 follow-up reverted to AETHER-only — `aether gateway restart/stop/start`, `launchctl ... *aether`, `systemctl ... *aether`, `pkill *aether*gateway`. No Hermes back-compat; spec-compliant (AETHER must coexist with upstream Hermes install without intercepting it).
+2. `aether_cli/model_switch.py` `_NOUS_AETHER_NON_AGENTIC_RE`: Task 9 added `(?:hermes|aether)` to detect Nous Hermes 3/4 model names — correct for `hermes`, but `aether` arm was meaningless (no `aether-3/4` model exists) and a false-positive risk for a future `aether-4` model. Task 9 follow-up changed to `hermes`-only: `r"(?:^|[/:])hermes[-_ ]?[34](?:[-_.:]|$)"`. Protected Nous model names still fully detected.
 
 ### STEP 2 — CLI smoke tests
 - `import aether_cli.main` → `IMPORT_OK`
@@ -67,7 +67,7 @@ Result: **empty** — CLEAN. All operational references resolve to `aether`.
 
 ### Summary
 - Carry-forward LICENSE fix: DONE
-- Residual hermes: 798 lines, all justified
+- Residual hermes: 794 lines (post Task-9 follow-up), all justified
 - 2 rename defects found and fixed (model_switch.py regex, cron.py regex)
 - CLI smoke: PASSED (3/3)
 - tests/rebrand: 12/12 passed
