@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getSessionMessages, listAllProfileSessions, listSessions } from './aether'
+import { getSessionMessages, listAllProfileSessions, listSessions } from './aether-api'
 
 const emptySessionsResponse = {
   limit: 0,

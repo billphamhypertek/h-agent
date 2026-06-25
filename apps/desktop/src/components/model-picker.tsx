@@ -5,8 +5,8 @@ import { useI18n } from '@/i18n'
 import { currentPickerSelection } from '@/lib/model-status-label'
 import type { ModelOptionProvider, ModelOptionsResponse, ModelPricing } from '@/types/aether'
 
-import type { AetherGateway } from '../aether'
-import { getGlobalModelOptions } from '../aether'
+import type { AetherGateway } from '../aether-api'
+import { getGlobalModelOptions } from '../aether-api'
 import { cn } from '../lib/utils'
 import { startManualOnboarding } from '../store/onboarding'
 

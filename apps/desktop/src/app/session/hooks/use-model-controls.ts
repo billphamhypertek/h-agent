@@ -1,7 +1,7 @@
 import { type QueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import { getGlobalModelInfo } from '@/aether'
+import { getGlobalModelInfo } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { notifyError } from '@/store/notifications'
 import {

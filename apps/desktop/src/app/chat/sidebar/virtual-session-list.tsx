@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { type FC, useCallback, useRef } from 'react'
 
-import type { SessionInfo } from '@/aether'
+import type { SessionInfo } from '@/aether-api'
 import { cn } from '@/lib/utils'
 import { sessionPinId } from '@/store/session'
 

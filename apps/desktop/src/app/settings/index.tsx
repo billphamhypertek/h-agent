@@ -2,7 +2,7 @@ import { IconDownload, IconRefresh, IconUpload } from '@tabler/icons-react'
 import { useRef } from 'react'
 
 import { Tip } from '@/components/ui/tooltip'
-import { getAetherConfigDefaults, getAetherConfigRecord, saveAetherConfig } from '@/aether'
+import { getAetherConfigDefaults, getAetherConfigRecord, saveAetherConfig } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { triggerHaptic } from '@/lib/haptics'
 import { Archive, Bell, Globe, Info, KeyRound, Settings2, Sparkles, Wrench, Zap } from '@/lib/icons'

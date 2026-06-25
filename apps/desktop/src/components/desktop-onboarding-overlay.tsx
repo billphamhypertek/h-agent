@@ -8,7 +8,7 @@ import { Codicon } from '@/components/ui/codicon'
 import { ErrorIcon } from '@/components/ui/error-state'
 import { Input } from '@/components/ui/input'
 import { Loader } from '@/components/ui/loader'
-import { getGlobalModelOptions } from '@/aether'
+import { getGlobalModelOptions } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import {
   Check,

@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 
-import type { AetherGateway } from '@/aether'
+import type { AetherGateway } from '@/aether-api'
 import type { IconComponent } from '@/lib/icons'
 import type { EnvVarInfo } from '@/types/aether'
 

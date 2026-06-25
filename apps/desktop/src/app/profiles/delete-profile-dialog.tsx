@@ -1,5 +1,5 @@
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { deleteProfile } from '@/aether'
+import { deleteProfile } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { $activeGatewayProfile, normalizeProfileKey, selectProfile, setActiveProfile } from '@/store/profile'
 

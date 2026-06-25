@@ -1,5 +1,5 @@
 import type { AetherWorktreeInfo } from '@/global'
-import type { SessionInfo } from '@/aether'
+import type { SessionInfo } from '@/aether-api'
 
 export interface SidebarSessionGroup {
   id: string

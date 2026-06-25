@@ -1,6 +1,6 @@
 import { atom, computed } from 'nanostores'
 
-import { getProfiles, setApiRequestProfile } from '@/aether'
+import { getProfiles, setApiRequestProfile } from '@/aether-api'
 import { queryClient } from '@/lib/query-client'
 import {
   arraysEqual,

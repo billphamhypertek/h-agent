@@ -12,7 +12,7 @@ import {
   getAetherConfigRecord,
   getAetherConfigSchema,
   saveAetherConfig
-} from '@/aether'
+} from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { notify, notifyError } from '@/store/notifications'

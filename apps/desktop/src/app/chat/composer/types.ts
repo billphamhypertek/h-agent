@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import type { AetherGateway } from '@/aether'
+import type { AetherGateway } from '@/aether-api'
 import type { ComposerAttachment } from '@/store/composer'
 
 import type { DroppedFile } from '../hooks/use-composer-actions'

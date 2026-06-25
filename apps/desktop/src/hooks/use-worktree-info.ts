@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { uniqueCwds, type WorktreeResolver } from '@/app/chat/sidebar/workspace-groups'
 import type { AetherWorktreeInfo } from '@/global'
-import type { SessionInfo } from '@/aether'
+import type { SessionInfo } from '@/aether-api'
 import { desktopFsCacheKey, desktopWorktrees } from '@/lib/desktop-fs'
 
 type WorktreeMap = Record<string, AetherWorktreeInfo | null>

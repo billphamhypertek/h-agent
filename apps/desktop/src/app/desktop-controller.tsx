@@ -9,7 +9,7 @@ import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
 import { formatRefValue } from '../components/assistant-ui/directive-text'
-import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo } from '../aether'
+import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo } from '../aether-api'
 import { type ChatMessage, chatMessageText, preserveLocalAssistantErrors, toChatMessages } from '../lib/chat-messages'
 import { storedSessionIdForNotification } from '../lib/session-ids'
 import {

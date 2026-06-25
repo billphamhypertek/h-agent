@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getAetherConfigRecord, type AetherConfigRecord, saveAetherConfig } from '@/aether'
+import { getAetherConfigRecord, type AetherConfigRecord, saveAetherConfig } from '@/aether-api'
 
 import { TRANSLATIONS } from './catalog'
 import { DEFAULT_LOCALE, localeConfigValue, normalizeLocale } from './languages'

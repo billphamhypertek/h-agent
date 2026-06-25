@@ -13,8 +13,8 @@ import {
   getUsageAnalytics,
   restartGateway,
   updateAETHER
-} from '@/aether'
-import type { ActionStatusResponse, AnalyticsResponse, StatusResponse } from '@/aether'
+} from '@/aether-api'
+import type { ActionStatusResponse, AnalyticsResponse, StatusResponse } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { sessionTitle } from '@/lib/chat-runtime'
 import { Activity, AlertCircle, BarChart3, Pin } from '@/lib/icons'

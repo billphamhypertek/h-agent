@@ -1,6 +1,6 @@
 import { atom } from 'nanostores'
 
-import { getActionStatus, restartGateway } from '@/aether'
+import { getActionStatus, restartGateway } from '@/aether-api'
 import { translateNow } from '@/i18n'
 import { notifyError } from '@/store/notifications'
 import type { ActionResponse } from '@/types/aether'

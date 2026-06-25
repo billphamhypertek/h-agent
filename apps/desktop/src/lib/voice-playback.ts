@@ -1,4 +1,4 @@
-import { speakText } from '@/aether'
+import { speakText } from '@/aether-api'
 import {
   $voicePlayback,
   setVoicePlaybackState,

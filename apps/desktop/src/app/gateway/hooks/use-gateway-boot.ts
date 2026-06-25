@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import type { AetherConnection } from '@/global'
-import { AetherGateway } from '@/aether'
+import { AetherGateway } from '@/aether-api'
 import { translateNow } from '@/i18n'
 import { desktopDefaultCwd } from '@/lib/desktop-fs'
 import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@/lib/gateway-ws-url'

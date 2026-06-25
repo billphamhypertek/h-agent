@@ -13,8 +13,8 @@ import {
   saveAetherConfig,
   setEnvVar,
   setModelAssignment
-} from '@/aether'
-import type { AuxiliaryModelsResponse, ModelOptionProvider, StaleAuxAssignment } from '@/aether'
+} from '@/aether-api'
+import type { AuxiliaryModelsResponse, ModelOptionProvider, StaleAuxAssignment } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { AlertTriangle, Cpu, Loader2 } from '@/lib/icons'
 import { cn } from '@/lib/utils'

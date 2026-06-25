@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { getLogs, getStatus } from '@/aether'
+import { getLogs, getStatus } from '@/aether-api'
 import { evaluateRuntimeReadiness, type RuntimeReadinessResult } from '@/lib/runtime-readiness'
 import type { StatusResponse } from '@/types/aether'
 

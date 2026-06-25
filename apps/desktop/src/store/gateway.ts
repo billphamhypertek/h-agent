@@ -1,7 +1,7 @@
 import type { ConnectionState, GatewayEvent } from '@aether/shared'
 import { atom } from 'nanostores'
 
-import { AetherGateway } from '@/aether'
+import { AetherGateway } from '@/aether-api'
 import { resolveGatewayWsUrl } from '@/lib/gateway-ws-url'
 import { setGatewayState } from '@/store/session'
 

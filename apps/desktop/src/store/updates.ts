@@ -13,7 +13,7 @@ import type {
   DesktopUpdateStatus,
   DesktopVersionInfo
 } from '@/global'
-import { checkAetherUpdate, getActionStatus, updateAETHER } from '@/aether'
+import { checkAetherUpdate, getActionStatus, updateAETHER } from '@/aether-api'
 import { translateNow } from '@/i18n'
 import { persistString, storedString } from '@/lib/storage'
 import { dismissNotification, notify } from '@/store/notifications'

@@ -1,6 +1,6 @@
 import { type MutableRefObject, useCallback, useState } from 'react'
 
-import { getAetherConfig, getAetherConfigDefaults } from '@/aether'
+import { getAetherConfig, getAetherConfigDefaults } from '@/aether-api'
 import { BUILTIN_PERSONALITIES, normalizePersonalityValue, personalityNamesFromConfig } from '@/lib/chat-runtime'
 import {
   $currentCwd,

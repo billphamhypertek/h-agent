@@ -1,5 +1,5 @@
-import type { SessionInfo } from '@/aether'
-import { getSessionMessages } from '@/aether'
+import type { SessionInfo } from '@/aether-api'
+import { getSessionMessages } from '@/aether-api'
 import { translateNow } from '@/i18n'
 import { notify, notifyError } from '@/store/notifications'
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { deleteEnvVar, getEnvVars, revealEnvVar, setEnvVar } from '@/aether'
+import { deleteEnvVar, getEnvVars, revealEnvVar, setEnvVar } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { type IconComponent } from '@/lib/icons'
 import { notify, notifyError } from '@/store/notifications'

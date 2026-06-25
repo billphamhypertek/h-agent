@@ -15,8 +15,8 @@ import {
   DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { AetherGateway } from '@/aether'
-import { getGlobalModelOptions } from '@/aether'
+import type { AetherGateway } from '@/aether-api'
+import { getGlobalModelOptions } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { currentPickerSelection, displayModelName, modelDisplayParts, reasoningEffortLabel } from '@/lib/model-status-label'
 import { cn } from '@/lib/utils'

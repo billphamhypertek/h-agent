@@ -1,4 +1,4 @@
-import { getSessionMessages } from '@/aether'
+import { getSessionMessages } from '@/aether-api'
 
 import type { Briefing } from './briefing-schema'
 import { parseBriefingFromMessages } from './parse-briefing'
