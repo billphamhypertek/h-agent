@@ -8,6 +8,8 @@ export const ARTIFACTS_ROUTE = '/artifacts'
 export const CRON_ROUTE = '/cron'
 export const PROFILES_ROUTE = '/profiles'
 export const AGENTS_ROUTE = '/agents'
+export const HUD_ROUTE = '/hud'
+export const BRIEF_ROUTE = '/brief'
 
 export type AppView =
   | 'agents'
