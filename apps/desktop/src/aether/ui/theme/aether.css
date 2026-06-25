@@ -1,0 +1,248 @@
+/* apps/desktop/src/aether/ui/theme/aether.css */
+[data-hermes-theme='aether'] {
+  --ae-navy: #07397d;
+  --ae-azure: #4aa3ff;
+  --ae-azure-soft: #8fc0ff;
+  --ae-azure-bright: #1659b5;
+  --ae-ink: #e9f1ff;
+  --ae-dim: #9fb6d6;
+  --ae-line: rgba(120, 180, 255, 0.16);
+  --ae-ok: #3de7a0;
+  --ae-warn: #ffb020;
+  --ae-error: #ff5d6c;
+  --ae-glass: rgba(150, 205, 245, 0.1);
+  --ae-glass-2: rgba(120, 190, 240, 0.06);
+  --ae-font-display: 'Orbitron', system-ui, sans-serif;
+}
+[data-hermes-theme='aether'][data-hermes-mode='light'] {
+  --ae-ink: #0c2444;
+  --ae-dim: #4d6694;
+  --ae-line: rgba(7, 57, 125, 0.16);
+  --ae-glass: rgba(255, 255, 255, 0.62);
+  --ae-glass-2: rgba(255, 255, 255, 0.42);
+}
+
+/* full-bleed cinematic background for AETHER screens */
+.ae-screen {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--ae-ink);
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.16), transparent 55%),
+    radial-gradient(100% 90% at 80% 110%, rgba(7, 57, 125, 0.18), transparent 60%),
+    linear-gradient(180deg, #082046 0%, #05132f 48%, #020c1d 100%);
+}
+[data-hermes-mode='light'] .ae-screen {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.12), transparent 55%),
+    linear-gradient(180deg, #f3f7ff 0%, #e9f1ff 100%);
+}
+
+.ae-grid-floor {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -6%;
+  height: 60%;
+  background-image:
+    linear-gradient(rgba(74, 163, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 163, 255, 0.11) 1px, transparent 1px);
+  background-size: 46px 46px;
+  transform: perspective(680px) rotateX(64deg);
+  transform-origin: bottom center;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 38%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 38%, #000 78%, transparent 100%);
+  opacity: 0.42;
+  z-index: 0;
+  pointer-events: none;
+}
+.ae-bloom {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(74, 163, 255, 0.2), transparent 65%);
+  filter: blur(22px);
+  animation: ae-breath 7s ease-in-out infinite;
+}
+.ae-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(110% 90% at 50% 30%, transparent 52%, rgba(3, 9, 16, 0.62) 100%);
+}
+
+/* glass slab surface */
+.ae-slab {
+  position: relative;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--ae-glass), var(--ae-glass-2));
+  border: 1px solid var(--ae-line);
+  box-shadow:
+    0 24px 44px -18px rgba(0, 0, 0, 0.7),
+    0 8px 18px -8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 30px rgba(74, 163, 255, 0.04);
+  backdrop-filter: blur(8px);
+}
+.ae-slab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 32%);
+}
+
+/* Living Orb (driven by living-orb.tsx; sizes via --ae-orb-size) */
+.ae-orb-stage {
+  position: relative;
+  width: var(--ae-orb-size, 170px);
+  height: var(--ae-orb-size, 170px);
+  display: grid;
+  place-items: center;
+  animation: ae-bob 6s ease-in-out infinite;
+}
+.ae-orb {
+  position: relative;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 34% 28%,
+    #ffffff 0%,
+    var(--ae-azure-soft) 14%,
+    var(--ae-azure) 40%,
+    var(--ae-azure-bright) 72%,
+    #0b4a68 100%
+  );
+  box-shadow:
+    inset -14px -16px 36px rgba(2, 20, 34, 0.85),
+    inset 11px 13px 28px rgba(255, 255, 255, 0.38),
+    0 0 60px rgba(74, 163, 255, 0.6),
+    0 22px 40px -10px rgba(0, 0, 0, 0.6);
+}
+.ae-orb::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  top: 16%;
+  width: 34%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.92), transparent 70%);
+  filter: blur(2px);
+}
+.ae-orb-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  border: 2px solid rgba(150, 225, 255, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  border-bottom-color: rgba(40, 140, 190, 0.22);
+  transform: translate(-50%, -50%) rotateX(72deg);
+  box-shadow: 0 0 22px rgba(74, 163, 255, 0.4), inset 0 0 18px rgba(74, 163, 255, 0.3);
+  animation: ae-spin 14s linear infinite;
+  width: 100%;
+  height: 100%;
+}
+.ae-orb-ring.r2 {
+  width: 84%;
+  height: 84%;
+  border-style: dashed;
+  opacity: 0.5;
+  animation-duration: 22s;
+  animation-direction: reverse;
+}
+.ae-orb--thinking .ae-orb {
+  animation: ae-breath 2.6s ease-in-out infinite;
+}
+
+/* nav active indicator (transform set by JS) */
+.ae-nav-indicator {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: var(--ae-nav-item-h, 38px);
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(74, 163, 255, 0.28), rgba(74, 163, 255, 0.08));
+  border: 1px solid rgba(120, 210, 255, 0.5);
+  box-shadow: 0 0 18px rgba(74, 163, 255, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transition: transform 0.44s cubic-bezier(0.5, 0.05, 0.1, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.ae-nav-edge {
+  position: absolute;
+  left: -5px;
+  width: 3px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--ae-azure);
+  box-shadow: 0 0 8px var(--ae-azure);
+  transition: transform 0.44s cubic-bezier(0.5, 0.05, 0.1, 1);
+}
+
+/* micro-viz */
+.ae-gauge,
+.ae-bar {
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.ae-gauge > i,
+.ae-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--ae-azure-bright), var(--ae-azure));
+  box-shadow: 0 0 12px rgba(74, 163, 255, 0.6);
+}
+.ae-bar.warn > i,
+.ae-gauge.warn > i {
+  background: linear-gradient(90deg, var(--ae-warn), #ffd27a);
+  box-shadow: 0 0 12px var(--ae-warn);
+}
+
+/* command bar */
+.ae-cmd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 18px;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(74, 163, 255, 0.12), rgba(120, 195, 245, 0.04));
+  border: 1px solid rgba(120, 210, 255, 0.3);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    0 0 30px rgba(74, 163, 255, 0.18);
+}
+
+/* "Depth" page transition */
+.ae-depth-enter {
+  animation: ae-depth 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes ae-depth {
+  from { opacity: 0; transform: scale(1.04); filter: blur(6px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes ae-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes ae-breath { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
+@keyframes ae-spin { to { transform: translate(-50%, -50%) rotateX(72deg) rotate(360deg); } }
+@keyframes ae-pulse { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-hermes-theme='aether'] .ae-bloom,
+  [data-hermes-theme='aether'] .ae-orb-stage,
+  [data-hermes-theme='aether'] .ae-orb,
+  [data-hermes-theme='aether'] .ae-orb-ring { animation: none !important; }
+  [data-hermes-theme='aether'] .ae-nav-indicator,
+  [data-hermes-theme='aether'] .ae-nav-edge { transition: none !important; }
+  [data-hermes-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
+  @keyframes ae-fade { from { opacity: 0; } to { opacity: 1; } }
+}

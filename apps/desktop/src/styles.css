@@ -3,6 +3,7 @@
 @import 'tw-shimmer';
 @import 'katex/dist/katex.min.css';
 @import '@vscode/codicons/dist/codicon.css';
+@import './aether/ui/theme/aether.css';
 @custom-variant dark (&:is(.dark *));
 
 /* Sidebar sections: tall viewports give each its own scroller; compact ones
