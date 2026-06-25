@@ -4338,25 +4338,28 @@ def _print_version_info(*, check_updates: bool = True) -> None:
     except ImportError:
         print("OpenAI SDK: Not installed")
 
-    if not check_updates:
-        return
+    if check_updates:
+        # Show update status (synchronous — acceptable since user asked for version info)
+        try:
+            from aether_cli.banner import check_for_updates
+            from aether_cli.config import recommended_update_command
 
-    # Show update status (synchronous — acceptable since user asked for version info)
-    try:
-        from aether_cli.banner import check_for_updates
-        from aether_cli.config import recommended_update_command
+            behind = check_for_updates()
+            if behind and behind > 0:
+                commits_word = "commit" if behind == 1 else "commits"
+                print(
+                    f"Update available: {behind} {commits_word} behind — "
+                    f"run '{recommended_update_command()}'"
+                )
+            elif behind == 0:
+                print("Up to date")
+        except Exception:
+            pass
 
-        behind = check_for_updates()
-        if behind and behind > 0:
-            commits_word = "commit" if behind == 1 else "commits"
-            print(
-                f"Update available: {behind} {commits_word} behind — "
-                f"run '{recommended_update_command()}'"
-            )
-        elif behind == 0:
-            print("Up to date")
-    except Exception:
-        pass
+    print(
+        "Forked from NousResearch/hermes-agent (MIT). "
+        "© Nous Research; modifications © HyperTek."
+    )
 
 
 def cmd_version(args):

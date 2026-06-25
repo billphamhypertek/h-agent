@@ -53,6 +53,11 @@ export function BootSequence() {
         </div>
       </div>
 
+      {/* fork attribution */}
+      <div className="absolute bottom-4 left-1/2 z-[3] -translate-x-1/2 font-mono text-[9px] tracking-[.06em] text-[color:var(--ae-dim)] opacity-50">
+        Forked from NousResearch/hermes-agent · MIT
+      </div>
+
       {/* loader / error */}
       <div className="absolute bottom-14 left-1/2 z-[3] flex w-[420px] -translate-x-1/2 flex-col gap-[9px]">
         {hasError ? (

@@ -197,9 +197,11 @@ python -m pytest tests/ -q
 - 📚 [技能中心](https://agentskills.io)
 - 🐛 [问题反馈](https://github.com/NousResearch/hermes-agent/issues)
 - 💡 [讨论区](https://github.com/NousResearch/hermes-agent/discussions)
-- 🔌 [AetherClaw](https://github.com/AaronWong1999/aetherclaw) — 社区微信桥接：在同一微信账号上运行 AETHER 和 OpenClaw。
+- 🔌 [HermesClaw](https://github.com/AaronWong1999/hermesclaw) — 社区微信桥接：在同一微信账号上运行 Hermes Agent 和 OpenClaw。
 
 ---
+
+> Forked from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) (MIT). Original work © Nous Research; modifications © HyperTek.
 
 ## 许可证
 

@@ -29,4 +29,8 @@ describe('BootSequence', () => {
     fireEvent.click(screen.getByText('Mở log'))
     expect(revealLogs).toHaveBeenCalled()
   })
+  it('shows fork attribution', () => {
+    render(<BootSequence />)
+    expect(screen.getByText(/Forked from NousResearch\/hermes-agent/i)).toBeTruthy()
+  })
 })
