@@ -85,3 +85,91 @@ def transform_text(text: str) -> str:
     for pattern, replacement in RULES:
         masked = pattern.sub(replacement, masked)
     return unmask(masked, mapping)
+
+
+EXCLUDE_PREFIXES = (
+    "node_modules/",
+    "scripts/rebrand/",
+    "tests/rebrand/",
+    "docs/superpowers/",
+)
+EXCLUDE_BASENAMES = {"package-lock.json", "uv.lock", "flake.lock", "LICENSE"}
+BINARY_SUFFIXES = {
+    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".icns", ".webp",
+    ".pdf", ".woff", ".woff2", ".ttf", ".otf",
+    ".zip", ".gz", ".whl", ".mp3", ".mp4", ".wav",
+}
+
+
+def is_text_target(path: Path) -> bool:
+    posix = path.as_posix()
+    if posix.startswith(EXCLUDE_PREFIXES):
+        return False
+    if path.name in EXCLUDE_BASENAMES:
+        return False
+    if path.suffix.lower() in BINARY_SUFFIXES:
+        return False
+    return True
+
+
+def tracked_files() -> list[Path]:
+    out = subprocess.run(
+        ["git", "ls-files"], capture_output=True, text=True, check=True
+    ).stdout
+    return [Path(line) for line in out.splitlines() if line]
+
+
+def rename_pairs() -> list[tuple[Path, Path]]:
+    pairs: list[tuple[Path, Path]] = []
+    for rel in tracked_files():
+        posix = rel.as_posix()
+        if posix.startswith(EXCLUDE_PREFIXES):
+            continue
+        new_posix = transform_text(posix)
+        if new_posix != posix:
+            pairs.append((rel, Path(new_posix)))
+    # Deepest paths first so files move before their parent dirs disappear.
+    pairs.sort(key=lambda pair: len(pair[0].as_posix()), reverse=True)
+    return pairs
+
+
+def rewrite_contents(root: Path) -> int:
+    changed = 0
+    for rel in tracked_files():
+        if not is_text_target(rel):
+            continue
+        path = root / rel
+        try:
+            original = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
+            continue
+        updated = transform_text(original)
+        if updated != original:
+            path.write_text(updated, encoding="utf-8")
+            changed += 1
+    return changed
+
+
+def rename_files(root: Path) -> int:
+    moved = 0
+    for old, new in rename_pairs():
+        dest = root / new
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["git", "mv", old.as_posix(), new.as_posix()], cwd=root, check=True
+        )
+        moved += 1
+    return moved
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="AETHER rebrand engine")
+    parser.add_argument("mode", choices=["rename", "rewrite"])
+    ns = parser.parse_args()
+    cwd = Path.cwd()
+    if ns.mode == "rename":
+        print(f"rebrand: git mv'd {rename_files(cwd)} paths")
+    else:
+        print(f"rebrand: rewrote {rewrite_contents(cwd)} files")

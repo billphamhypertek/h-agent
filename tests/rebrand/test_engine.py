@@ -78,3 +78,25 @@ def test_idempotent():
     )
     once = transform_text(sample)
     assert transform_text(once) == once
+
+
+from pathlib import Path
+
+from scripts.rebrand.engine import is_text_target
+
+
+def test_is_text_target_excludes_tooling_and_binaries():
+    assert is_text_target(Path("hermes_cli/main.py")) is True
+    assert is_text_target(Path("README.md")) is True
+    # Excluded directories.
+    assert is_text_target(Path("scripts/rebrand/engine.py")) is False
+    assert is_text_target(Path("tests/rebrand/test_engine.py")) is False
+    assert is_text_target(Path("docs/superpowers/specs/x.md")) is False
+    assert is_text_target(Path("node_modules/foo/index.js")) is False
+    # Excluded basenames.
+    assert is_text_target(Path("LICENSE")) is False
+    assert is_text_target(Path("package-lock.json")) is False
+    assert is_text_target(Path("uv.lock")) is False
+    # Binary assets.
+    assert is_text_target(Path("apps/desktop/public/hermes.png")) is False
+    assert is_text_target(Path("docs/hermes-kanban-v1-spec.pdf")) is False
