@@ -91,7 +91,7 @@ Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn
 - **Chuyển trang chính = "Depth":** trang mới `scale(1.04→1)` + `blur(6px→0)` + fade, ~0.5s, `cubic-bezier(.4,0,.2,1)`. Hợp theme "Spatial Depth" — cảm giác lùi/tiến trong chiều sâu. Có thể tái dùng cho overlay / Command Palette (⌘K).
 - Control transitions tiết chế (~100–150ms; breathing orb). Implement bằng CSS keyframes/transition; JS chỉ toggle class + cập nhật transform của indicator. **Tôn trọng `prefers-reduced-motion`** (giảm về fade thuần hoặc tắt).
 
-**Để ngỏ (TBD — không chặn lát đầu):** nhóm hiệu ứng "dòng chảy" **ambient** (kiểu Sacred Timeline / Temporal Loom của Loki — sợi sáng chảy & phân nhánh) cho nền/boot/orb. Đã thử demo, chưa chốt; quyết sau.
+**Ambient motion — hướng ĐÃ KHOÁ, build sau:** lớp nền cinematic cao cấp dùng **WebGL/Three.js + shader (GLSL)** — fidelity kiểu [getlayers.ai](https://www.getlayers.ai) (3D/shader fluid "dòng chảy", KHÔNG phải CSS/canvas mô phỏng) — cho **Living Orb + background** ở Boot / nền HUD / Voice. **Không thuộc lát đầu**; đưa vào **sub-project "motion/cinematic" riêng** sau khi foundation chạy. Khi đó quyết **mua Layers** (phải kiểm tra license cho sản phẩm bán lại) **vs tự build** (`@react-three/fiber` + GLSL — sở hữu mã, brand-tuned). Desktop hiện CHƯA có Three.js → sẽ thêm lúc đó. Guard: chỉ vài màn, pause khi ẩn/idle, tôn trọng `prefers-reduced-motion`. **Lát đầu dùng orb SVG/CSS nhẹ** (pattern `components/ui/loader.tsx`).
 
 ## 5. Bản đồ 16 màn hình
 
@@ -126,7 +126,7 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 Đây là phần đưa sang **writing-plans**. Các màn còn lại đã có mockup, triển khai ở các sub-project sau.
 
 **Trong phạm vi:**
-- **Foundation:** transport layer (reuse `JsonRpcGatewayClient` + REST wrapper + reconnect), theme system (dark+light tokens), app shell (nav rail + top bar + online dot), routing, **Living Orb** component.
+- **Foundation:** transport layer (reuse `JsonRpcGatewayClient` + REST wrapper + reconnect), theme system (dark+light tokens), app shell (nav rail + top bar + online dot), routing, **Living Orb** (bản SVG/CSS nhẹ — nâng cấp WebGL ở sub-project motion).
 - **Màn:** Boot Sequence · Command-Center HUD · Chat (streaming + tool-call) · Brief sáng.
 - **Proof pillar:** Vận hành / **Morning Briefing** (tổng hợp đa nguồn).
 
@@ -156,7 +156,7 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 
 ## 10. Rủi ro & câu hỏi mở
 
-- **Ambient motion** ("dòng chảy"/Loki Sacred-Timeline cho nền/boot/orb) — TBD. (Nav-slide + page transition "Depth" đã chốt ở §4.6.)
+- **Ambient motion** — *hướng đã khoá* (WebGL/Three.js shader-grade, tham khảo getlayers.ai; §4.6). Build đưa vào **sub-project "motion/cinematic"** sau foundation; quyết **mua Layers vs tự build** khi đó. (Nav-slide + page transition "Depth" đã chốt.)
 - ✅ **Nguồn dữ liệu Briefing — ĐÃ CHỐT** (§7): email/lịch (`google-workspace`), server health (bọc các skill server-manage sẵn có), tasks/ngữ cảnh (cron/sessions/memory) qua cơ chế cron-artifact. CRM/deals để sau.
 - ✅ **Reuse vs rebuild — ĐÃ CHỐT** (§3.3): hybrid — reuse runtime (chat/terminal/markdown/⌘K/theme/gateway), build mới shell + 16 màn + orb + hiệu ứng.
 - **CRM/deals** — chưa có native; sẽ thêm (MCP HubSpot/Pipedrive hoặc store JSON) ở sub-project sau.
