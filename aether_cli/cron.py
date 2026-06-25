@@ -23,10 +23,10 @@ from aether_cli.colors import Colors, color
 # the API gateway logs and report restart events").
 _GATEWAY_LIFECYCLE_PATTERNS = re.compile(
     r"(?i)"
-    r"(aether\s+gateway\s+(restart|stop|start))"
-    r"|(launchctl\s+(kickstart|unload|load|stop|restart)\s+.*aether)"
-    r"|(systemctl\s+(-\S+\s+)*(restart|stop|start)\s+.*aether)"
-    r"|(p?kill\s+.*aether.*gateway)"
+    r"((?:hermes|aether)\s+gateway\s+(restart|stop|start))"
+    r"|(launchctl\s+(kickstart|unload|load|stop|restart)\s+.*(?:hermes|aether))"
+    r"|(systemctl\s+(-\S+\s+)*(restart|stop|start)\s+.*(?:hermes|aether))"
+    r"|(p?kill\s+.*(?:hermes|aether).*gateway)"
 )
 
 
