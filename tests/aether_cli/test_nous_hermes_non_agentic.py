@@ -29,6 +29,7 @@ from aether_cli.model_switch import (
         "Hermes-3",
         "hermes-4",
         "hermes-4-405b",
+        "hermes_4_70b",
         "openrouter/hermes3:70b",
         "openrouter/nousresearch/hermes-4-405b",
         "NousResearch/Hermes3",
