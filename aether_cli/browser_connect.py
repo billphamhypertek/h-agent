@@ -1,4 +1,4 @@
-"""Shared helpers for attaching Hermes to a local Chromium-family CDP port."""
+"""Shared helpers for attaching AETHER to a local Chromium-family CDP port."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import shlex
 import shutil
 import subprocess
 
-from hermes_constants import get_hermes_home
+from aether_constants import get_aether_home
 
 
 DEFAULT_BROWSER_CDP_PORT = 9222
@@ -121,7 +121,7 @@ def get_chrome_debug_candidates(system: str) -> list[str]:
 
 
 def chrome_debug_data_dir() -> str:
-    return str(get_hermes_home() / "chrome-debug")
+    return str(get_aether_home() / "chrome-debug")
 
 
 def _chrome_debug_args(port: int) -> list[str]:

@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship the first slice of the AETHER desktop redesign — a cinematic navy/azure shell with four working screens (Boot Sequence, Command-Center HUD, Chat, Morning Brief) plus a cron-driven Morning Briefing data layer — by reusing the existing Hermes runtime and replacing only the visual shell.
+**Goal:** Ship the first slice of the AETHER desktop redesign — a cinematic navy/azure shell with four working screens (Boot Sequence, Command-Center HUD, Chat, Morning Brief) plus a cron-driven Morning Briefing data layer — by reusing the existing AETHER runtime and replacing only the visual shell.
 
-**Architecture:** AETHER is a **hybrid** rewrite. We **reuse, untouched,** the proven runtime inside `apps/desktop/src/app/desktop-controller.tsx` — gateway boot (`useGatewayBoot`), request wrapper (`useGatewayRequest`), message streaming + tool-call handling (`useMessageStream`), the `@assistant-ui` chat (`ChatView`/`Thread`/`ChatBar`), the theme token system (`src/themes`), and the REST helpers (`src/hermes.ts`). We **replace** exactly one thing: the controller's render block (`return (<AppShell>…</AppShell>)`, [desktop-controller.tsx:1188-1262](../../../apps/desktop/src/app/desktop-controller.tsx#L1188-L1262)) is swapped for a new `<AetherShell>` that owns the nav rail, top bar, Boot overlay, "Depth" page transitions, and the AETHER route table. The chat element (`chatView`, [desktop-controller.tsx:1091-1123](../../../apps/desktop/src/app/desktop-controller.tsx#L1091-L1123)) is passed into `AetherShell` and rendered restyled (token-driven) — its streaming logic is never rewritten. New screens (Boot/HUD/Brief), the Living Orb, the AETHER theme preset, and the briefing data layer live in a new isolated subtree `apps/desktop/src/aether/`. The Morning Briefing reads the latest cron run via the **existing** REST surface (no Python web-server changes); a new `morning-briefing-aggregator` skill produces the JSON artifact.
+**Architecture:** AETHER is a **hybrid** rewrite. We **reuse, untouched,** the proven runtime inside `apps/desktop/src/app/desktop-controller.tsx` — gateway boot (`useGatewayBoot`), request wrapper (`useGatewayRequest`), message streaming + tool-call handling (`useMessageStream`), the `@assistant-ui` chat (`ChatView`/`Thread`/`ChatBar`), the theme token system (`src/themes`), and the REST helpers (`src/aether.ts`). We **replace** exactly one thing: the controller's render block (`return (<AppShell>…</AppShell>)`, [desktop-controller.tsx:1188-1262](../../../apps/desktop/src/app/desktop-controller.tsx#L1188-L1262)) is swapped for a new `<AetherShell>` that owns the nav rail, top bar, Boot overlay, "Depth" page transitions, and the AETHER route table. The chat element (`chatView`, [desktop-controller.tsx:1091-1123](../../../apps/desktop/src/app/desktop-controller.tsx#L1091-L1123)) is passed into `AetherShell` and rendered restyled (token-driven) — its streaming logic is never rewritten. New screens (Boot/HUD/Brief), the Living Orb, the AETHER theme preset, and the briefing data layer live in a new isolated subtree `apps/desktop/src/aether/`. The Morning Briefing reads the latest cron run via the **existing** REST surface (no Python web-server changes); a new `morning-briefing-aggregator` skill produces the JSON artifact.
 
-**Tech Stack:** React 19, TypeScript 6, Vite 8, react-router-dom 7 (HashRouter), nanostores + `@nanostores/react`, Tailwind CSS 4 (CSS-var token system, `@theme`/`@layer`), `@assistant-ui/react`, Vitest 4 + jsdom + `@testing-library/react`. Backend skill: Hermes SKILL.md format. No new runtime dependencies are introduced in this slice (Three.js / WebGL ambient motion is explicitly a later sub-project).
+**Tech Stack:** React 19, TypeScript 6, Vite 8, react-router-dom 7 (HashRouter), nanostores + `@nanostores/react`, Tailwind CSS 4 (CSS-var token system, `@theme`/`@layer`), `@assistant-ui/react`, Vitest 4 + jsdom + `@testing-library/react`. Backend skill: AETHER SKILL.md format. No new runtime dependencies are introduced in this slice (Three.js / WebGL ambient motion is explicitly a later sub-project).
 
 ## Global Constraints
 
@@ -70,7 +70,7 @@ apps/desktop/src/aether/
   domain/
     boot/
       boot-store.ts                nanostores: $bootProgress, $bootDone
-      use-boot-progress.ts         subscribe window.hermesDesktop boot progress → store
+      use-boot-progress.ts         subscribe window.aetherDesktop boot progress → store
       use-boot-progress.test.ts
     connection/
       use-connection-status.ts     derive 'online' | 'paused' from gateway state
@@ -108,7 +108,7 @@ skills/productivity/morning-briefing-aggregator/
 These are real signatures the tasks depend on. Do not redefine them.
 
 ```ts
-// apps/desktop/src/global.d.ts — window.hermesDesktop (subset used here)
+// apps/desktop/src/global.d.ts — window.aetherDesktop (subset used here)
 getBootProgress(): Promise<DesktopBootProgress>
 onBootProgress(cb: (p: DesktopBootProgress) => void): () => void
 api<T>(request: { path: string; method?: string; body?: unknown; timeoutMs?: number; profile?: string }): Promise<T>
@@ -129,7 +129,7 @@ export const BUILTIN_THEMES: Record<string, DesktopTheme>   // presets.ts
 // apps/desktop/src/themes/context.tsx
 useTheme(): { theme; themeName: string; mode; resolvedMode; setTheme(name: string): void; setMode(m): void; … }
 
-// apps/desktop/src/hermes.ts
+// apps/desktop/src/aether.ts
 getSessionMessages(sessionId: string, profile?: string | null): Promise<{ messages: ChatMessageRecord[]; session_id: string }>
 
 // Existing chat runtime (REUSED untouched) — controller builds these:
@@ -342,11 +342,11 @@ Defines all shared visual primitives as token-driven CSS classes (glass slab, pe
 
 > Note: CSS rendering is verified visually + through the component tests in later tasks (jsdom does not compute CSS). This task's "test" is a successful Vite build/typecheck that proves the import resolves.
 
-- [ ] **Step 1: Create `aether.css`** with the primitives lifted/adapted from the locked mockups ([`_ref_hud_dark.html`](../../../.superpowers/brainstorm/21982-1782359469/_ref_hud_dark.html) and the Boot/Brief/Chat frames in `09-all-screens.html`), converted to AETHER vars. Scope under `[data-hermes-theme='aether']` so it only applies to our theme.
+- [ ] **Step 1: Create `aether.css`** with the primitives lifted/adapted from the locked mockups ([`_ref_hud_dark.html`](../../../.superpowers/brainstorm/21982-1782359469/_ref_hud_dark.html) and the Boot/Brief/Chat frames in `09-all-screens.html`), converted to AETHER vars. Scope under `[data-aether-theme='aether']` so it only applies to our theme.
 
 ```css
 /* apps/desktop/src/aether/ui/theme/aether.css */
-[data-hermes-theme='aether'] {
+[data-aether-theme='aether'] {
   --ae-navy: #07397d;
   --ae-azure: #4aa3ff;
   --ae-azure-soft: #8fc0ff;
@@ -361,7 +361,7 @@ Defines all shared visual primitives as token-driven CSS classes (glass slab, pe
   --ae-glass-2: rgba(120, 190, 240, 0.06);
   --ae-font-display: 'Orbitron', system-ui, sans-serif;
 }
-[data-hermes-theme='aether'][data-hermes-mode='light'] {
+[data-aether-theme='aether'][data-aether-mode='light'] {
   --ae-ink: #0c2444;
   --ae-dim: #4d6694;
   --ae-line: rgba(7, 57, 125, 0.16);
@@ -380,7 +380,7 @@ Defines all shared visual primitives as token-driven CSS classes (glass slab, pe
     radial-gradient(100% 90% at 80% 110%, rgba(7, 57, 125, 0.18), transparent 60%),
     linear-gradient(180deg, #082046 0%, #05132f 48%, #020c1d 100%);
 }
-[data-hermes-mode='light'] .ae-screen {
+[data-aether-mode='light'] .ae-screen {
   background:
     radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.12), transparent 55%),
     linear-gradient(180deg, #f3f7ff 0%, #e9f1ff 100%);
@@ -584,14 +584,14 @@ Defines all shared visual primitives as token-driven CSS classes (glass slab, pe
 @keyframes ae-pulse { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-hermes-theme='aether'] .ae-bloom,
-  [data-hermes-theme='aether'] .ae-orb-stage,
-  [data-hermes-theme='aether'] .ae-orb,
-  [data-hermes-theme='aether'] .ae-orb-ring,
-  [data-hermes-theme='aether'] .ae-depth-enter { animation: none !important; }
-  [data-hermes-theme='aether'] .ae-nav-indicator,
-  [data-hermes-theme='aether'] .ae-nav-edge { transition: none !important; }
-  [data-hermes-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
+  [data-aether-theme='aether'] .ae-bloom,
+  [data-aether-theme='aether'] .ae-orb-stage,
+  [data-aether-theme='aether'] .ae-orb,
+  [data-aether-theme='aether'] .ae-orb-ring,
+  [data-aether-theme='aether'] .ae-depth-enter { animation: none !important; }
+  [data-aether-theme='aether'] .ae-nav-indicator,
+  [data-aether-theme='aether'] .ae-nav-edge { transition: none !important; }
+  [data-aether-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
   @keyframes ae-fade { from { opacity: 0; } to { opacity: 1; } }
 }
 ```
@@ -1036,7 +1036,7 @@ A nanostores-backed boot state fed by the Electron preload boot-progress channel
 - Create: `apps/desktop/src/aether/domain/boot/use-boot-progress.test.ts`
 
 **Interfaces:**
-- Consumes: `window.hermesDesktop.getBootProgress()` + `onBootProgress(cb)`; `DesktopBootProgress` ([global.d.ts](../../../apps/desktop/src/global.d.ts)).
+- Consumes: `window.aetherDesktop.getBootProgress()` + `onBootProgress(cb)`; `DesktopBootProgress` ([global.d.ts](../../../apps/desktop/src/global.d.ts)).
 - Produces:
   - `$bootProgress = atom<DesktopBootProgress | null>(null)`, `$bootDone = atom<boolean>(false)`.
   - `BOOT_STEPS: { phase: string; label: string }[]` (Vietnamese checklist).
@@ -1130,7 +1130,7 @@ function isComplete(p: DesktopBootProgress): boolean {
 
 export function useBootProgress(): void {
   useEffect(() => {
-    const desktop = window.hermesDesktop
+    const desktop = window.aetherDesktop
     if (!desktop) return
     let cancelled = false
     const apply = (p: DesktopBootProgress | null) => {
@@ -1172,7 +1172,7 @@ The cinematic splash: orb + rings, the init checklist (driven by the boot store)
 
 **Interfaces:**
 - Consumes: `$bootProgress`, `BOOT_STEPS`, `bootStepStatus` (Task 6); `LivingOrb` (Task 3); `useStore` from `@nanostores/react`.
-- Produces: `BootSequence()` — a full-bleed `.ae-screen` overlay. Renders checklist statuses, the percentage from `progress`, and (when `progress.error` is set) an inline error panel with a "Mở log" affordance that calls `window.hermesDesktop.revealLogs()` (confirmed at [global.d.ts:92](../../../apps/desktop/src/global.d.ts#L92)).
+- Produces: `BootSequence()` — a full-bleed `.ae-screen` overlay. Renders checklist statuses, the percentage from `progress`, and (when `progress.error` is set) an inline error panel with a "Mở log" affordance that calls `window.aetherDesktop.revealLogs()` (confirmed at [global.d.ts:92](../../../apps/desktop/src/global.d.ts#L92)).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1268,7 +1268,7 @@ export function BootSequence() {
           <div className="ae-slab px-4 py-3 text-center">
             <div className="text-sm font-semibold text-[color:var(--ae-error)]">Khởi động lỗi</div>
             <div className="mt-1 font-mono text-[11px] text-[color:var(--ae-dim)]">{progress?.error}</div>
-            <button type="button" onClick={() => window.hermesDesktop?.revealLogs?.()}
+            <button type="button" onClick={() => window.aetherDesktop?.revealLogs?.()}
               className="mt-2 text-[11px] text-[color:var(--ae-azure-soft)] underline">
               Mở log
             </button>
@@ -1489,7 +1489,7 @@ Reads the latest Morning Briefing artifact via the **existing** cron REST surfac
 - Create: `skills/productivity/morning-briefing-aggregator/references/briefing-schema.json`
 
 **Interfaces:**
-- Consumes: `window.hermesDesktop.api<T>(...)`; `getSessionMessages` from [hermes.ts](../../../apps/desktop/src/hermes.ts); `parseBriefingFromMessages`, `isBriefing` (Task 8).
+- Consumes: `window.aetherDesktop.api<T>(...)`; `getSessionMessages` from [aether.ts](../../../apps/desktop/src/aether.ts); `parseBriefingFromMessages`, `isBriefing` (Task 8).
 - Produces:
   - `readLatestBriefing(deps?: ReadBriefingDeps): Promise<Briefing | null>` with injectable deps `{ api; getMessages; jobName?; profile? }` (defaults wire the real implementations).
   - `$briefing = atom<Briefing | null>(null)`, `$briefingStatus = atom<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle')`, `loadBriefing(): Promise<void>`.
@@ -1538,7 +1538,7 @@ Expected: FAIL — cannot find `./read-briefing`.
 
 ```ts
 // apps/desktop/src/aether/domain/briefing/read-briefing.ts
-import { getSessionMessages } from '@/hermes'
+import { getSessionMessages } from '@/aether'
 import type { Briefing } from './briefing-schema'
 import { parseBriefingFromMessages } from './parse-briefing'
 
@@ -1555,7 +1555,7 @@ export interface ReadBriefingDeps {
 export const BRIEFING_JOB_NAME = 'morning-briefing-aggregator'
 
 export async function readLatestBriefing(deps: ReadBriefingDeps = {}): Promise<Briefing | null> {
-  const api = deps.api ?? (req => window.hermesDesktop.api(req))
+  const api = deps.api ?? (req => window.aetherDesktop.api(req))
   const getMessages = deps.getMessages ?? getSessionMessages
   const jobName = deps.jobName ?? BRIEFING_JOB_NAME
   const profile = deps.profile ?? 'default'
@@ -1615,7 +1615,7 @@ author: HyperTek
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  aether:
     tags: [Productivity, Briefing, Aggregation, JSON, Cron]
     related_skills: [google-workspace, hypertekvn-main-server-manage, h-workspace-server-manage]
 ---
@@ -2285,7 +2285,7 @@ import { $bootDone, $bootProgress } from '@/aether/domain/boot/boot-store'
 import { HUD_ROUTE } from '@/app/routes'
 
 beforeEach(() => {
-  vi.stubGlobal('hermesDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
+  vi.stubGlobal('aetherDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
   $bootDone.set(false)
   $bootProgress.set(null)
 })
@@ -2498,7 +2498,7 @@ The HUD + Brief read the latest run of a cron job whose **name is exactly**
 - **Prompt:** "Run the morning-briefing-aggregator skill and emit today's briefing JSON artifact."
 - **Deliver:** `local`
 
-Create via the existing cron REST surface (POST `/api/cron/jobs`) or the Hermes cron UI.
+Create via the existing cron REST surface (POST `/api/cron/jobs`) or the AETHER cron UI.
 The job runs in its own session, so it never disturbs the prompt cache of the user's
 live conversation. The renderer reads the latest run via
 `GET /api/cron/jobs/<id>/runs?limit=1` → the run session's messages → the JSON artifact.

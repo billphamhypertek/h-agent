@@ -1,5 +1,5 @@
 /* apps/desktop/src/aether/ui/theme/aether.css */
-[data-hermes-theme='aether'] {
+[data-aether-theme='aether'] {
   --ae-navy: #07397d;
   --ae-azure: #4aa3ff;
   --ae-azure-soft: #8fc0ff;
@@ -14,7 +14,7 @@
   --ae-glass-2: rgba(120, 190, 240, 0.06);
   --ae-font-display: 'Orbitron', system-ui, sans-serif;
 }
-[data-hermes-theme='aether'][data-hermes-mode='light'] {
+[data-aether-theme='aether'][data-aether-mode='light'] {
   --ae-ink: #0c2444;
   --ae-dim: #4d6694;
   --ae-line: rgba(7, 57, 125, 0.16);
@@ -33,7 +33,7 @@
     radial-gradient(100% 90% at 80% 110%, rgba(7, 57, 125, 0.18), transparent 60%),
     linear-gradient(180deg, #082046 0%, #05132f 48%, #020c1d 100%);
 }
-[data-hermes-mode='light'] .ae-screen {
+[data-aether-mode='light'] .ae-screen {
   background:
     radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.12), transparent 55%),
     linear-gradient(180deg, #f3f7ff 0%, #e9f1ff 100%);
@@ -236,7 +236,7 @@
 @keyframes ae-spin { to { transform: translate(-50%, -50%) rotateX(72deg) rotate(360deg); } }
 @keyframes ae-pulse { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
 
-[data-hermes-theme='aether'] [data-testid='ae-online-dot']::after {
+[data-aether-theme='aether'] [data-testid='ae-online-dot']::after {
   content: '';
   position: absolute;
   inset: -3px;
@@ -246,13 +246,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-hermes-theme='aether'] .ae-bloom,
-  [data-hermes-theme='aether'] .ae-orb-stage,
-  [data-hermes-theme='aether'] .ae-orb,
-  [data-hermes-theme='aether'] [data-testid='ae-online-dot']::after,
-  [data-hermes-theme='aether'] .ae-orb-ring { animation: none !important; }
-  [data-hermes-theme='aether'] .ae-nav-indicator,
-  [data-hermes-theme='aether'] .ae-nav-edge { transition: none !important; }
-  [data-hermes-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
+  [data-aether-theme='aether'] .ae-bloom,
+  [data-aether-theme='aether'] .ae-orb-stage,
+  [data-aether-theme='aether'] .ae-orb,
+  [data-aether-theme='aether'] [data-testid='ae-online-dot']::after,
+  [data-aether-theme='aether'] .ae-orb-ring { animation: none !important; }
+  [data-aether-theme='aether'] .ae-nav-indicator,
+  [data-aether-theme='aether'] .ae-nav-edge { transition: none !important; }
+  [data-aether-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
   @keyframes ae-fade { from { opacity: 0; } to { opacity: 1; } }
 }

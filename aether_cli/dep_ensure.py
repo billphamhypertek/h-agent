@@ -22,7 +22,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from hermes_constants import agent_browser_runnable
+from aether_constants import agent_browser_runnable
 
 _IS_WINDOWS = platform.system() == "Windows"
 
@@ -31,7 +31,7 @@ _DEP_CHECKS = {
     "browser": lambda: (
         agent_browser_runnable(shutil.which("agent-browser"))
         or _has_system_browser()
-        or _has_hermes_agent_browser()
+        or _has_aether_agent_browser()
     ),
     "ripgrep": lambda: shutil.which("rg") is not None,
     "ffmpeg": lambda: shutil.which("ffmpeg") is not None,
@@ -56,13 +56,13 @@ def _has_system_browser() -> bool:
     return False
 
 
-def _has_hermes_agent_browser() -> bool:
-    from hermes_constants import get_hermes_home
-    home = get_hermes_home()
+def _has_aether_agent_browser() -> bool:
+    from aether_constants import get_aether_home
+    home = get_aether_home()
     if _IS_WINDOWS:
         # npm -g --prefix puts .cmd shims directly in the prefix dir on Windows
         return (home / "node" / "agent-browser.cmd").is_file()
-    # install.sh installs globally into $HERMES_HOME/node/bin/ via npm -g --prefix
+    # install.sh installs globally into $AETHER_HOME/node/bin/ via npm -g --prefix
     # Also check legacy node_modules/.bin/ path for git-clone installs.
     return (
         (home / "node" / "bin" / "agent-browser").is_file()
@@ -132,7 +132,7 @@ def ensure_dependency(
             return False
 
     if shell == "powershell":
-        from hermes_constants import get_hermes_home
+        from aether_constants import get_aether_home
         ps_bin = shutil.which("powershell") or shutil.which("pwsh")
         if not ps_bin:
             if interactive:
@@ -143,7 +143,7 @@ def ensure_dependency(
             "-ExecutionPolicy", "Bypass",
             "-File", str(script),
             "-Ensure", dep,
-            "-HermesHome", str(get_hermes_home()),
+            "-AetherHome", str(get_aether_home()),
         ]
     else:
         cmd = ["bash", str(script), "--ensure", dep]

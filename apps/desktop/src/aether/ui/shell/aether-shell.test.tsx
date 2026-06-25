@@ -10,7 +10,7 @@ import { HUD_ROUTE } from '@/app/routes'
 import { AetherShell } from './aether-shell'
 
 beforeEach(() => {
-  vi.stubGlobal('hermesDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
+  vi.stubGlobal('aetherDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
   $bootDone.set(false)
   $bootProgress.set(null)
   $briefingStatus.set('ready')

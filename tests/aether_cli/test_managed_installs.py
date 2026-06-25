@@ -1,60 +1,60 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from hermes_cli.config import (
+from aether_cli.config import (
     format_managed_message,
     get_managed_system,
     recommended_update_command,
 )
-from hermes_cli.main import cmd_update
+from aether_cli.main import cmd_update
 from tools.skills_hub import OptionalSkillSource
 
 
 def test_get_managed_system_homebrew(monkeypatch):
-    monkeypatch.setenv("HERMES_MANAGED", "homebrew")
+    monkeypatch.setenv("AETHER_MANAGED", "homebrew")
 
     assert get_managed_system() == "Homebrew"
-    assert recommended_update_command() == "brew upgrade hermes-agent"
+    assert recommended_update_command() == "brew upgrade aether-agent"
 
 
 def test_format_managed_message_homebrew(monkeypatch):
-    monkeypatch.setenv("HERMES_MANAGED", "homebrew")
+    monkeypatch.setenv("AETHER_MANAGED", "homebrew")
 
-    message = format_managed_message("update Hermes Agent")
+    message = format_managed_message("update AETHER")
 
     assert "managed by Homebrew" in message
-    assert "brew upgrade hermes-agent" in message
+    assert "brew upgrade aether-agent" in message
 
 
-def test_recommended_update_command_defaults_to_hermes_update(monkeypatch):
-    monkeypatch.delenv("HERMES_MANAGED", raising=False)
+def test_recommended_update_command_defaults_to_aether_update(monkeypatch):
+    monkeypatch.delenv("AETHER_MANAGED", raising=False)
 
     # Also short-circuit the .managed marker path — CI runners may have an
-    # ambient ~/.hermes/.managed if a prior test left HERMES_HOME pointing
+    # ambient ~/.aether/.managed if a prior test left AETHER_HOME pointing
     # somewhere with that marker, which would make get_managed_update_command()
     # return "Update your Nix flake input ..." instead of falling through to
     # detect_install_method().
-    with patch("hermes_cli.config.get_managed_update_command", return_value=None), \
-         patch("hermes_cli.config.detect_install_method", return_value="git"):
-        assert recommended_update_command() == "hermes update"
+    with patch("aether_cli.config.get_managed_update_command", return_value=None), \
+         patch("aether_cli.config.detect_install_method", return_value="git"):
+        assert recommended_update_command() == "aether update"
 
 
 def test_cmd_update_blocks_managed_homebrew(monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_MANAGED", "homebrew")
+    monkeypatch.setenv("AETHER_MANAGED", "homebrew")
 
-    with patch("hermes_cli.main.subprocess.run") as mock_run:
+    with patch("aether_cli.main.subprocess.run") as mock_run:
         cmd_update(SimpleNamespace())
 
     assert not mock_run.called
     captured = capsys.readouterr()
     assert "managed by Homebrew" in captured.err
-    assert "brew upgrade hermes-agent" in captured.err
+    assert "brew upgrade aether-agent" in captured.err
 
 
 def test_optional_skill_source_honors_env_override(monkeypatch, tmp_path):
     optional_dir = tmp_path / "optional-skills"
     optional_dir.mkdir()
-    monkeypatch.setenv("HERMES_OPTIONAL_SKILLS", str(optional_dir))
+    monkeypatch.setenv("AETHER_OPTIONAL_SKILLS", str(optional_dir))
 
     source = OptionalSkillSource()
 

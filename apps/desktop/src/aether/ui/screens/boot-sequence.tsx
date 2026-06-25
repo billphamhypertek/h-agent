@@ -61,7 +61,7 @@ export function BootSequence() {
             <div className="mt-1 font-mono text-[11px] text-[color:var(--ae-dim)]">{progress?.error}</div>
             <button
               className="mt-2 text-[11px] text-[color:var(--ae-azure-soft)] underline"
-              onClick={() => window.hermesDesktop?.revealLogs?.()}
+              onClick={() => window.aetherDesktop?.revealLogs?.()}
               type="button"
             >
               Mở log

@@ -1,18 +1,18 @@
-"""Tests for the ``hermes prompt-size`` diagnostic (issue #34667)."""
+"""Tests for the ``aether prompt-size`` diagnostic (issue #34667)."""
 
 import json
 
 import pytest
 
-from hermes_cli.prompt_size import (
+from aether_cli.prompt_size import (
     _SKILLS_BLOCK_RE,
     compute_prompt_breakdown,
     render_breakdown,
 )
 
 
-def _seed_memory(hermes_home, memory_text="", user_text=""):
-    mem_dir = hermes_home / "memories"
+def _seed_memory(aether_home, memory_text="", user_text=""):
+    mem_dir = aether_home / "memories"
     mem_dir.mkdir(parents=True, exist_ok=True)
     if memory_text:
         (mem_dir / "MEMORY.md").write_text(memory_text, encoding="utf-8")
@@ -20,8 +20,8 @@ def _seed_memory(hermes_home, memory_text="", user_text=""):
         (mem_dir / "USER.md").write_text(user_text, encoding="utf-8")
 
 
-def _seed_skill(hermes_home, name, description):
-    skill_dir = hermes_home / "skills" / "demo" / name
+def _seed_skill(aether_home, name, description):
+    skill_dir = aether_home / "skills" / "demo" / name
     skill_dir.mkdir(parents=True, exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
         f"---\nname: {name}\ndescription: {description}\n---\n# {name}\nbody\n",
@@ -31,11 +31,11 @@ def _seed_skill(hermes_home, name, description):
 
 @pytest.fixture
 def isolated_home(tmp_path, monkeypatch):
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    aether_home = tmp_path / ".aether"
+    aether_home.mkdir()
+    monkeypatch.setenv("AETHER_HOME", str(aether_home))
     monkeypatch.chdir(tmp_path)  # avoid picking up the repo's AGENTS.md
-    return hermes_home
+    return aether_home
 
 
 def test_breakdown_keys_and_shape(isolated_home):

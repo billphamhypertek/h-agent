@@ -1,6 +1,6 @@
-"""Shared curses-based UI components for Hermes CLI.
+"""Shared curses-based UI components for AETHER CLI.
 
-Used by `hermes tools` and `hermes skills` for interactive checklists.
+Used by `aether tools` and `aether skills` for interactive checklists.
 Provides a curses multi-select with keyboard navigation, plus a
 text-based numbered fallback for terminals without curses support.
 """
@@ -8,7 +8,7 @@ import sys
 from dataclasses import dataclass
 from typing import Callable, List, Optional, Set
 
-from hermes_cli.colors import Colors, color
+from aether_cli.colors import Colors, color
 
 
 def _query_matches(label: str, query: str) -> bool:

@@ -1,6 +1,6 @@
-"""``hermes auth`` subcommand parser.
+"""``aether auth`` subcommand parser.
 
-Extracted verbatim from ``hermes_cli/main.py:main()`` (god-file Phase 2).
+Extracted verbatim from ``aether_cli/main.py:main()`` (god-file Phase 2).
 Handler injected to avoid importing ``main``.
 """
 
@@ -82,7 +82,7 @@ def build_auth_parser(subparsers, *, cmd_auth: Callable) -> None:
     )
     auth_logout.add_argument("provider", help="Provider id")
     auth_spotify = auth_subparsers.add_parser(
-        "spotify", help="Authenticate Hermes with Spotify via PKCE"
+        "spotify", help="Authenticate AETHER with Spotify via PKCE"
     )
     auth_spotify.add_argument(
         "spotify_action",
@@ -91,7 +91,7 @@ def build_auth_parser(subparsers, *, cmd_auth: Callable) -> None:
         default="login",
     )
     auth_spotify.add_argument(
-        "--client-id", help="Spotify app client_id (or set HERMES_SPOTIFY_CLIENT_ID)"
+        "--client-id", help="Spotify app client_id (or set AETHER_SPOTIFY_CLIENT_ID)"
     )
     auth_spotify.add_argument(
         "--redirect-uri",

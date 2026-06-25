@@ -5,40 +5,40 @@
 
 ## 1. Bối cảnh & Tầm nhìn
 
-**AETHER** là bản viết lại desktop app của Hermes Agent, một sản phẩm của **HyperTek** (thương hiệu nền tảng: **HYPERTEK - AGENT PLATFORM**).
+**AETHER** là bản viết lại desktop app của AETHER, một sản phẩm của **HyperTek** (thương hiệu nền tảng: **HYPERTEK - AGENT PLATFORM**).
 
 Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn thấy toàn bộ hoạt động (dev/DevOps, kinh doanh & khách hàng, nội dung & marketing, vận hành & hành chính), chủ động chạy việc nền, và trình diện mọi thứ qua một **buồng lái điện ảnh** khiến người dùng cảm thấy đang điều khiển cả một tổ hợp dù chỉ có một mình.
 
 **Định hướng kinh doanh:** *dùng-trước-bán-sau* (personal-first, productize-later). Lát đầu tiên tối ưu cho **một người dùng** (chủ sở hữu); kiến trúc giữ sạch để sau này có thể tách thành sản phẩm multi-tenant bán cho các solopreneur khác. **Không** over-engineer multi-tenant/billing/auth nhiều người ở giai đoạn này.
 
-## 2. Nguyên tắc nền (kế thừa Hermes — không vi phạm)
+## 2. Nguyên tắc nền (kế thừa AETHER — không vi phạm)
 
 - **Per-conversation prompt caching là bất khả xâm phạm.** Renderer chỉ là client; không làm gì khiến backend phải rebuild system prompt / swap toolset giữa hội thoại.
 - **Core là eo thắt hẹp; năng lực ở rìa** (plugin/skill/CLI), không phình core. Mọi tính năng "company OS" mới ưu tiên hiện thực ở rìa (skill/cron/tool), renderer chỉ *trình bày* và *điều khiển*.
 
 ## 3. Quyết định kiến trúc
 
-**Giữ nguyên (không đụng):** Hermes Python backend, Electron shell, gateway/dashboard API, protocol layer.
+**Giữ nguyên (không đụng):** AETHER Python backend, Electron shell, gateway/dashboard API, protocol layer.
 **Cách tiếp cận: HYBRID (đã chốt).** Viết mới phần "vỏ" — design system AETHER, app shell, 16 màn, Living Orb, hiệu ứng — trên canvas trắng; **tái dùng runtime đã tôi luyện** (gateway client, theme plumbing, chat streaming/tool-call, terminal, markdown, command palette, virtualization) bằng cách restyle thay vì viết lại. Đẹp như ý mà không phải giải lại bug streaming/tool-call. Chi tiết ở §3.3.
 
 ### 3.1 Mặt tiếp giáp backend ↔ renderer (đã khảo sát)
 
-- **Khởi động backend:** Electron spawn `hermes [--profile X] dashboard --no-open --host 127.0.0.1 --port 0` (port động đọc từ stdout). Logic ở `apps/desktop/electron/main.cjs` (`startHermes`).
+- **Khởi động backend:** Electron spawn `aether [--profile X] dashboard --no-open --host 127.0.0.1 --port 0` (port động đọc từ stdout). Logic ở `apps/desktop/electron/main.cjs` (`startAETHER`).
 - **Transport:**
   - **WebSocket JSON-RPC 2.0** tại `/api/gateway?token=<token>` — dùng cho streaming/events.
   - **REST** tại `/api/*` — dùng cho mutation/config/list.
 - **Client tái dùng nguyên:** `apps/shared/src/json-rpc-gateway.ts` (`JsonRpcGatewayClient`) — UI-agnostic, không phụ thuộc UI. Renderer mới **dùng lại class này**.
-- **Preload bridge** `window.hermesDesktop` (`apps/desktop/electron/preload.cjs`): `getConnection/getGatewayWsUrl/api/terminal/openSessionWindow/readDir/...`. Renderer mới vẫn dùng cho connection-resolution, REST proxy, terminal (PTY), file/clipboard — **không hardcode business logic vào preload**.
+- **Preload bridge** `window.aetherDesktop` (`apps/desktop/electron/preload.cjs`): `getConnection/getGatewayWsUrl/api/terminal/openSessionWindow/readDir/...`. Renderer mới vẫn dùng cho connection-resolution, REST proxy, terminal (PTY), file/clipboard — **không hardcode business logic vào preload**.
 - **Event types** (WS, server-initiated): `gateway.ready`, `session.info`, `message.start|delta|complete`, `thinking.delta`, `reasoning.delta|available`, `tool.start|progress|complete|generating`, `clarify.request`, `approval.request`, `sudo.request`, `secret.request`, `status.update`, `error`, `skin.changed`.
 - **REST surfaces:** sessions (+search), config (+schema/defaults), model (info/set), skills (+toggle), tools/toolsets (+provider), env (+reveal), providers/oauth, messaging/platforms, memory/providers, cron/jobs (+runs/trigger/pause/resume), profiles, status, logs.
 
 ### 3.2 Kiến trúc renderer mới (3 lớp tách bạch)
 
-1. **transport/** — bọc `JsonRpcGatewayClient` (WS) + một REST wrapper (qua `window.hermesDesktop.api`, profile-aware). Reconnect/backoff, "paused" overlay khi mất kết nối.
+1. **transport/** — bọc `JsonRpcGatewayClient` (WS) + một REST wrapper (qua `window.aetherDesktop.api`, profile-aware). Reconnect/backoff, "paused" overlay khi mất kết nối.
 2. **domain/state/** — **nanostores** theo từng feature (sessions, chat stream, models, skills, cron, memory, server-vitals, briefing…). Render components subscribe bằng `useStore`; non-render đọc `$atom.get()`.
 3. **ui/** — design system AETHER (tokens, theme, components) + các route/màn hình. Mỗi màn = 1 route, state riêng, file mỏng.
 
-**Key files để nghiên cứu khi triển khai:** `apps/shared/src/json-rpc-gateway.ts`, `apps/desktop/electron/main.cjs` + `preload.cjs`, `apps/desktop/src/hermes.ts` (REST patterns hiện có), `web/src/lib/api.ts`, `tui_gateway/server.py` (RPC dispatch).
+**Key files để nghiên cứu khi triển khai:** `apps/shared/src/json-rpc-gateway.ts`, `apps/desktop/electron/main.cjs` + `preload.cjs`, `apps/desktop/src/aether.ts` (REST patterns hiện có), `web/src/lib/api.ts`, `tui_gateway/server.py` (RPC dispatch).
 
 ### 3.3 Reuse vs Rebuild (đã chốt — hybrid)
 
@@ -137,13 +137,13 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 ## 7. Data flow (lát đầu)
 
 - **Boot:** Electron resolve connection → renderer connect WS (`getGatewayWsUrl`) + REST `/status` → hiển thị boot checklist từ event/`getBootProgress` → vào HUD.
-- **HUD/Briefing (đã chốt cơ chế):** một skill `morning-briefing-aggregator` chạy bằng **cron** (vd 07:00) gọi các nguồn → ghi **artifact JSON có cấu trúc** → renderer đọc run mới nhất qua `/api/cron/jobs/<id>/runs` (hoặc thêm endpoint `/api/briefing/daily`). Nguồn **sẵn dùng**: email + lịch qua skill `google-workspace`; **server health** qua một skill mỏng bọc các skill có sẵn của user `hypertekvn-main-server-manage` / `h-workspace-server-manage` (xuất JSON); tasks + ngữ cảnh qua cron / `/api/sessions` / memory providers. **CRM/deals để sau** (Hermes chưa có native — chỉ Linear MCP). Cơ chế này cũng **an toàn prompt-cache** vì chạy trong session cron riêng.
+- **HUD/Briefing (đã chốt cơ chế):** một skill `morning-briefing-aggregator` chạy bằng **cron** (vd 07:00) gọi các nguồn → ghi **artifact JSON có cấu trúc** → renderer đọc run mới nhất qua `/api/cron/jobs/<id>/runs` (hoặc thêm endpoint `/api/briefing/daily`). Nguồn **sẵn dùng**: email + lịch qua skill `google-workspace`; **server health** qua một skill mỏng bọc các skill có sẵn của user `hypertekvn-main-server-manage` / `h-workspace-server-manage` (xuất JSON); tasks + ngữ cảnh qua cron / `/api/sessions` / memory providers. **CRM/deals để sau** (AETHER chưa có native — chỉ Linear MCP). Cơ chế này cũng **an toàn prompt-cache** vì chạy trong session cron riêng.
 - **Chat:** gửi message qua WS → nhận `message.delta` (stream) + `tool.start/progress/complete` (render tool-call cards) + xử lý `approval/clarify/secret.request`.
 
 ## 8. Error / edge handling
 
 - Mất kết nối → reconnect backoff (shared client hỗ trợ) + overlay "paused"; remote/OAuth dùng `getGatewayWsUrl` mint ticket.
-- Boot failure → ErrorState + link log (`HERMES_HOME/logs/desktop.log`).
+- Boot failure → ErrorState + link log (`AETHER_HOME/logs/desktop.log`).
 - Interactive prompts (`approval/sudo/secret/clarify`) → modal/inline trong Chat.
 - **An toàn prompt-cache (cứng):** HUD/Briefing **KHÔNG** subscribe `message.delta` và **KHÔNG** poll hội thoại live; chỉ đọc artifact cron + event không-thuộc-hội-thoại + REST `/status`. Tránh re-trigger LLM làm hỏng cache. `prefers-reduced-motion` đã được hệ hiện tại xử lý (Web Animations API) → tái dùng.
 

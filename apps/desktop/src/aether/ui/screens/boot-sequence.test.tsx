@@ -21,7 +21,7 @@ describe('BootSequence', () => {
   })
   it('surfaces a boot error with a log affordance', () => {
     const revealLogs = vi.fn()
-    vi.stubGlobal('hermesDesktop', { revealLogs })
+    vi.stubGlobal('aetherDesktop', { revealLogs })
     $bootProgress.set({ error: 'spawn failed', fakeMode: false, message: 'Lỗi', phase: 'backend.error', progress: 28, running: false, timestamp: 0 })
     render(<BootSequence />)
     expect(screen.getByText(/spawn failed/i)).toBeTruthy()

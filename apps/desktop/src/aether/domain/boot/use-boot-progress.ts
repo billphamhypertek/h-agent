@@ -8,7 +8,7 @@ function isComplete(p: DesktopBootProgress): boolean {
 
 export function useBootProgress(): void {
   useEffect(() => {
-    const desktop = window.hermesDesktop
+    const desktop = window.aetherDesktop
 
     if (!desktop) {return}
     let cancelled = false

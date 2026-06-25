@@ -1,4 +1,4 @@
-import { getSessionMessages } from '@/hermes'
+import { getSessionMessages } from '@/aether'
 
 import type { Briefing } from './briefing-schema'
 import { parseBriefingFromMessages } from './parse-briefing'
@@ -19,7 +19,7 @@ export async function readLatestBriefing(deps: ReadBriefingDeps = {}): Promise<B
   const api =
     deps.api ??
     (<T>(request: { path: string; method?: string; body?: unknown; timeoutMs?: number; profile?: string }) =>
-      window.hermesDesktop.api<T>(request))
+      window.aetherDesktop.api<T>(request))
 
   const getMessages = deps.getMessages ?? getSessionMessages
   const jobName = deps.jobName ?? BRIEFING_JOB_NAME

@@ -117,7 +117,7 @@ export interface PetGenProvider {
   default: boolean
 }
 
-const PROVIDER_KEY = 'hermes.desktop.petgen.provider'
+const PROVIDER_KEY = 'aether.desktop.petgen.provider'
 
 /** Reference-capable providers available to pick (from `pet.generate.status`). */
 export const $petGenProviders = atom<PetGenProvider[]>([])

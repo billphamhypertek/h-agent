@@ -1,8 +1,8 @@
-"""Windows ConPTY bridge for the `hermes dashboard` chat tab.
+"""Windows ConPTY bridge for the `aether dashboard` chat tab.
 
-Drop-in counterpart to ``hermes_cli.pty_bridge.PtyBridge`` for native
+Drop-in counterpart to ``aether_cli.pty_bridge.PtyBridge`` for native
 Windows. Mirrors the exact public surface the ``/api/pty`` WebSocket
-handler in ``hermes_cli.web_server`` consumes: ``spawn``, ``read``,
+handler in ``aether_cli.web_server`` consumes: ``spawn``, ``read``,
 ``write``, ``resize``, ``close``, ``is_available``, plus the
 ``PtyUnavailableError`` type.
 

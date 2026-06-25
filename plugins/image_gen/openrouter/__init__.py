@@ -9,7 +9,7 @@ content parts for grounding, and read the generated images back from
 
 Nous Portal proxies OpenRouter, so one implementation services both — we only
 swap the resolved ``(base_url, api_key)``. Credentials are resolved through the
-agent's existing :func:`~hermes_cli.runtime_provider.resolve_runtime_provider`,
+agent's existing :func:`~aether_cli.runtime_provider.resolve_runtime_provider`,
 which already understands OpenRouter's key pool and the Nous OAuth device-code
 token, so this plugin never reinvents auth.
 
@@ -63,7 +63,7 @@ _REQUEST_TIMEOUT = 180.0
 def _load_image_gen_config() -> Dict[str, Any]:
     """Read the ``image_gen`` section from config.yaml (``{}`` on failure)."""
     try:
-        from hermes_cli.config import load_config
+        from aether_cli.config import load_config
 
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
@@ -156,7 +156,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
 
     def _resolve_runtime(self) -> Dict[str, Any]:
         """Resolve ``(base_url, api_key)`` via the shared runtime resolver."""
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from aether_cli.runtime_provider import resolve_runtime_provider
 
         return resolve_runtime_provider(requested=self._runtime_name)
 
@@ -230,7 +230,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
             return error_response(
                 error=(
                     f"No {self._display} credentials found. "
-                    f"Configure {self._display} in `hermes tools` → Image Generation."
+                    f"Configure {self._display} in `aether tools` → Image Generation."
                 ),
                 error_type="missing_api_key",
                 provider=self._name,
@@ -269,7 +269,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
             "Content-Type": "application/json",
             # OpenRouter attribution headers (harmless against Nous Portal).
             "HTTP-Referer": "https://github.com/NousResearch/hermes-agent",
-            "X-Title": "Hermes Agent",
+            "X-Title": "AETHER",
         }
 
         try:

@@ -6,7 +6,7 @@ author: HyperTek
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  aether:
     tags: [Productivity, Briefing, Aggregation, JSON, Cron]
     related_skills: [google-workspace, hypertekvn-main-server-manage, h-workspace-server-manage]
 ---

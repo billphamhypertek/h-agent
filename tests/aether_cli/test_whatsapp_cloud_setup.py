@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli.setup_whatsapp_cloud import (
+from aether_cli.setup_whatsapp_cloud import (
     _validate_phone_number_id,
     _validate_waba_id,
     _validate_app_id,
@@ -162,20 +162,20 @@ class TestWabaIdValidator:
 
 @pytest.fixture
 def isolated_home(tmp_path, monkeypatch):
-    """Redirect HERMES_HOME so save_env_value writes into a temp .env."""
+    """Redirect AETHER_HOME so save_env_value writes into a temp .env."""
     home = tmp_path / "home"
-    hermes = home / ".hermes"
-    hermes.mkdir(parents=True)
+    aether = home / ".aether"
+    aether.mkdir(parents=True)
     monkeypatch.setattr(Path, "home", lambda: home)
-    monkeypatch.setenv("HERMES_HOME", str(hermes))
+    monkeypatch.setenv("AETHER_HOME", str(aether))
     for key in list(os.environ):
         if key.startswith("WHATSAPP_CLOUD_"):
             monkeypatch.delenv(key, raising=False)
-    return hermes
+    return aether
 
 
-def _env_value(hermes_home: Path, key: str) -> str | None:
-    env_file = hermes_home / ".env"
+def _env_value(aether_home: Path, key: str) -> str | None:
+    env_file = aether_home / ".env"
     if not env_file.exists():
         return None
     for line in env_file.read_text().splitlines():
@@ -300,7 +300,7 @@ class TestWizardFlow:
         out = buf.getvalue()
         # Required post-setup guidance
         assert "cloudflared tunnel --url http://localhost:8090" in out
-        assert "hermes gateway" in out
+        assert "aether gateway" in out
         assert "Verify and save" in out
         assert "messages" in out
         # The verify token should be quotable on the curl line

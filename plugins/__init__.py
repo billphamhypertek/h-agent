@@ -1,1 +1,1 @@
-# Hermes plugins package
+# AETHER plugins package

@@ -2,8 +2,8 @@
 
 import pytest
 
-from hermes_cli import auth
-from hermes_cli.auth import AuthError
+from aether_cli import auth
+from aether_cli.auth import AuthError
 
 
 def test_read_xai_oauth_tokens_uses_credential_pool_when_provider_tokens_empty(monkeypatch):

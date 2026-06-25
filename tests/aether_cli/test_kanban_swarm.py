@@ -1,6 +1,6 @@
 
-from hermes_cli import kanban_db as kb
-from hermes_cli.kanban_swarm import (
+from aether_cli import kanban_db as kb
+from aether_cli.kanban_swarm import (
     SwarmWorkerSpec,
     create_swarm,
     latest_blackboard,

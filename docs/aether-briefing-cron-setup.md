@@ -10,7 +10,7 @@ The HUD + Brief read the latest run of a cron job whose **name is exactly**
 - **Prompt:** "Run the morning-briefing-aggregator skill and emit today's briefing JSON artifact."
 - **Deliver:** `local`
 
-Create via the existing cron REST surface (POST `/api/cron/jobs`) or the Hermes cron UI.
+Create via the existing cron REST surface (POST `/api/cron/jobs`) or the AETHER cron UI.
 The job runs in its own session, so it never disturbs the prompt cache of the user's
 live conversation. The renderer reads the latest run via
 `GET /api/cron/jobs/<id>/runs?limit=1` → the run session's messages → the JSON artifact.
