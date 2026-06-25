@@ -70,9 +70,14 @@ Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn
 - UI tiếng Việt. **KHÔNG dịch "Agent" → "Đại lý".** Giữ "Agent". "Trợ lý" dùng được cho mô tả.
 - Platform name hiển thị: **"HYPERTEK - AGENT PLATFORM"**.
 
-### 4.6 Motion — ĐỂ NGỎ (TBD)
-- Mặc định: motion tiết chế (~100ms trên control, breathing orb, fade), tôn trọng `prefers-reduced-motion`.
-- **Mở:** nhóm hiệu ứng "dòng chảy" cao cấp (kiểu Sacred Timeline / Temporal Loom của Loki — sợi sáng chảy & phân nhánh) cho nền/boot/orb. Đã thử nghiệm demo nhưng **chưa chốt**; sẽ quyết sau, **không chặn lát đầu tiên**.
+### 4.6 Motion & Transitions
+
+**Đã chốt:**
+- **Nav active-indicator trượt:** "focus background" (pill azure glow) **trượt** giữa các mục nav bằng spring easing (`cubic-bezier(.5,.05,.1,1)`, ~0.44s) — translate `translateY(index * itemHeight)`. Hover hiện một highlight mờ chạy theo con trỏ (~0.26s); click commit focus. Mép trái có thanh sáng glide theo.
+- **Chuyển trang chính = "Depth":** trang mới `scale(1.04→1)` + `blur(6px→0)` + fade, ~0.5s, `cubic-bezier(.4,0,.2,1)`. Hợp theme "Spatial Depth" — cảm giác lùi/tiến trong chiều sâu. Có thể tái dùng cho overlay / Command Palette (⌘K).
+- Control transitions tiết chế (~100–150ms; breathing orb). Implement bằng CSS keyframes/transition; JS chỉ toggle class + cập nhật transform của indicator. **Tôn trọng `prefers-reduced-motion`** (giảm về fade thuần hoặc tắt).
+
+**Để ngỏ (TBD — không chặn lát đầu):** nhóm hiệu ứng "dòng chảy" **ambient** (kiểu Sacred Timeline / Temporal Loom của Loki — sợi sáng chảy & phân nhánh) cho nền/boot/orb. Đã thử demo, chưa chốt; quyết sau.
 
 ## 5. Bản đồ 16 màn hình
 
@@ -136,7 +141,7 @@ Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-sc
 
 ## 10. Rủi ro & câu hỏi mở
 
-- **Motion language** ("dòng chảy"/Loki) — TBD, chưa chốt.
+- **Ambient motion** ("dòng chảy"/Loki Sacred-Timeline cho nền/boot/orb) — TBD. (Nav-slide + page transition "Depth" đã chốt ở §4.6.)
 - **Nguồn dữ liệu Briefing** — cần xác định tool/skill/cron nào cung cấp email/lịch/server health → chốt trong plan.
 - **Reuse vs rebuild component phức tạp:** terminal (xterm) nên vendor lại; chat (@assistant-ui) — quyết trong plan có reuse hay tự dựng để khớp design system.
 - **Hiệu năng hiệu ứng điện ảnh** (glass blur, canvas, orb) trong Electron — đặt budget & guard, tôn trọng `prefers-reduced-motion`.
