@@ -660,6 +660,7 @@ export function CommandPalette() {
           className={cn(
             HUD_POSITION,
             HUD_SURFACE,
+            'ae-palette',
             'z-[210] w-[min(34rem,calc(100vw-2rem))] overflow-hidden duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 data-[state=open]:zoom-in-95'
           )}
         >
