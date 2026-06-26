@@ -8,12 +8,22 @@ import { useConnectionStatus } from '@/aether/domain/connection/use-connection-s
 import { AetherCanvas } from '@/aether/ui/motion/aether-canvas'
 import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
+import { AgentsScreen } from '@/aether/ui/screens/agents-screen'
+import { ArtifactsScreen } from '@/aether/ui/screens/artifacts-screen'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
+import { CronScreen } from '@/aether/ui/screens/cron-screen'
+import { MemoryScreen } from '@/aether/ui/screens/memory-screen'
+import { MessagingScreen } from '@/aether/ui/screens/messaging-screen'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
+import { ProfilesScreen } from '@/aether/ui/screens/profiles-screen'
+import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
+import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
-import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, HUD_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, PROFILES_ROUTE } from '@/app/routes'
+import { CommandPalette } from '@/app/command-palette'
+import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, HUD_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, PROFILES_ROUTE } from '@/app/routes'
+import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
@@ -47,17 +57,17 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
             <Routes location={location}>
               <Route element={<ChatScreen chatView={chatView} />} index />
               <Route element={<ChatScreen chatView={chatView} />} path=":sessionId" />
-              <Route element={<CommandCenter onCommandPalette={() => { /* wire ⌘K in a later slice */ }} />} path={HUD_ROUTE.slice(1)} />
+              <Route element={<CommandCenter onCommandPalette={openCommandPalette} />} path={HUD_ROUTE.slice(1)} />
               <Route element={<MorningBrief />} path={BRIEF_ROUTE.slice(1)} />
-              <Route element={<StubScreen title="Agents" />} path="agents" />
-              <Route element={<StubScreen title="Artifacts" />} path={ARTIFACTS_ROUTE.slice(1)} />
+              <Route element={<AgentsScreen />} path="agents" />
+              <Route element={<ArtifactsScreen />} path={ARTIFACTS_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Command Center" />} path={COMMAND_CENTER_ROUTE.slice(1)} />
-              <Route element={<StubScreen title="Cron" />} path="cron" />
-              <Route element={<StubScreen title="Memory" />} path="memory" />
-              <Route element={<StubScreen title="Messaging" />} path={MESSAGING_ROUTE.slice(1)} />
-              <Route element={<StubScreen title="Profiles" />} path={PROFILES_ROUTE.slice(1)} />
-              <Route element={<StubScreen title="Settings" />} path="settings" />
-              <Route element={<StubScreen title="Skills" />} path="skills" />
+              <Route element={<CronScreen />} path="cron" />
+              <Route element={<MemoryScreen />} path={MEMORY_ROUTE.slice(1)} />
+              <Route element={<MessagingScreen />} path={MESSAGING_ROUTE.slice(1)} />
+              <Route element={<ProfilesScreen />} path={PROFILES_ROUTE.slice(1)} />
+              <Route element={<SettingsScreen />} path="settings" />
+              <Route element={<SkillsScreen />} path="skills" />
               <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />
             </Routes>
           </PageTransition>
@@ -68,6 +78,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
           <GlassSlab className="text-sm text-[color:var(--ae-dim)]" size="md">Mất kết nối — đang thử lại…</GlassSlab>
         </div>
       )}
+      <CommandPalette />
     </div>
   )
 }

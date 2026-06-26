@@ -10,6 +10,7 @@ export const PROFILES_ROUTE = '/profiles'
 export const AGENTS_ROUTE = '/agents'
 export const HUD_ROUTE = '/hud'
 export const BRIEF_ROUTE = '/brief'
+export const MEMORY_ROUTE = '/memory'
 
 export type AppView =
   | 'agents'

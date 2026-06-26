@@ -21,6 +21,7 @@ import {
   Cpu,
   Download,
   Egg,
+  FileText,
   Globe,
   type IconComponent,
   Info,
@@ -53,8 +54,11 @@ import { isUserTheme, resolveTheme } from '@/themes/user-themes'
 import {
   AGENTS_ROUTE,
   ARTIFACTS_ROUTE,
+  BRIEF_ROUTE,
   COMMAND_CENTER_ROUTE,
   CRON_ROUTE,
+  HUD_ROUTE,
+  MEMORY_ROUTE,
   MESSAGING_ROUTE,
   NEW_CHAT_ROUTE,
   PROFILES_ROUTE,
@@ -208,6 +212,82 @@ function themeSupportsMode(name: string, target: 'light' | 'dark'): boolean {
   return target === 'dark' ? luminance(background) <= 0.5 : luminance(background) > 0.5
 }
 
+/** The AETHER "Go to" catalog: every navigable AETHER route, as palette rows.
+ *  Pure + exported so it can be unit-tested without rendering the palette. */
+export function aetherGoToItems(go: (path: string) => () => void, t: ReturnType<typeof useI18n>['t']): PaletteItem[] {
+  const cc = t.commandCenter
+
+  return [
+    {
+      action: 'session.new',
+      icon: Plus,
+      id: 'nav-new',
+      keywords: ['chat', 'create', 'trò chuyện'],
+      label: cc.nav.newChat.title,
+      run: go(NEW_CHAT_ROUTE)
+    },
+    { icon: Activity, id: 'nav-home', keywords: ['home', 'hud', 'trang chủ', 'command center'], label: 'Trang chủ', run: go(HUD_ROUTE) },
+    { icon: FileText, id: 'nav-brief', keywords: ['brief', 'morning', 'brief sáng', 'tóm tắt'], label: 'Brief sáng', run: go(BRIEF_ROUTE) },
+    {
+      action: 'view.showTerminal',
+      icon: Terminal,
+      id: 'nav-terminal',
+      keywords: ['terminal', 'shell', 'console'],
+      label: t.keybinds.actions['view.showTerminal'],
+      run: () => setTerminalTakeover(true)
+    },
+    {
+      action: 'nav.settings',
+      icon: Settings,
+      id: 'nav-settings',
+      label: cc.nav.settings.title,
+      run: go(SETTINGS_ROUTE)
+    },
+    {
+      action: 'nav.skills',
+      icon: Wrench,
+      id: 'nav-skills',
+      keywords: ['tools', 'toolsets'],
+      label: cc.nav.skills.title,
+      run: go(SKILLS_ROUTE)
+    },
+    { icon: Cpu, id: 'nav-memory', keywords: ['memory', 'context', 'ký ức', 'bộ nhớ'], label: 'Memory', run: go(MEMORY_ROUTE) },
+    {
+      action: 'nav.messaging',
+      icon: MessageCircle,
+      id: 'nav-messaging',
+      label: cc.nav.messaging.title,
+      run: go(MESSAGING_ROUTE)
+    },
+    {
+      action: 'nav.artifacts',
+      icon: Package,
+      id: 'nav-artifacts',
+      label: cc.nav.artifacts.title,
+      run: go(ARTIFACTS_ROUTE)
+    },
+    {
+      action: 'nav.cron',
+      icon: Clock,
+      id: 'nav-cron',
+      keywords: ['schedule', 'jobs'],
+      label: t.shell.statusbar.cron,
+      run: go(CRON_ROUTE)
+    },
+    { action: 'nav.profiles', icon: Users, id: 'nav-profiles', label: t.profiles.title, run: go(PROFILES_ROUTE) },
+    { action: 'nav.agents', icon: Cpu, id: 'nav-agents', label: t.agents.title, run: go(AGENTS_ROUTE) }
+  ]
+}
+
+/** Per-screen primary actions (deep-links). Pure + exported for unit tests. */
+export function aetherActionItems(go: (path: string) => () => void, _t: ReturnType<typeof useI18n>['t']): PaletteItem[] {
+  return [
+    { icon: Settings, id: 'act-settings-model', keywords: ['model', 'đổi model', 'change model', 'llm', 'settings'], label: 'Cài đặt: đổi model', run: go(`${SETTINGS_ROUTE}?tab=config:model`) },
+    { icon: Wrench, id: 'act-skills-open', keywords: ['skills', 'bật', 'tắt', 'toggle', 'tools'], label: 'Skills: bật/tắt', run: go(SKILLS_ROUTE) },
+    { icon: Clock, id: 'act-cron-create', keywords: ['cron', 'tạo job', 'create', 'schedule', 'new'], label: 'Cron: tạo job', run: go(`${CRON_ROUTE}?new=1`) }
+  ]
+}
+
 export function CommandPalette() {
   const { t } = useI18n()
   const open = useStore($commandPaletteOpen)
@@ -294,63 +374,11 @@ export function CommandPalette() {
     return [
       {
         heading: cc.goTo,
-        items: [
-          {
-            action: 'session.new',
-            icon: Plus,
-            id: 'nav-new',
-            keywords: ['chat', 'create'],
-            label: cc.nav.newChat.title,
-            run: go(NEW_CHAT_ROUTE)
-          },
-          {
-            action: 'view.showTerminal',
-            icon: Terminal,
-            id: 'nav-terminal',
-            keywords: ['terminal', 'shell', 'console'],
-            label: t.keybinds.actions['view.showTerminal'],
-            run: () => setTerminalTakeover(true)
-          },
-          {
-            action: 'nav.settings',
-            icon: Settings,
-            id: 'nav-settings',
-            label: cc.nav.settings.title,
-            run: go(SETTINGS_ROUTE)
-          },
-          {
-            action: 'nav.skills',
-            icon: Wrench,
-            id: 'nav-skills',
-            keywords: ['tools', 'toolsets'],
-            label: cc.nav.skills.title,
-            run: go(SKILLS_ROUTE)
-          },
-          {
-            action: 'nav.messaging',
-            icon: MessageCircle,
-            id: 'nav-messaging',
-            label: cc.nav.messaging.title,
-            run: go(MESSAGING_ROUTE)
-          },
-          {
-            action: 'nav.artifacts',
-            icon: Package,
-            id: 'nav-artifacts',
-            label: cc.nav.artifacts.title,
-            run: go(ARTIFACTS_ROUTE)
-          },
-          {
-            action: 'nav.cron',
-            icon: Clock,
-            id: 'nav-cron',
-            keywords: ['schedule', 'jobs'],
-            label: t.shell.statusbar.cron,
-            run: go(CRON_ROUTE)
-          },
-          { action: 'nav.profiles', icon: Users, id: 'nav-profiles', label: t.profiles.title, run: go(PROFILES_ROUTE) },
-          { action: 'nav.agents', icon: Cpu, id: 'nav-agents', label: t.agents.title, run: go(AGENTS_ROUTE) }
-        ]
+        items: aetherGoToItems(go, t)
+      },
+      {
+        heading: 'Hành động nhanh',
+        items: aetherActionItems(go, t)
       },
       {
         heading: cc.commandCenter,
@@ -632,6 +660,7 @@ export function CommandPalette() {
           className={cn(
             HUD_POSITION,
             HUD_SURFACE,
+            'ae-palette',
             'z-[210] w-[min(34rem,calc(100vw-2rem))] overflow-hidden duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 data-[state=open]:zoom-in-95'
           )}
         >

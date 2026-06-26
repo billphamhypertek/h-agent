@@ -1,10 +1,14 @@
 // apps/desktop/src/aether/ui/shell/aether-shell.test.tsx
-import { cleanup, render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { $agents, $agentsStatus } from '@/aether/domain/agents/agents-store'
+import type { AgentsView } from '@/aether/domain/agents/agents-view'
 import { $bootDone, $bootProgress } from '@/aether/domain/boot/boot-store'
 import { $briefingStatus } from '@/aether/domain/briefing/briefing-store'
+import { $commandPaletteOpen, closeCommandPalette } from '@/store/command-palette'
 import { $connection, $gatewayState } from '@/store/session'
 import { HUD_ROUTE } from '@/app/routes'
 
@@ -14,33 +18,45 @@ beforeEach(() => {
   vi.stubGlobal('aetherDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
   // jsdom has no matchMedia; the shell's useMotionEnabled() probes prefers-reduced-motion.
   vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+  // jsdom has no ResizeObserver; cmdk (inside the shell-mounted <CommandPalette/>) needs it.
+  vi.stubGlobal('ResizeObserver', class { disconnect() {} observe() {} unobserve() {} })
+  // cmdk scrolls the selected item into view on open; jsdom has no scrollIntoView.
+  Element.prototype.scrollIntoView = vi.fn()
   $bootDone.set(false)
   $bootProgress.set(null)
   $briefingStatus.set('ready')
+  closeCommandPalette()
 })
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
+// The shell now mounts <CommandPalette/> at shell scope, which calls useQuery
+// unconditionally — so every AetherShell render needs a QueryClient in scope
+// (the real app provides one at the <main> root).
+function renderShell(initialPath: string) {
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <AetherShell chatView={<div data-testid="chat" />} />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  )
+}
+
 describe('AetherShell', () => {
   it('shows the Boot overlay until boot completes', () => {
-    render(<MemoryRouter initialEntries={[HUD_ROUTE]}><AetherShell chatView={<div />} /></MemoryRouter>)
+    renderShell(HUD_ROUTE)
     expect(screen.getByText('HYPERTEK - AGENT PLATFORM')).toBeTruthy()
   })
   it('reveals the shell + HUD once boot is done', () => {
     $bootDone.set(true)
-    render(<MemoryRouter initialEntries={[HUD_ROUTE]}><AetherShell chatView={<div />} /></MemoryRouter>)
+    renderShell(HUD_ROUTE)
     // nav rail present (brand nav landmark) and HUD command bar visible
     expect(screen.getByRole('navigation', { name: 'HYPERTEK - AGENT PLATFORM' })).toBeTruthy()
     expect(screen.getByText('⌘K')).toBeTruthy()
   })
 })
 
-function mountShell(initialPath: string) {
-  return render(
-    <MemoryRouter initialEntries={[initialPath]}>
-      <AetherShell chatView={<div data-testid="chat" />} />
-    </MemoryRouter>,
-  )
-}
+const mountShell = renderShell
 
 describe('AetherShell layering (regression b: shell-level double-pad)', () => {
   beforeEach(() => {
@@ -78,5 +94,45 @@ describe('AetherShell layering (regression b: shell-level double-pad)', () => {
     const { container } = mountShell(HUD_ROUTE)
     const rail = container.querySelector('.ae-rail') as HTMLElement
     expect(rail.style.paddingTop).toBe('0px')
+  })
+})
+
+describe('AetherShell ⌘K wiring', () => {
+  beforeEach(() => { $bootDone.set(true); closeCommandPalette() })
+
+  it('the HUD command bar opens the command palette store on click', () => {
+    expect($commandPaletteOpen.get()).toBe(false)
+    renderShell(HUD_ROUTE)
+    // The CommandBar wraps the ⌘K chip; clicking the bar triggers onActivate → openCommandPalette().
+    fireEvent.click(screen.getByText('⌘K').closest('[role="button"]') as HTMLElement)
+    expect($commandPaletteOpen.get()).toBe(true)
+  })
+
+  it('mounts the command palette dialog when the store is open', () => {
+    $commandPaletteOpen.set(true)
+    renderShell(HUD_ROUTE)
+    // radix Dialog renders the palette search input once open.
+    expect(screen.getByPlaceholderText(/Search sessions, views, and actions/i)).toBeTruthy()
+  })
+})
+
+describe('AetherShell Agents route', () => {
+  beforeEach(() => {
+    $bootDone.set(true)
+    $gatewayState.set('open')
+    $agentsStatus.set('ready')
+    $agents.set({
+      runningCount: 0,
+      sessions: [],
+      cron: [{ id: 'j1', name: 'Brief sáng', schedule: 'Mỗi 8h', enabled: true, nextRunAt: null, lastError: null }],
+      skills: [],
+      enabledSkillCount: 0,
+    } satisfies AgentsView)
+  })
+
+  it('renders the AgentsScreen (read-only mission control) on /agents', () => {
+    renderShell('/agents')
+    expect(screen.getByText(/Mission control · Agent/)).toBeTruthy()
+    expect(screen.getByText(/Chỉ xem/)).toBeTruthy()
   })
 })
