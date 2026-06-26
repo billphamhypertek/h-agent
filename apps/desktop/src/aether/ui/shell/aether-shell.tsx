@@ -14,7 +14,9 @@ import { CommandCenter } from '@/aether/ui/screens/command-center'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
 import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
+import { CommandPalette } from '@/app/command-palette'
 import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, HUD_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, PROFILES_ROUTE } from '@/app/routes'
+import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
@@ -48,7 +50,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
             <Routes location={location}>
               <Route element={<ChatScreen chatView={chatView} />} index />
               <Route element={<ChatScreen chatView={chatView} />} path=":sessionId" />
-              <Route element={<CommandCenter onCommandPalette={() => { /* wire ⌘K in a later slice */ }} />} path={HUD_ROUTE.slice(1)} />
+              <Route element={<CommandCenter onCommandPalette={openCommandPalette} />} path={HUD_ROUTE.slice(1)} />
               <Route element={<MorningBrief />} path={BRIEF_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Agents" />} path="agents" />
               <Route element={<StubScreen title="Artifacts" />} path={ARTIFACTS_ROUTE.slice(1)} />
@@ -69,6 +71,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
           <GlassSlab className="text-sm text-[color:var(--ae-dim)]" size="md">Mất kết nối — đang thử lại…</GlassSlab>
         </div>
       )}
+      <CommandPalette />
     </div>
   )
 }
