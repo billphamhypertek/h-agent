@@ -73,6 +73,7 @@ import { clearSessionTodos, setSessionTodos, todoListActive } from '../store/tod
 import { openUpdatesWindow, startUpdatePoller, stopUpdatePoller } from '../store/updates'
 import { isSecondaryWindow } from '../store/windows'
 
+import { applyAetherDefaultOnce } from './apply-aether-default'
 import { ChatView } from './chat'
 import { requestComposerFocus, requestComposerInsert } from './chat/composer/focus'
 import { useComposerActions } from './chat/hooks/use-composer-actions'
@@ -218,22 +219,12 @@ export function DesktopController() {
 
   const { connectionRef, gatewayRef, requestGateway } = useGatewayRequest()
 
-  // First run paints AETHER/dark as the default appearance, then records that
-  // it did so — so a later explicit user theme choice is never overridden.
+  // First run paints AETHER + Light "Arctic Glass" as the default appearance,
+  // then records that it did so — so a later explicit user theme choice is never
+  // overridden. The decision lives in a pure, unit-tested helper.
   const { themeName, setTheme, setMode } = useTheme()
   useEffect(() => {
-    const KEY = 'aether-default-applied'
-
-    if (localStorage.getItem(KEY)) {
-      return
-    }
-
-    if (themeName !== 'aether') {
-      setTheme('aether')
-      setMode('dark')
-    }
-
-    localStorage.setItem(KEY, '1')
+    applyAetherDefaultOnce({ themeName, setTheme, setMode })
   }, [themeName, setTheme, setMode])
 
   useEffect(() => {
