@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { $cronJobs, $cronJobsStatus, $cronRuns, $cronRunsStatus, loadCronDeliveryTargets, loadCronJobs } from '@/aether/domain/cron/cron-store'
 import * as cronStore from '@/aether/domain/cron/cron-store'
+import { useCronPoll } from '@/aether/domain/cron/use-cron-poll'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { CronForm } from '@/aether/ui/screens/cron-form'
 import type { CronJob, CronJobCreatePayload } from '@/types/aether'
@@ -55,6 +56,8 @@ export function CronScreen() {
     if ($cronJobsStatus.get() === 'idle') { void loadCronJobs() }
     void loadCronDeliveryTargets()
   }, [])
+
+  useCronPoll()
 
   const handleCreate = (payload: CronJobCreatePayload) => {
     void cronStore.createCronJobAction(payload)
