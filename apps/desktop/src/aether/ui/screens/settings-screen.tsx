@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 import { ModelTab } from './settings/model-tab'
+import { ProvidersTab } from './settings/providers-tab'
 
 type TabId = 'appearance' | 'env' | 'model' | 'providers' | 'tools'
 
@@ -47,7 +48,7 @@ export function SettingsScreen() {
         </GlassSlab>
         <div className="min-h-0 flex-1 overflow-auto">
           {tab === 'model' && <ModelTab />}
-          {tab === 'providers' && <Soon label="Providers/OAuth" />}
+          {tab === 'providers' && <ProvidersTab />}
           {tab === 'env' && <Soon label="Khóa môi trường" />}
           {tab === 'tools' && <Soon label="Công cụ" />}
           {tab === 'appearance' && <Soon label="Giao diện" />}

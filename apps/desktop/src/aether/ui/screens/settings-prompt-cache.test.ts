@@ -8,7 +8,9 @@ const ROOT = join(__dirname, '..', '..', '..')
 const FILES = [
   'aether/ui/screens/settings-screen.tsx',
   'aether/ui/screens/settings/model-tab.tsx',
-  'aether/domain/settings/model-store.ts'
+  'aether/domain/settings/model-store.ts',
+  'aether/ui/screens/settings/providers-tab.tsx',
+  'aether/domain/settings/oauth-store.ts'
 ]
 
 const FORBIDDEN = [
