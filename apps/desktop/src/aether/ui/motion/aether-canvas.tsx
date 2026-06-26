@@ -23,6 +23,9 @@ export function AetherCanvas({ enabled }: { enabled: boolean }) {
 
   useEffect(() => {
     if (!enabled) return
+    // Resync now: `enabled` resolves async (IPC), so the window may have gone hidden
+    // between the initial useState read and this (re)enable — avoid a stale visible=true.
+    setVisible(!document.hidden)
     $motionActive.set(true)
     // backgroundThrottling:false ⇒ we must self-pause: toggle visibility so the
     // frameloop runs continuously while shown and fully stops (~0 CPU) when hidden.
