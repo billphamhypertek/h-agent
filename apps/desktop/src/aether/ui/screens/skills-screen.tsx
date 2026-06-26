@@ -2,10 +2,12 @@
 import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
+import { openEditor } from '@/aether/domain/skills/skills-content-store'
 import { $skills, $skillsStatus, loadSkills, toggleSkillEnabled } from '@/aether/domain/skills/skills-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import type { SkillInfo } from '@/types/aether'
 
+import { SkillEditor } from './skill-editor'
 import { SkillsHubPanel } from './skills-hub-panel'
 
 function SkillCard({ skill }: { skill: SkillInfo }) {
@@ -29,30 +31,40 @@ function SkillCard({ skill }: { skill: SkillInfo }) {
           {skill.category}
         </span>
       </div>
-      <button
-        aria-checked={skill.enabled}
-        aria-label={`${skill.enabled ? 'Tắt' : 'Bật'} ${skill.name}`}
-        className="mt-auto flex items-center gap-2 self-start rounded-[9px] px-2.5 py-1 text-[11px] font-semibold"
-        onClick={() => void toggleSkillEnabled(skill.name, !skill.enabled)}
-        role="switch"
-        style={{
-          background: skill.enabled
-            ? 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))'
-            : 'rgba(120,195,245,.04)',
-          border: `1px solid ${skill.enabled ? 'rgba(120,210,255,.34)' : 'rgba(120,200,255,.12)'}`,
-          color: skill.enabled ? 'var(--ae-azure-soft)' : 'var(--ae-dim)',
-        }}
-        type="button"
-      >
-        <span
-          className="h-[7px] w-[7px] rounded-full"
+      <div className="mt-auto flex items-center gap-2">
+        <button
+          aria-checked={skill.enabled}
+          aria-label={`${skill.enabled ? 'Tắt' : 'Bật'} ${skill.name}`}
+          className="flex items-center gap-2 rounded-[9px] px-2.5 py-1 text-[11px] font-semibold"
+          onClick={() => void toggleSkillEnabled(skill.name, !skill.enabled)}
+          role="switch"
           style={{
-            background: skill.enabled ? 'var(--ae-ok)' : 'var(--ae-dim)',
-            boxShadow: skill.enabled ? '0 0 8px var(--ae-ok)' : 'none',
+            background: skill.enabled
+              ? 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))'
+              : 'rgba(120,195,245,.04)',
+            border: `1px solid ${skill.enabled ? 'rgba(120,210,255,.34)' : 'rgba(120,200,255,.12)'}`,
+            color: skill.enabled ? 'var(--ae-azure-soft)' : 'var(--ae-dim)',
           }}
-        />
-        {skill.enabled ? 'Đã bật' : 'Đã tắt'}
-      </button>
+          type="button"
+        >
+          <span
+            className="h-[7px] w-[7px] rounded-full"
+            style={{
+              background: skill.enabled ? 'var(--ae-ok)' : 'var(--ae-dim)',
+              boxShadow: skill.enabled ? '0 0 8px var(--ae-ok)' : 'none',
+            }}
+          />
+          {skill.enabled ? 'Đã bật' : 'Đã tắt'}
+        </button>
+        <button
+          className="rounded-[9px] px-2.5 py-1 text-[11px] font-semibold"
+          onClick={() => void openEditor(skill.name)}
+          style={{ background: 'rgba(120,195,245,.05)', border: '1px solid rgba(120,200,255,.14)', color: 'var(--ae-dim)' }}
+          type="button"
+        >
+          Sửa
+        </button>
+      </div>
     </GlassSlab>
   )
 }
@@ -131,6 +143,7 @@ export function SkillsScreen() {
       )}
 
       <SkillsHubPanel />
+      <SkillEditor />
     </div>
   )
 }
