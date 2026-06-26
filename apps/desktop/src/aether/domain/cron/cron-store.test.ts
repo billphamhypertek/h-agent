@@ -1,15 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { CronJob } from '@/types/aether'
+import type { CronJob, SessionInfo } from '@/types/aether'
 
 import {
   $cronDeliveryTargets,
   $cronJobs,
   $cronJobsStatus,
+  $cronRuns,
+  $cronRunsStatus,
   createCronJobAction,
   deleteCronJobAction,
   loadCronDeliveryTargets,
   loadCronJobs,
+  loadCronRuns,
   pauseCronJobAction,
   resumeCronJobAction,
   triggerCronJobAction,
@@ -19,6 +22,8 @@ import {
 function resetStore(): void {
   $cronJobs.set(null)
   $cronJobsStatus.set('idle')
+  $cronRuns.set(null)
+  $cronRunsStatus.set('idle')
   $cronDeliveryTargets.set([{ id: 'local', name: 'Local', home_target_set: true, home_env_var: null }])
 }
 
@@ -114,5 +119,30 @@ describe('create/update', () => {
     const api = vi.fn().mockResolvedValue([job])
     await updateCronJobAction('job-1', { name: 'Mới' }, { api })
     expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1', method: 'PUT', body: { updates: { name: 'Mới' } } })
+  })
+})
+
+const run: SessionInfo = {
+  id: 'run-1', title: 'Lần chạy 1', started_at: 1, ended_at: 2, last_active: 2,
+  is_active: false, message_count: 4, model: 'x', input_tokens: 0, output_tokens: 0,
+  preview: null, source: 'cron', tool_call_count: 0,
+}
+
+describe('loadCronRuns', () => {
+  it('GETs the runs path with the limit and unwraps { runs } (metadata only)', async () => {
+    const api = vi.fn().mockResolvedValue({ runs: [run] })
+    await loadCronRuns('job-1', 10, { api })
+    expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1/runs?limit=10' })
+    // HARD: only the runs path is hit — never a messages stream
+    const paths = api.mock.calls.map(c => c[0].path as string)
+    expect(paths.every(p => !p.includes('/messages'))).toBe(true)
+    expect($cronRuns.get()).toEqual([run])
+    expect($cronRunsStatus.get()).toBe('ready')
+  })
+
+  it('sets empty for no runs', async () => {
+    const api = vi.fn().mockResolvedValue({ runs: [] })
+    await loadCronRuns('job-1', 10, { api })
+    expect($cronRunsStatus.get()).toBe('empty')
   })
 })

@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useState } from 'react'
 
-import { $cronJobs, $cronJobsStatus, loadCronDeliveryTargets, loadCronJobs } from '@/aether/domain/cron/cron-store'
+import { $cronJobs, $cronJobsStatus, $cronRuns, $cronRunsStatus, loadCronDeliveryTargets, loadCronJobs } from '@/aether/domain/cron/cron-store'
 import * as cronStore from '@/aether/domain/cron/cron-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { CronForm } from '@/aether/ui/screens/cron-form'
@@ -47,6 +47,8 @@ function scheduleText(job: CronJob): string {
 export function CronScreen() {
   const jobs = useStore($cronJobs)
   const status = useStore($cronJobsStatus)
+  const runs = useStore($cronRuns)
+  const runsStatus = useStore($cronRunsStatus)
   const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
@@ -117,7 +119,9 @@ export function CronScreen() {
               <GlassSlab className="flex items-start justify-between gap-4" data-testid="ae-cron-row" key={job.id} size="sm">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-[13.5px] font-semibold text-white">{jobTitle(job)}</span>
+                    <button className="truncate text-left text-[13.5px] font-semibold text-white" onClick={() => void cronStore.loadCronRuns(job.id)} type="button">
+                      {jobTitle(job)}
+                    </button>
                     <span
                       className="rounded-full px-2 py-[2px] text-[10px] font-semibold"
                       style={{ background: 'rgba(120,200,255,.08)', color: stateColor(state) }}
@@ -172,6 +176,24 @@ export function CronScreen() {
               </GlassSlab>
             )
           })}
+
+        {runsStatus !== 'idle' && (
+          <GlassSlab className="flex flex-col gap-2" size="sm">
+            <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">LỊCH SỬ CHẠY</div>
+            {runsStatus === 'loading' && <div className="text-[11px] text-[color:var(--ae-dim)]">Đang tải…</div>}
+            {runsStatus === 'empty' && <div className="text-[11px] text-[color:var(--ae-dim)]">Chưa có lần chạy nào.</div>}
+            {runsStatus === 'error' && <div className="text-[11px] text-[color:var(--ae-warn)]">Không tải được lịch sử.</div>}
+            {runsStatus === 'ready' &&
+              (runs ?? []).map(run => (
+                <div className="flex items-center justify-between text-[11px]" key={run.id}>
+                  <span className="truncate text-[#D7ECFA]">{run.title ?? run.id}</span>
+                  <span className="flex-none text-[color:var(--ae-dim)]">
+                    {run.is_active ? 'đang chạy' : `${run.message_count} tin`} · {formatTime(new Date(run.started_at * 1000).toISOString())}
+                  </span>
+                </div>
+              ))}
+          </GlassSlab>
+        )}
       </div>
     </div>
   )

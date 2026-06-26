@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import type { AetherApiRequest } from '@/global'
-import type { CronJob, CronJobCreatePayload, CronJobUpdates } from '@/types/aether'
+import type { CronJob, CronJobCreatePayload, CronJobUpdates, SessionInfo } from '@/types/aether'
 
 export interface CronStoreDeps {
   api: <T>(req: AetherApiRequest) => Promise<T>
@@ -74,4 +74,24 @@ export async function createCronJobAction(body: CronJobCreatePayload, deps: Cron
 export async function updateCronJobAction(id: string, updates: CronJobUpdates, deps: CronStoreDeps = defaultDeps()): Promise<void> {
   await deps.api({ path: `/api/cron/jobs/${encodeURIComponent(id)}`, method: 'PUT', body: { updates } })
   await loadCronJobs(deps)
+}
+
+export const $cronRuns = atom<SessionInfo[] | null>(null)
+export const $cronRunsJobId = atom<string | null>(null)
+export const $cronRunsStatus = atom<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle')
+
+export async function loadCronRuns(jobId: string, limit = 20, deps: CronStoreDeps = defaultDeps()): Promise<void> {
+  $cronRunsJobId.set(jobId)
+  $cronRunsStatus.set('loading')
+
+  try {
+    const { runs } = await deps.api<{ runs: SessionInfo[] }>({
+      path: `/api/cron/jobs/${encodeURIComponent(jobId)}/runs?limit=${limit}`,
+    })
+    const list = runs ?? []
+    $cronRuns.set(list)
+    $cronRunsStatus.set(list.length === 0 ? 'empty' : 'ready')
+  } catch {
+    $cronRunsStatus.set('error')
+  }
 }

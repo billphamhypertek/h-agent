@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { $cronJobs, $cronJobsStatus } from '@/aether/domain/cron/cron-store'
+import { $cronJobs, $cronJobsStatus, $cronRuns, $cronRunsStatus } from '@/aether/domain/cron/cron-store'
 import * as store from '@/aether/domain/cron/cron-store'
 import type { CronJob } from '@/types/aether'
 
@@ -16,6 +18,8 @@ afterEach(() => {
   cleanup()
   $cronJobs.set(null)
   $cronJobsStatus.set('idle')
+  $cronRuns.set(null)
+  $cronRunsStatus.set('idle')
 })
 
 describe('CronScreen', () => {
@@ -67,5 +71,39 @@ describe('CronScreen controls', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Chạy ngay' })[0])
     expect(spy).toHaveBeenCalledWith('a')
     spy.mockRestore()
+  })
+})
+
+describe('CronScreen run history (prompt-cache safe)', () => {
+  it('clicking a job loads its runs via getCronJobRuns metadata only', () => {
+    const spy = vi.spyOn(store, 'loadCronRuns').mockResolvedValue()
+    $cronJobs.set(jobs)
+    $cronJobsStatus.set('ready')
+    render(<CronScreen />)
+    fireEvent.click(screen.getByText('Brief sáng'))
+    expect(spy).toHaveBeenCalledWith('a')
+    spy.mockRestore()
+  })
+
+  it('renders run rows from SessionInfo metadata (title + message_count) without opening a conversation', () => {
+    $cronJobs.set(jobs)
+    $cronJobsStatus.set('ready')
+    $cronRuns.set([
+      { id: 'r1', title: 'Lần chạy', started_at: 1, ended_at: 2, last_active: 2, is_active: false, message_count: 4, model: 'x', input_tokens: 0, output_tokens: 0, preview: null, source: 'cron', tool_call_count: 0 },
+    ])
+    $cronRunsStatus.set('ready')
+    render(<CronScreen />)
+    expect(screen.getByText('Lần chạy')).toBeTruthy()
+    // HARD guard: the screen module must not reference a message-stream / delta API
+    // (forbidden-import assertion lives in the source review below).
+  })
+})
+
+describe('CronScreen prompt-cache forbidden symbols', () => {
+  it('never imports a conversation/delta API', () => {
+    const src = readFileSync(join(__dirname, 'cron-screen.tsx'), 'utf8')
+    // Justification: the cron screen is non-chat; touching any of these would
+    // open a conversation stream and poison the prompt cache.
+    expect(src).not.toMatch(/appendAssistantDelta|getSessionMessages|message\.delta|reasoning\.delta|thinking\./)
   })
 })
