@@ -1,10 +1,6 @@
-import { getSessionMessages } from '@/aether-api'
+import { COMPANY_OS_JOB_NAME, readLatestCompanyOs } from '@/aether/domain/company-os/read-company-os'
 
 import type { Briefing } from './briefing-schema'
-import { parseBriefingFromMessages } from './parse-briefing'
-
-interface CronJob { id: string; name: string }
-interface CronRunsResponse { runs: { id: string }[]; limit: number }
 
 export interface ReadBriefingDeps {
   api?: <T>(request: { path: string; method?: string; body?: unknown; timeoutMs?: number; profile?: string }) => Promise<T>
@@ -13,29 +9,14 @@ export interface ReadBriefingDeps {
   profile?: string
 }
 
-export const BRIEFING_JOB_NAME = 'morning-briefing-aggregator'
+// Kept for back-compat: same value, same name string. HUD/Brief and the cron
+// setup doc still reference this; the reader resolves by this job name.
+export const BRIEFING_JOB_NAME = COMPANY_OS_JOB_NAME
 
+// The briefing IS the company-os artifact's top-level slice (a CompanyOs is a
+// Briefing superset). Force-bypass the company-os TTL cache so the briefing read
+// is always fresh and never observes a cache another surface populated — the
+// existing read-briefing tests assert a live fetch each call.
 export async function readLatestBriefing(deps: ReadBriefingDeps = {}): Promise<Briefing | null> {
-  const api =
-    deps.api ??
-    (<T>(request: { path: string; method?: string; body?: unknown; timeoutMs?: number; profile?: string }) =>
-      window.aetherDesktop.api<T>(request))
-
-  const getMessages = deps.getMessages ?? getSessionMessages
-  const jobName = deps.jobName ?? BRIEFING_JOB_NAME
-  const profile = deps.profile ?? 'default'
-
-  const jobs = await api<CronJob[]>({ path: `/api/cron/jobs?profile=${encodeURIComponent(profile)}` })
-  const job = jobs.find(j => j.name === jobName)
-
-  if (!job) { return null }
-
-  const runs = await api<CronRunsResponse>({ path: `/api/cron/jobs/${encodeURIComponent(job.id)}/runs?limit=1` })
-  const latest = runs.runs?.[0]
-
-  if (!latest) { return null }
-
-  const { messages } = await getMessages(latest.id, profile)
-
-  return parseBriefingFromMessages(messages)
+  return readLatestCompanyOs(deps, { force: true })
 }
