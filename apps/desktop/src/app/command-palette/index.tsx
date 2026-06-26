@@ -279,6 +279,15 @@ export function aetherGoToItems(go: (path: string) => () => void, t: ReturnType<
   ]
 }
 
+/** Per-screen primary actions (deep-links). Pure + exported for unit tests. */
+export function aetherActionItems(go: (path: string) => () => void, _t: ReturnType<typeof useI18n>['t']): PaletteItem[] {
+  return [
+    { icon: Settings, id: 'act-settings-model', keywords: ['model', 'đổi model', 'change model', 'llm', 'settings'], label: 'Cài đặt: đổi model', run: go(`${SETTINGS_ROUTE}?tab=config:model`) },
+    { icon: Wrench, id: 'act-skills-open', keywords: ['skills', 'bật', 'tắt', 'toggle', 'tools'], label: 'Skills: bật/tắt', run: go(SKILLS_ROUTE) },
+    { icon: Clock, id: 'act-cron-create', keywords: ['cron', 'tạo job', 'create', 'schedule', 'new'], label: 'Cron: tạo job', run: go(`${CRON_ROUTE}?new=1`) }
+  ]
+}
+
 export function CommandPalette() {
   const { t } = useI18n()
   const open = useStore($commandPaletteOpen)
@@ -366,6 +375,10 @@ export function CommandPalette() {
       {
         heading: cc.goTo,
         items: aetherGoToItems(go, t)
+      },
+      {
+        heading: 'Hành động nhanh',
+        items: aetherActionItems(go, t)
       },
       {
         heading: cc.commandCenter,

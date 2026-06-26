@@ -15,7 +15,7 @@ import {
   SKILLS_ROUTE
 } from '@/app/routes'
 
-import { aetherGoToItems } from './index'
+import { aetherActionItems, aetherGoToItems } from './index'
 
 // Minimal t stub: only the keys aetherGoToItems actually reads.
 const tStub = {
@@ -73,5 +73,35 @@ describe('command palette AETHER catalog', () => {
     expect(memory).toBeTruthy()
     memory?.run?.()
     expect(navigate).toHaveBeenCalledWith(MEMORY_ROUTE)
+  })
+})
+
+describe('command palette per-screen actions', () => {
+  const navigate = vi.fn()
+  const go = (path: string) => () => navigate(path)
+  const t = { } as never
+
+  it('offers a "đổi model" action that deep-links into Settings', () => {
+    navigate.mockClear()
+    const item = aetherActionItems(go, t).find(i => i.id === 'act-settings-model')
+    expect(item).toBeTruthy()
+    item?.run?.()
+    expect(navigate).toHaveBeenCalledWith('/settings?tab=config:model')
+  })
+
+  it('offers a Skills action that opens the Skills screen', () => {
+    navigate.mockClear()
+    const item = aetherActionItems(go, t).find(i => i.id === 'act-skills-open')
+    expect(item).toBeTruthy()
+    item?.run?.()
+    expect(navigate).toHaveBeenCalledWith('/skills')
+  })
+
+  it('offers a Cron "tạo job" action', () => {
+    navigate.mockClear()
+    const item = aetherActionItems(go, t).find(i => i.id === 'act-cron-create')
+    expect(item).toBeTruthy()
+    item?.run?.()
+    expect(navigate).toHaveBeenCalledWith('/cron?new=1')
   })
 })
