@@ -12,6 +12,7 @@ export const HUD_ROUTE = '/hud'
 export const BRIEF_ROUTE = '/brief'
 export const MEMORY_ROUTE = '/memory'
 export const DEV_ROUTE = '/dev'
+export const INBOX_ROUTE = '/inbox'
 
 export type AppView =
   | 'agents'
@@ -20,6 +21,7 @@ export type AppView =
   | 'command-center'
   | 'cron'
   | 'dev'
+  | 'inbox'
   | 'messaging'
   | 'profiles'
   | 'settings'
@@ -31,6 +33,7 @@ export type AppRouteId =
   | 'command-center'
   | 'cron'
   | 'dev'
+  | 'inbox'
   | 'messaging'
   | 'new'
   | 'profiles'
@@ -53,7 +56,8 @@ export const APP_ROUTES = [
   { id: 'cron', path: CRON_ROUTE, view: 'cron' },
   { id: 'profiles', path: PROFILES_ROUTE, view: 'profiles' },
   { id: 'agents', path: AGENTS_ROUTE, view: 'agents' },
-  { id: 'dev', path: DEV_ROUTE, view: 'dev' }
+  { id: 'dev', path: DEV_ROUTE, view: 'dev' },
+  { id: 'inbox', path: INBOX_ROUTE, view: 'inbox' }
 ] as const satisfies readonly AppRoute[]
 
 const APP_VIEW_BY_PATH = new Map<string, AppView>(APP_ROUTES.map(route => [route.path, route.view]))

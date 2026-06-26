@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { BRIEF_ROUTE, DEV_ROUTE, HUD_ROUTE, MEMORY_ROUTE } from '@/app/routes'
+import { BRIEF_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE } from '@/app/routes'
 
 export interface NavItem {
   id: string
@@ -26,4 +26,5 @@ export const AETHER_NAV_ITEMS: NavItem[] = [
   { id: 'memory', route: MEMORY_ROUTE, label: 'Memory', icon: I('M12 4a4 4 0 0 0-4 4 3.5 3.5 0 0 0-1 6.5V18a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-3.5A3.5 3.5 0 0 0 16 8a4 4 0 0 0-4-4z') },
   { id: 'cron', route: '/cron', label: 'Cron', icon: I('M12 8v4l3 2') },
   { id: 'dev', route: DEV_ROUTE, label: 'Dev', icon: I('M9 7l-5 5 5 5M15 7l5 5-5 5') },
+  { id: 'inbox', route: INBOX_ROUTE, label: 'Inbox', icon: I('M4 6h16v12H4zM4 7l8 6 8-6') },
 ]

@@ -8,6 +8,7 @@ import {
   CRON_ROUTE,
   DEV_ROUTE,
   HUD_ROUTE,
+  INBOX_ROUTE,
   MEMORY_ROUTE,
   MESSAGING_ROUTE,
   NEW_CHAT_ROUTE,
@@ -61,6 +62,7 @@ describe('command palette AETHER catalog', () => {
       ARTIFACTS_ROUTE,
       CRON_ROUTE,
       DEV_ROUTE,
+      INBOX_ROUTE,
       PROFILES_ROUTE,
       AGENTS_ROUTE
     ]) {
@@ -84,6 +86,15 @@ describe('command palette AETHER catalog', () => {
     expect(dev).toBeTruthy()
     dev?.run?.()
     expect(navigate).toHaveBeenCalledWith(DEV_ROUTE)
+  })
+
+  it('selecting the Inbox item navigates to /inbox', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const inbox = aetherGoToItems(go, tStub).find(item => item.id === 'nav-inbox')
+    expect(inbox).toBeTruthy()
+    inbox?.run?.()
+    expect(navigate).toHaveBeenCalledWith(INBOX_ROUTE)
   })
 })
 
