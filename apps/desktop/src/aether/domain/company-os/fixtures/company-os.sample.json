@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-06-26T07:02:00+07:00",
+  "greetingName": "Bình",
+  "priorities": [
+    { "id": "p1", "title": "3 email cần bạn trả lời — 1 từ khách hàng Hypertek", "severity": "info" },
+    { "id": "p2", "title": "Server h-workspace: CPU 82% — cao bất thường", "severity": "warn" }
+  ],
+  "servers": [
+    { "name": "hypertekvn", "status": "ok", "cpu": 21 },
+    { "name": "h-workspace", "status": "warn", "cpu": 82 }
+  ],
+  "bento": {
+    "calendar": { "count": 2, "next": "14:00 · call ACME" }
+  },
+  "feed": [
+    { "time": "07:01", "text": "Đã quét 47 email mới" }
+  ],
+  "vitals": { "cpu": 82, "api": 34, "memory": 61 },
+  "dev": {
+    "servers": [
+      { "name": "hypertekvn", "status": "ok", "cpu": 21, "mem": 44, "disk": 38 },
+      { "name": "h-workspace", "status": "warn", "cpu": 82, "mem": 71, "disk": 64 }
+    ],
+    "deploys": [
+      { "id": "d1", "service": "aether-web", "status": "success", "at": "06:40", "sub": "main @ 7c342f4" }
+    ],
+    "incidents": [
+      { "id": "i1", "title": "h-workspace CPU 82% kéo dài 20 phút", "severity": "warn", "at": "06:30" }
+    ]
+  },
+  "inbox": {
+    "threads": [
+      { "id": "t1", "sender": "ACME", "subject": "Báo giá website", "snippet": "Bên mình cần thêm…", "unread": true }
+    ],
+    "deals": []
+  },
+  "content": {
+    "calendar": [],
+    "ideas": []
+  },
+  "ops": {
+    "calendar": [
+      { "id": "c1", "title": "Call ACME", "at": "14:00", "sub": "Google Meet" }
+    ],
+    "tasks": [
+      { "id": "k1", "title": "Gửi báo giá VinFast", "due": "hôm nay", "severity": "warn" }
+    ],
+    "finance": {},
+    "notes": [
+      { "id": "n1", "title": "Ghi chú: ưu đãi Q3 cho khách cũ" }
+    ]
+  }
+}
