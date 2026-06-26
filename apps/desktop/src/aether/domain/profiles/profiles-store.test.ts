@@ -161,3 +161,63 @@ describe('soul editor sub-store', () => {
     expect($profileSoulStatus.get()).toBe('error')
   })
 })
+
+import type { ModelOptionsResponse, ProfileSetupCommand } from '@/types/aether'
+
+import {
+  $modelOptions,
+  $profileSetup,
+  loadModelOptions,
+  loadProfileSetup,
+  setActiveProfileAction,
+  setProfileModelAction
+} from './profiles-store'
+
+describe('per-profile model + active + setup', () => {
+  it('setProfileModelAction PUTs /model then reloads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/coder/model' && req.method === 'PUT') { return { ok: true, provider: 'anthropic', model: 'opus' } }
+      if (req.path === '/api/profiles') { return { profiles: ROWS } }
+      return { active: 'default', current: 'default' }
+    })
+
+    await setProfileModelAction('coder', 'anthropic', 'opus')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles/coder/model',
+      method: 'PUT',
+      body: { provider: 'anthropic', model: 'opus' }
+    }))
+    expect($profilesStatus.get()).toBe('ready')
+  })
+
+  it('setActiveProfileAction POSTs /active then reloads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/active' && req.method === 'POST') { return { ok: true, active: 'coder' } }
+      if (req.path === '/api/profiles') { return { profiles: ROWS } }
+      return { active: 'coder', current: 'coder' }
+    })
+
+    await setActiveProfileAction('coder')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles/active',
+      method: 'POST',
+      body: { name: 'coder' }
+    }))
+  })
+
+  it('loadProfileSetup GETs setup-command', async () => {
+    const cmd: ProfileSetupCommand = { command: 'aether profile use coder' }
+    mockApi(req => (req.path === '/api/profiles/coder/setup-command' ? cmd : { active: 'default', current: 'default' }))
+    await loadProfileSetup('coder')
+    expect($profileSetup.get()).toEqual(cmd)
+  })
+
+  it('loadModelOptions GETs /api/model/options', async () => {
+    const opts: ModelOptionsResponse = { providers: [{ name: 'Anthropic', slug: 'anthropic', models: ['opus', 'sonnet'] }] }
+    mockApi(req => (req.path === '/api/model/options' ? opts : { active: 'default', current: 'default' }))
+    await loadModelOptions()
+    expect($modelOptions.get()).toEqual(opts)
+  })
+})

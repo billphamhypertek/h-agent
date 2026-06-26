@@ -106,3 +106,79 @@ describe('ProfilesScreen soul editor', () => {
     loadSpy.mockRestore()
   })
 })
+
+import { $modelOptions, $profileSetup } from '@/aether/domain/profiles/profiles-store'
+import type { ModelOptionsResponse, ProfileSetupCommand } from '@/types/aether'
+
+describe('ProfilesScreen model + active + setup', () => {
+  // The screen's mount/select effects call the REAL loadModelOptions /
+  // loadProfileSetup / loadProfileSoul. With no mockApi here they would throw
+  // and clobber the atoms we pre-set in beforeEach (setup→null, options→null),
+  // failing the assertions below. Stub them so the pre-set atoms survive.
+  // (Mirrors the soul-editor describe's loadProfileSoul stub.)
+  let loadOptsSpy: ReturnType<typeof vi.spyOn>
+  let loadSetupSpy: ReturnType<typeof vi.spyOn>
+  let loadSoulSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    const opts: ModelOptionsResponse = { providers: [{ name: 'Anthropic', slug: 'anthropic', models: ['opus', 'sonnet'] }] }
+    $modelOptions.set(opts)
+    const setup: ProfileSetupCommand = { command: 'aether profile use coder' }
+    $profileSetup.set(setup)
+    loadOptsSpy = vi.spyOn(store, 'loadModelOptions').mockResolvedValue()
+    loadSetupSpy = vi.spyOn(store, 'loadProfileSetup').mockResolvedValue()
+    loadSoulSpy = vi.spyOn(store, 'loadProfileSoul').mockResolvedValue()
+  })
+  afterEach(() => {
+    loadOptsSpy.mockRestore()
+    loadSetupSpy.mockRestore()
+    loadSoulSpy.mockRestore()
+  })
+
+  it('sets the per-profile model from the selector', () => {
+    $activeProfile.set('coder')
+    const spy = vi.spyOn(store, 'setProfileModelAction').mockResolvedValue()
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+    fireEvent.change(screen.getByTestId('ae-model-select'), { target: { value: 'anthropic::opus' } })
+    fireEvent.click(screen.getByRole('button', { name: /Lưu model/ }))
+    expect(spy).toHaveBeenCalledWith('coder', 'anthropic', 'opus')
+    spy.mockRestore()
+  })
+
+  it('marks a non-active profile and lets the user set it active', () => {
+    $activeProfile.set('default')
+    const spy = vi.spyOn(store, 'setActiveProfileAction').mockResolvedValue()
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+    fireEvent.click(screen.getByRole('button', { name: /Đặt làm mặc định/ }))
+    expect(spy).toHaveBeenCalledWith('coder')
+    spy.mockRestore()
+  })
+
+  it('shows the setup command for the selected profile', () => {
+    $activeProfile.set('coder')
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+    expect(screen.getByText('aether profile use coder')).toBeTruthy()
+  })
+})
+
+// PROMPT-CACHE GUARD (hard): Profiles is a non-chat REST screen. It must never
+// subscribe to conversation deltas or append assistant text — doing so would
+// re-trigger the LLM and break prompt caching. We assert the source contains no
+// forbidden conversation-stream identifiers (source-level guard chosen because
+// the screen has no event subscription to spy on — absence is the contract).
+describe('ProfilesScreen prompt-cache safety', () => {
+  it('has no conversation-delta / appendAssistantDelta usage in source', async () => {
+    const fs = await import('node:fs')
+    const path = await import('node:path')
+    const src = fs.readFileSync(
+      path.resolve(__dirname, 'profiles-screen.tsx'),
+      'utf8'
+    )
+    for (const forbidden of ['appendAssistantDelta', 'message.delta', 'reasoning.delta', 'thinking.']) {
+      expect(src.includes(forbidden)).toBe(false)
+    }
+  })
+})

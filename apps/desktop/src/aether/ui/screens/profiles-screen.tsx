@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 
 import {
   $activeProfile,
+  $modelOptions,
   $profiles,
   $profilesStatus,
+  $profileSetup,
   $profileSoul,
   $profileSoulStatus,
   loadProfiles
@@ -39,16 +41,24 @@ export function ProfilesScreen() {
   const soul = useStore($profileSoul)
   const soulStatus = useStore($profileSoulStatus)
   const [soulDraft, setSoulDraft] = useState('')
+  const modelOptions = useStore($modelOptions)
+  const setup = useStore($profileSetup)
+  const [modelChoice, setModelChoice] = useState('')
 
   useEffect(() => {
     if ($profilesStatus.get() === 'idle') { void loadProfiles() }
+    void profilesStore.loadModelOptions()
   }, [])
 
   const rows: ProfileInfo[] = profiles ?? []
   const selectedName = selected ?? active
 
   useEffect(() => {
-    if (selectedName) { void profilesStore.loadProfileSoul(selectedName) }
+    if (selectedName) {
+      void profilesStore.loadProfileSoul(selectedName)
+      void profilesStore.loadProfileSetup(selectedName)
+      setModelChoice('')
+    }
   }, [selectedName])
 
   useEffect(() => {
@@ -256,6 +266,52 @@ export function ProfilesScreen() {
               </div>
             )}
 
+            {selectedName && selectedName !== active && (
+              <button
+                className="self-start rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                onClick={() => void profilesStore.setActiveProfileAction(selectedName)}
+                type="button"
+              >
+                Đặt làm mặc định
+              </button>
+            )}
+
+            {selectedName && (
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
+                  MODEL CHO HỒ SƠ
+                </span>
+                <div className="flex gap-2">
+                  <select
+                    className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                    data-testid="ae-model-select"
+                    onChange={e => setModelChoice(e.target.value)}
+                    value={modelChoice}
+                  >
+                    <option value="">Chọn model…</option>
+                    {(modelOptions?.providers ?? []).flatMap(provider =>
+                      (provider.models ?? []).map(m => (
+                        <option key={`${provider.slug}::${m}`} value={`${provider.slug}::${m}`}>
+                          {provider.name} · {m}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  <button
+                    className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                    disabled={!modelChoice}
+                    onClick={() => {
+                      const [provider, model] = modelChoice.split('::')
+                      if (provider && model) { void profilesStore.setProfileModelAction(selectedName, provider, model) }
+                    }}
+                    type="button"
+                  >
+                    Lưu model
+                  </button>
+                </div>
+              </div>
+            )}
+
             {selectedName && (
               <div className="flex flex-col gap-2">
                 <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
@@ -285,6 +341,17 @@ export function ProfilesScreen() {
                     </button>
                   </>
                 )}
+              </div>
+            )}
+
+            {selectedName && setup && (
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
+                  LỆNH THIẾT LẬP
+                </span>
+                <code className="block overflow-auto rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] p-2.5 text-[11.5px] text-[#CFE2F7]">
+                  {setup.command}
+                </code>
               </div>
             )}
           </div>

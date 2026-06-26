@@ -1,7 +1,16 @@
 import { atom } from 'nanostores'
 
-import { createProfile, deleteProfile, getProfiles, getProfileSoul, renameProfile, updateProfileSoul } from '@/aether-api'
-import type { ProfileCreatePayload, ProfileInfo, ProfileSoul } from '@/types/aether'
+import {
+  createProfile,
+  deleteProfile,
+  getGlobalModelOptions,
+  getProfiles,
+  getProfileSetupCommand,
+  getProfileSoul,
+  renameProfile,
+  updateProfileSoul
+} from '@/aether-api'
+import type { ModelOptionsResponse, ProfileCreatePayload, ProfileInfo, ProfileSetupCommand, ProfileSoul } from '@/types/aether'
 
 // NOTE: None of the Profiles endpoints are profile-scoped — they all run on the
 // primary backend and take the target profile in the path or body. So this
@@ -93,4 +102,53 @@ export async function saveProfileSoul(
 ): Promise<void> {
   await updateProfileSoul(name, content)
   await loadProfileSoul(name, deps)
+}
+
+export const $modelOptions = atom<ModelOptionsResponse | null>(null)
+export const $profileSetup = atom<ProfileSetupCommand | null>(null)
+
+export async function loadModelOptions(_deps: ProfilesDeps = defaultDeps()): Promise<void> {
+  try {
+    $modelOptions.set(await getGlobalModelOptions())
+  } catch {
+    $modelOptions.set(null)
+  }
+}
+
+export async function loadProfileSetup(name: string, _deps: ProfilesDeps = defaultDeps()): Promise<void> {
+  try {
+    $profileSetup.set(await getProfileSetupCommand(name))
+  } catch {
+    $profileSetup.set(null)
+  }
+}
+
+// Raw api: no named helper exists for PUT /api/profiles/{name}/model.
+export async function setProfileModelAction(
+  name: string,
+  provider: string,
+  model: string,
+  deps: ProfilesDeps = defaultDeps()
+): Promise<void> {
+  await deps.api({
+    path: `/api/profiles/${encodeURIComponent(name)}/model`,
+    method: 'PUT',
+    body: { provider, model }
+  })
+  await loadProfiles(deps)
+}
+
+// Raw api: no named helper exists for POST /api/profiles/active. Sets the sticky
+// active profile only (does NOT retarget the running backend — see backend
+// docstring); surfaced in UI as "Đặt làm mặc định".
+export async function setActiveProfileAction(
+  name: string,
+  deps: ProfilesDeps = defaultDeps()
+): Promise<void> {
+  await deps.api({
+    path: '/api/profiles/active',
+    method: 'POST',
+    body: { name }
+  })
+  await loadProfiles(deps)
 }
