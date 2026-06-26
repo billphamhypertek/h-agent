@@ -9,6 +9,7 @@ import { AetherCanvas } from '@/aether/ui/motion/aether-canvas'
 import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { AgentsScreen } from '@/aether/ui/screens/agents-screen'
+import { ArtifactsScreen } from '@/aether/ui/screens/artifacts-screen'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
@@ -59,7 +60,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<CommandCenter onCommandPalette={openCommandPalette} />} path={HUD_ROUTE.slice(1)} />
               <Route element={<MorningBrief />} path={BRIEF_ROUTE.slice(1)} />
               <Route element={<AgentsScreen />} path="agents" />
-              <Route element={<StubScreen title="Artifacts" />} path={ARTIFACTS_ROUTE.slice(1)} />
+              <Route element={<ArtifactsScreen />} path={ARTIFACTS_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Command Center" />} path={COMMAND_CENTER_ROUTE.slice(1)} />
               <Route element={<CronScreen />} path="cron" />
               <Route element={<MemoryScreen />} path={MEMORY_ROUTE.slice(1)} />
