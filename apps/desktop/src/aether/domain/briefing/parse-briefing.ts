@@ -30,7 +30,7 @@ export function extractJsonBlock(text: string): unknown | null {
   }
 }
 
-function messageText(content: unknown): string {
+export function messageText(content: unknown): string {
   if (typeof content === 'string') { return content }
 
   if (Array.isArray(content)) {
