@@ -11,3 +11,18 @@ describe('geometry source of truth', () => {
     expect(GEOMETRY.nav).toEqual({ width: 62, item: 38, gap: 5 })
   })
 })
+
+describe('geometry token scale', () => {
+  it('splits column gap (13) from grid gap (18) — not merged', () => {
+    expect(GEOMETRY.gap.col).toBe(13)
+    expect(GEOMETRY.gap.grid).toBe(18)
+    expect(GEOMETRY.gap.col).not.toBe(GEOMETRY.gap.grid)
+  })
+  it('exposes radius, orb, avatar/control, and page gutter groups', () => {
+    expect(GEOMETRY.radius).toEqual({ xs: 6, sm: 9, md: 11, lg: 14 })
+    expect(GEOMETRY.orb).toEqual({ sm: 42, md: 170, lg: 300 })
+    expect(GEOMETRY.avatar).toBe(34)
+    expect(GEOMETRY.control).toBe(38)
+    expect(GEOMETRY.page).toEqual({ x: 22, t: 16, b: 18 })
+  })
+})

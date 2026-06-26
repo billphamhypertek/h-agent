@@ -5,6 +5,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { useBootProgress } from '@/aether/domain/boot/use-boot-progress'
 import { useConnectionStatus } from '@/aether/domain/connection/use-connection-status'
+import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
@@ -59,7 +60,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
       </div>
       {status === 'paused' && (
         <div className="absolute inset-0 z-[50] grid place-items-center bg-[rgba(2,12,29,.55)] backdrop-blur-sm">
-          <div className="ae-slab px-6 py-4 text-sm text-[color:var(--ae-dim)]">Mất kết nối — đang thử lại…</div>
+          <GlassSlab className="text-sm text-[color:var(--ae-dim)]" size="md">Mất kết nối — đang thử lại…</GlassSlab>
         </div>
       )}
     </div>

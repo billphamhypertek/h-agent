@@ -2,6 +2,7 @@
 import { useStore } from '@nanostores/react'
 
 import { $bootProgress, BOOT_STEPS, bootStepStatus } from '@/aether/domain/boot/boot-store'
+import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
 
 export function BootSequence() {
@@ -61,7 +62,7 @@ export function BootSequence() {
       {/* loader / error */}
       <div className="absolute bottom-14 left-1/2 z-[3] flex w-[420px] -translate-x-1/2 flex-col gap-[9px]">
         {hasError ? (
-          <div className="ae-slab px-4 py-3 text-center">
+          <GlassSlab className="text-center" size="md">
             <div className="text-sm font-semibold text-[color:var(--ae-error)]">Khởi động lỗi</div>
             <div className="mt-1 font-mono text-[11px] text-[color:var(--ae-dim)]">{progress?.error}</div>
             <button
@@ -71,7 +72,7 @@ export function BootSequence() {
             >
               Mở log
             </button>
-          </div>
+          </GlassSlab>
         ) : (
           <>
             <div className="flex items-baseline justify-between font-mono text-[11px] tracking-[.08em] text-[color:var(--ae-dim)]">

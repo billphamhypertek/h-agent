@@ -18,6 +18,31 @@
   --ae-nav-w: 62px;
   --ae-nav-item: 38px;
   --ae-nav-gap: 5px;
+  --ae-radius-xs: 6px;
+  --ae-radius-sm: 9px;
+  --ae-radius-md: 11px;
+  --ae-radius-lg: 14px;
+  --ae-radius-full: 9999px;
+  --ae-page-x: 22px;
+  --ae-page-t: 16px;
+  --ae-page-b: 18px;
+  --ae-gap-col: 13px;
+  --ae-gap-grid: 18px;
+  --ae-slab-pad-sm: 10px 13px;
+  --ae-slab-pad-md: 13px 15px;
+  --ae-slab-pad-lg: 16px 18px;
+  --ae-avatar: 34px;
+  --ae-control: 38px;
+  --ae-orb-sm: 42px;
+  --ae-orb-md: 170px;
+  --ae-orb-lg: 300px;
+  --ae-space-1: 4px;
+  --ae-space-2: 6px;
+  --ae-space-3: 8px;
+  --ae-space-4: 11px;
+  --ae-space-5: 13px;
+  --ae-space-6: 18px;
+  --ae-hairline: 1px var(--ae-line);
 }
 [data-aether-theme='aether'][data-aether-mode='light'] {
   --ae-ink: #0c2444;
@@ -83,7 +108,8 @@
 /* glass slab surface */
 .ae-slab {
   position: relative;
-  border-radius: 16px;
+  border-radius: var(--ae-radius-lg);
+  padding: var(--ae-slab-pad, var(--ae-slab-pad-md)); /* baked default; size prop overrides via --ae-slab-pad */
   background: linear-gradient(160deg, var(--ae-glass), var(--ae-glass-2));
   border: 1px solid var(--ae-line);
   box-shadow:
@@ -220,8 +246,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 13px 18px;
-  border-radius: 15px;
+  padding: var(--ae-slab-pad-lg);
+  border-radius: var(--ae-radius-lg);
   background: linear-gradient(180deg, rgba(74, 163, 255, 0.12), rgba(120, 195, 245, 0.04));
   border: 1px solid rgba(120, 210, 255, 0.3);
   box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.25),

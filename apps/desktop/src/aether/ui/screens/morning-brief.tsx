@@ -79,7 +79,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
 
       {/* section cards */}
       <div className="z-[2] mt-4 grid min-h-0 flex-1 grid-cols-[1.25fr_1fr_1fr] grid-rows-2 gap-3.5">
-        <GlassSlab className="row-span-2 flex flex-col p-[13px_15px]">
+        <GlassSlab className="row-span-2 flex flex-col" size="md">
           <div className="mb-[11px] text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
             ƯU TIÊN TRONG NGÀY
           </div>
@@ -112,7 +112,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
           </div>
         </GlassSlab>
 
-        <GlassSlab className="flex flex-col p-[13px_15px]">
+        <GlassSlab className="flex flex-col" size="md">
           <div className="mb-[11px] text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
             SERVERS
           </div>
@@ -134,7 +134,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
           </div>
         </GlassSlab>
 
-        <GlassSlab className="flex flex-col p-[13px_15px]">
+        <GlassSlab className="flex flex-col" size="md">
           <div className="mb-[11px] text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
             LỊCH HÔM NAY
           </div>
