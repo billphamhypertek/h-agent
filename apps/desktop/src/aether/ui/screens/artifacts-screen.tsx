@@ -5,6 +5,9 @@ import {
   $artifacts,
   $artifactsStatus,
   $artifactQuery,
+  $selectedArtifact,
+  $selectedPreview,
+  $previewStatus,
   loadArtifacts,
   searchArtifacts,
   openArtifact,
@@ -13,10 +16,33 @@ import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 const SECTION_LABEL = 'text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]'
 
+function messageText(value: unknown): string {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map(part =>
+        typeof part === 'string'
+          ? part
+          : part && typeof part === 'object' && 'text' in part && typeof (part as { text: unknown }).text === 'string'
+            ? (part as { text: string }).text
+            : '',
+      )
+      .join('')
+  }
+
+  return ''
+}
+
 export function ArtifactsScreen() {
   const artifacts = useStore($artifacts)
   const status = useStore($artifactsStatus)
   const query = useStore($artifactQuery)
+  const selected = useStore($selectedArtifact)
+  const preview = useStore($selectedPreview)
+  const previewStatus = useStore($previewStatus)
 
   useEffect(() => {
     if ($artifactsStatus.get() === 'idle') {
@@ -60,7 +86,8 @@ export function ArtifactsScreen() {
         />
       </div>
 
-      <div className="z-[2] mt-4 min-h-0 flex-1 overflow-auto">
+      <div className="z-[2] mt-4 grid min-h-0 flex-1 grid-cols-[1.4fr_1fr] gap-3.5">
+        <div className="min-h-0 overflow-auto">
         {status === 'loading' && (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -127,6 +154,43 @@ export function ArtifactsScreen() {
             ))}
           </div>
         )}
+        </div>
+
+        <GlassSlab className="flex min-h-0 flex-col" size="md">
+          <div className="mb-2 flex items-center justify-between">
+            <div className={SECTION_LABEL}>XEM TRƯỚC · CHỈ ĐỌC</div>
+          </div>
+
+          {previewStatus === 'idle' && (
+            <div className="text-[12px] text-[color:var(--ae-dim)]">
+              Chọn một artifact để xem nội dung tĩnh.
+            </div>
+          )}
+          {previewStatus === 'loading' && (
+            <div className="text-[12px] text-[color:var(--ae-dim)]">Đang tải…</div>
+          )}
+          {previewStatus === 'error' && (
+            <div className="text-[12px] text-[color:var(--ae-warn)]">Không mở được artifact.</div>
+          )}
+          {previewStatus === 'ready' && (
+            <div className="flex min-h-0 flex-col gap-2" data-testid="ae-artifact-preview">
+              <div className="text-[13px] font-semibold text-white">
+                {selected?.title ?? 'Phiên không tên'}
+              </div>
+              <div className="text-[10.5px] text-[color:var(--ae-azure-soft)]">
+                {selected?.model} · {selected?.message_count ?? 0} tin nhắn
+              </div>
+              <div className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-[12px] leading-[1.5] text-[#CFE2F7]">
+                {(preview ?? []).map((m, i) => (
+                  <p className="mb-2" key={i}>
+                    <b className="text-[color:var(--ae-azure-soft)]">{m.role}: </b>
+                    {messageText(m.content) || messageText(m.text)}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+        </GlassSlab>
       </div>
     </div>
   )
