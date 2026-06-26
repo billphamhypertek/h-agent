@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus } from '@/aether/domain/messaging/messaging-store'
 import * as store from '@/aether/domain/messaging/messaging-store'
+import * as tg from '@/aether/domain/messaging/telegram-onboarding-store'
 
 import { MessagingScreen } from './messaging-screen'
 
@@ -98,5 +99,56 @@ describe('MessagingScreen test connection', () => {
     await waitFor(() => expect(screen.getByText('Kết nối tốt')).toBeTruthy())
     expect(spy).toHaveBeenCalledWith('telegram')
     spy.mockRestore()
+  })
+})
+
+describe('MessagingScreen Telegram pairing panel', () => {
+  it('starts onboarding when the user clicks the QR pairing button', () => {
+    const spy = vi.spyOn(tg, 'startTelegramOnboarding').mockResolvedValue(undefined)
+    $platforms.set([{ ...withFields, id: 'telegram', name: 'Telegram' }])
+    $platformsStatus.set('ready')
+
+    render(<MessagingScreen />)
+    fireEvent.click(screen.getByTestId('ae-messaging-card'))
+    fireEvent.click(screen.getByRole('button', { name: 'Ghép nối bằng QR' }))
+
+    expect(spy).toHaveBeenCalled()
+    spy.mockRestore()
+  })
+
+  it('stops the Telegram poll on unmount (poll guard)', () => {
+    const stopSpy = vi.spyOn(tg, 'stopTelegramPoll')
+    $platforms.set([{ ...withFields, id: 'telegram', name: 'Telegram' }])
+    $platformsStatus.set('ready')
+
+    const view = render(<MessagingScreen />)
+    view.unmount()
+
+    expect(stopSpy).toHaveBeenCalled()
+    stopSpy.mockRestore()
+  })
+})
+
+describe('MessagingScreen prompt-cache safety', () => {
+  // HARD guard: a non-chat screen must never touch the conversation delta path.
+  // Source-level assertion is sufficient and stable — appendAssistantDelta and
+  // the *.delta / thinking.* event names must not appear in the screen module
+  // or the messaging domain stores.
+  it('never references conversation deltas or appendAssistantDelta', async () => {
+    const fs = await import('node:fs')
+    const files = [
+      'src/aether/ui/screens/messaging-screen.tsx',
+      'src/aether/domain/messaging/messaging-store.ts',
+      'src/aether/domain/messaging/telegram-onboarding-store.ts',
+    ]
+    const forbidden = ['appendAssistantDelta', 'message.delta', 'reasoning.delta', 'thinking.']
+
+    for (const file of files) {
+      const text = fs.readFileSync(file, 'utf8')
+
+      for (const token of forbidden) {
+        expect(text.includes(token), `${file} must not reference ${token}`).toBe(false)
+      }
+    }
   })
 })

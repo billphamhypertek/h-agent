@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react'
 import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus, loadPlatforms } from '@/aether/domain/messaging/messaging-store'
 import * as messagingStore from '@/aether/domain/messaging/messaging-store'
+// Namespace import so screen tests can vi.spyOn(tgStore, 'startTelegramOnboarding')
+// and vi.spyOn(tgStore, 'stopTelegramPoll') and have the panel + screen-level
+// poll-guard cleanup go through the intercepted bindings.
+import * as tgStore from '@/aether/domain/messaging/telegram-onboarding-store'
+import { $telegramOnboarding } from '@/aether/domain/messaging/telegram-onboarding-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 type BadgeTone = 'good' | 'warn' | 'bad' | 'muted'
@@ -144,6 +149,121 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
   )
 }
 
+function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
+  const state = useStore($telegramOnboarding)
+  const [allowedIds, setAllowedIds] = useState<string[]>([])
+  const [newId, setNewId] = useState('')
+
+  // Poll guard: ensure any in-flight light poll is cleared if the panel
+  // unmounts (platform deselected / screen left). REST-only, no socket.
+  // Goes through the namespace so screen tests can spy on stopTelegramPoll.
+  useEffect(() => () => tgStore.stopTelegramPoll(), [])
+
+  useEffect(() => {
+    if (state.fsm === 'done' && state.ownerId && allowedIds.length === 0) {
+      setAllowedIds([state.ownerId])
+    }
+  }, [state.fsm, state.ownerId])
+
+  function addId() {
+    const trimmed = newId.trim()
+
+    if (!/^\d+$/.test(trimmed)) { return }
+
+    setAllowedIds(ids => (ids.includes(trimmed) ? ids : [...ids, trimmed]))
+    setNewId('')
+  }
+
+  async function apply() {
+    if (allowedIds.length === 0) { return }
+
+    await tgStore.applyTelegramOnboarding(allowedIds)
+    onApplied()
+  }
+
+  return (
+    <div className="mt-2 flex flex-col gap-2.5 border-t border-[rgba(120,200,255,.12)] pt-2.5">
+      <div className="text-[11px] font-semibold tracking-[.14em] text-[color:var(--ae-azure-soft)]">
+        GHÉP NỐI QR
+      </div>
+
+      {(state.fsm === 'idle' || state.fsm === 'error') && (
+        <>
+          {state.error && <div className="text-[11px]" style={{ color: 'var(--ae-warn)' }}>{state.error}</div>}
+          <button
+            className="self-start rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold"
+            onClick={() => void tgStore.startTelegramOnboarding()}
+            style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+            type="button"
+          >
+            Ghép nối bằng QR
+          </button>
+        </>
+      )}
+
+      {state.fsm === 'starting' && <div className="text-[11.5px] text-[color:var(--ae-dim)]">Đang khởi tạo…</div>}
+
+      {state.fsm === 'pending' && state.setup && (
+        <div className="flex flex-col gap-2">
+          <div className="text-[11.5px] text-[color:var(--ae-dim)]">
+            Mở liên kết này trên điện thoại để ghép nối, đang chờ xác nhận…
+          </div>
+          <a className="break-all text-[11px] text-[color:var(--ae-azure-soft)] underline" href={state.setup.deep_link} rel="noreferrer" target="_blank">
+            {state.setup.deep_link}
+          </a>
+          <button
+            className="self-start rounded-[10px] px-[12px] py-[6px] text-[11.5px] font-semibold"
+            onClick={() => void tgStore.cancelTelegramOnboarding()}
+            style={{ border: '1px solid rgba(120,200,255,.28)' }}
+            type="button"
+          >
+            Hủy
+          </button>
+        </div>
+      )}
+
+      {state.fsm === 'done' && (
+        <div className="flex flex-col gap-2">
+          <div className="text-[11.5px]" style={{ color: 'var(--ae-ok)' }}>
+            Đã ghép nối{state.botUsername ? ` với @${state.botUsername}` : ''}.
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {allowedIds.map(id => (
+              <span className="rounded-full px-2 py-0.5 text-[11px]" key={id} style={{ border: '1px solid rgba(120,200,255,.28)' }}>{id}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              className="rounded-[9px] bg-[rgba(8,24,44,.55)] px-2.5 py-1.5 text-[12px] text-white outline-none"
+              onChange={event => setNewId(event.target.value)}
+              placeholder="ID người dùng được phép"
+              style={{ border: '1px solid rgba(120,200,255,.18)' }}
+              value={newId}
+            />
+            <button
+              className="rounded-[10px] px-[12px] py-[7px] text-[12px] font-semibold"
+              onClick={addId}
+              style={{ border: '1px solid rgba(120,200,255,.28)' }}
+              type="button"
+            >
+              Thêm
+            </button>
+          </div>
+          <button
+            className="self-start rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
+            disabled={allowedIds.length === 0}
+            onClick={() => void apply()}
+            style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+            type="button"
+          >
+            Hoàn tất ghép nối
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function MessagingScreen() {
   const platforms = useStore($platforms)
   const status = useStore($platformsStatus)
@@ -152,6 +272,11 @@ export function MessagingScreen() {
   useEffect(() => {
     if ($platformsStatus.get() === 'idle') { void loadPlatforms() }
   }, [])
+
+  // Screen-level poll guard: clear any in-flight Telegram pairing poll when the
+  // Messaging screen unmounts, even if the Telegram detail panel was never
+  // expanded. Routed through the namespace so tests can spy on stopTelegramPoll.
+  useEffect(() => () => tgStore.stopTelegramPoll(), [])
 
   return (
     <div className="ae-screen-bare flex h-full min-w-0 flex-col">
@@ -209,6 +334,7 @@ export function MessagingScreen() {
             {selectedId === platform.id && (
               <div className="border-t border-[rgba(120,200,255,.12)] pt-2 text-[11.5px] text-[color:var(--ae-dim)]" data-testid="ae-messaging-detail">
                 <PlatformConfig platform={platform} />
+                {platform.id === 'telegram' && <TelegramPairingPanel onApplied={() => void loadPlatforms()} />}
               </div>
             )}
           </GlassSlab>
