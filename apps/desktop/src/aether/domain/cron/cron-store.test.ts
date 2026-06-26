@@ -3,18 +3,23 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { CronJob } from '@/types/aether'
 
 import {
+  $cronDeliveryTargets,
   $cronJobs,
   $cronJobsStatus,
+  createCronJobAction,
   deleteCronJobAction,
+  loadCronDeliveryTargets,
   loadCronJobs,
   pauseCronJobAction,
   resumeCronJobAction,
   triggerCronJobAction,
+  updateCronJobAction,
 } from './cron-store'
 
 function resetStore(): void {
   $cronJobs.set(null)
   $cronJobsStatus.set('idle')
+  $cronDeliveryTargets.set([{ id: 'local', name: 'Local', home_target_set: true, home_env_var: null }])
 }
 
 afterEach(() => {
@@ -77,5 +82,37 @@ describe('control actions', () => {
     await deleteCronJobAction('job-1', { api })
     expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1', method: 'DELETE' })
     expect($cronJobsStatus.get()).toBe('empty')
+  })
+})
+
+describe('delivery targets', () => {
+  it('GETs /api/cron/delivery-targets and unwraps { targets }', async () => {
+    const targets = [{ id: 'local', name: 'Local', home_target_set: true, home_env_var: null }, { id: 'telegram', name: 'Telegram', home_target_set: true, home_env_var: 'TG' }]
+    const api = vi.fn().mockResolvedValue({ targets })
+    await loadCronDeliveryTargets({ api })
+    expect(api).toHaveBeenCalledWith({ path: '/api/cron/delivery-targets' })
+    expect($cronDeliveryTargets.get()).toEqual(targets)
+  })
+
+  it('falls back to local-only when the endpoint rejects', async () => {
+    const api = vi.fn().mockRejectedValue(new Error('nope'))
+    await loadCronDeliveryTargets({ api })
+    expect($cronDeliveryTargets.get()).toEqual([{ id: 'local', name: 'Local', home_target_set: true, home_env_var: null }])
+  })
+})
+
+describe('create/update', () => {
+  it('create POSTs the payload as the body then re-fetches', async () => {
+    const api = vi.fn().mockResolvedValue([job])
+    const payload = { prompt: 'Tóm tắt tin', schedule: '0 7 * * *', name: 'Brief', deliver: 'local' }
+    await createCronJobAction(payload, { api })
+    expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs', method: 'POST', body: payload })
+    expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs' })
+  })
+
+  it('update PUTs { updates } then re-fetches', async () => {
+    const api = vi.fn().mockResolvedValue([job])
+    await updateCronJobAction('job-1', { name: 'Mới' }, { api })
+    expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1', method: 'PUT', body: { updates: { name: 'Mới' } } })
   })
 })

@@ -285,6 +285,25 @@
     0 0 30px rgba(74, 163, 255, 0.18);
 }
 
+/* form field — token-only surface for inputs/textareas/selects on AETHER screens */
+[data-aether-theme='aether'] .ae-field {
+  width: 100%;
+  padding: var(--ae-space-2) var(--ae-space-4);
+  border-radius: var(--ae-radius-sm);
+  background: var(--ae-glass-2);
+  border: 1px solid var(--ae-line);
+  color: var(--ae-ink);
+  font-size: 12px;
+  outline: none;
+}
+[data-aether-theme='aether'] .ae-field:focus {
+  border-color: var(--ae-azure-soft);
+  box-shadow: 0 0 0 1px var(--ae-azure-soft);
+}
+[data-aether-theme='aether'] .ae-field::placeholder {
+  color: var(--ae-dim);
+}
+
 /* "Depth" page transition */
 .ae-depth-enter {
   animation: ae-depth 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;

@@ -1,10 +1,11 @@
 import { useStore } from '@nanostores/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import { $cronJobs, $cronJobsStatus, loadCronJobs } from '@/aether/domain/cron/cron-store'
+import { $cronJobs, $cronJobsStatus, loadCronDeliveryTargets, loadCronJobs } from '@/aether/domain/cron/cron-store'
 import * as cronStore from '@/aether/domain/cron/cron-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
-import type { CronJob } from '@/types/aether'
+import { CronForm } from '@/aether/ui/screens/cron-form'
+import type { CronJob, CronJobCreatePayload } from '@/types/aether'
 
 function asText(v?: null | string): string {
   return typeof v === 'string' ? v.trim() : ''
@@ -46,10 +47,17 @@ function scheduleText(job: CronJob): string {
 export function CronScreen() {
   const jobs = useStore($cronJobs)
   const status = useStore($cronJobsStatus)
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     if ($cronJobsStatus.get() === 'idle') { void loadCronJobs() }
+    void loadCronDeliveryTargets()
   }, [])
+
+  const handleCreate = (payload: CronJobCreatePayload) => {
+    void cronStore.createCronJobAction(payload)
+    setShowForm(false)
+  }
 
   return (
     <div className="ae-screen-bare flex h-full min-w-0 flex-col">
@@ -58,10 +66,21 @@ export function CronScreen() {
 
       <div className="z-[2] mt-[18px] flex items-end justify-between gap-4">
         <div className="text-[22px] font-semibold leading-tight text-white">Tác vụ định kỳ</div>
-        <div className="text-[12px] text-[color:var(--ae-dim)]">{jobs?.length ?? 0} tác vụ</div>
+        <div className="flex items-center gap-3">
+          <div className="text-[12px] text-[color:var(--ae-dim)]">{jobs?.length ?? 0} tác vụ</div>
+          <button
+            className="rounded-[10px] border border-[color:var(--ae-azure-soft)] px-3 py-1.5 text-[12px] text-[color:var(--ae-azure-soft)]"
+            onClick={() => setShowForm(v => !v)}
+            type="button"
+          >
+            {showForm ? 'Đóng' : 'Tạo tác vụ'}
+          </button>
+        </div>
       </div>
 
       <div className="z-[2] mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
+        {showForm && <CronForm onCancel={() => setShowForm(false)} onSubmit={handleCreate} />}
+
         {status === 'loading' && (
           <div className="flex flex-col gap-3" data-testid="ae-cron-skeleton">
             {[0, 1, 2].map(i => (
