@@ -5,6 +5,8 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { useBootProgress } from '@/aether/domain/boot/use-boot-progress'
 import { useConnectionStatus } from '@/aether/domain/connection/use-connection-status'
+import { AetherCanvas } from '@/aether/ui/motion/aether-canvas'
+import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
@@ -26,6 +28,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
   const status = useConnectionStatus()
   const location = useLocation()
   const navigate = useNavigate()
+  const motionEnabled = useMotionEnabled()
 
   if (!bootDone) { return <BootSequence /> }
 
@@ -35,6 +38,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
   return (
     <div className="ae-depth-enter relative flex h-screen min-h-0 w-screen overflow-hidden">
       <div className="ae-shell-bg" />
+      <AetherCanvas enabled={motionEnabled} />
       <NavRail activeRoute={location.pathname} online={status === 'online'} onNavigate={r => navigate(r)} />
       <div className="relative z-[1] flex min-w-0 flex-1 flex-col p-[var(--ae-page-t)_var(--ae-page-x)_var(--ae-page-b)]">
         <TopBar title={title} />

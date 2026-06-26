@@ -214,6 +214,15 @@
 .ae-orb--thinking .ae-orb {
   animation: ae-breath 2.6s ease-in-out infinite;
 }
+/* paused (dim) — spec §5 orb-state mapping: reduced brightness/opacity, no breathing */
+.ae-orb--paused .ae-orb {
+  opacity: 0.55;
+  filter: brightness(0.6) saturate(0.85);
+  animation: none;
+}
+.ae-orb--paused .ae-orb-ring {
+  opacity: 0.35;
+}
 
 /* nav active indicator (transform set by JS) */
 .ae-nav-indicator {

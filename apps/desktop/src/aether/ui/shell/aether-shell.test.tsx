@@ -12,6 +12,8 @@ import { AetherShell } from './aether-shell'
 
 beforeEach(() => {
   vi.stubGlobal('aetherDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
+  // jsdom has no matchMedia; the shell's useMotionEnabled() probes prefers-reduced-motion.
+  vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
   $bootDone.set(false)
   $bootProgress.set(null)
   $briefingStatus.set('ready')

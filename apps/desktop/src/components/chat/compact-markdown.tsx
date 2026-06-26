@@ -1,4 +1,4 @@
-import type { ComponentProps, ElementType, FC } from 'react'
+import type { ComponentProps, ComponentType, FC } from 'react'
 import { Streamdown } from 'streamdown'
 
 import { ExternalLink, ExternalLinkIcon } from '@/lib/external-link'
@@ -28,7 +28,11 @@ const TAG_CLASSES = {
 
 function tagged<T extends keyof typeof TAG_CLASSES>(Tag: T) {
   const Component = (({ className, ...rest }: ComponentProps<T>) => {
-    const Element = Tag as ElementType
+    // R3F v9 globally augments JSX.IntrinsicElements, which collapses a bare
+    // `ElementType`'s `className` to `never`. Render the tag string through a
+    // minimal component type so `className` stays `string` (runtime is unchanged —
+    // React renders the literal tag). `unknown` bridges the string→component cast.
+    const Element = Tag as unknown as ComponentType<{ className?: string }>
 
     return <Element className={cn(TAG_CLASSES[Tag], className)} {...rest} />
   }) as FC<ComponentProps<T>>

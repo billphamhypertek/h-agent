@@ -29,7 +29,7 @@ export function CommandCenter({ onCommandPalette }: { onCommandPalette?: () => v
         {/* LEFT — orb + chips */}
         <div className="flex min-h-0 flex-col gap-[13px]">
           <GlassSlab className="flex flex-1 flex-col items-center justify-center gap-3.5" size="md">
-            <LivingOrb label="Agent sẵn sàng" size={170} state="idle" />
+            <LivingOrb label="Agent sẵn sàng" size={170} />
             <div className="text-[12.5px] font-semibold tracking-[.18em] text-[color:var(--ae-azure-soft)]">SẴN SÀNG</div>
           </GlassSlab>
           <div className="flex flex-col gap-2">

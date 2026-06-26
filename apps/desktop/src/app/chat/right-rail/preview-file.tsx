@@ -233,7 +233,11 @@ function tagged<T extends keyof typeof MD_TAG_CLASSES>(Tag: T) {
   const base = MD_TAG_CLASSES[Tag]
 
   const Component = (({ className, ...rest }: ComponentProps<T>) => {
-    const Element = Tag as React.ElementType
+    // R3F v9 globally augments JSX.IntrinsicElements, which collapses a bare
+    // `ElementType`'s `className` to `never`. Render the tag string through a
+    // minimal component type so `className` stays `string` (runtime is unchanged —
+    // React renders the literal tag). `unknown` bridges the string→component cast.
+    const Element = Tag as unknown as React.ComponentType<{ className?: string }>
 
     return <Element className={cn(base, className)} {...rest} />
   }) as React.FC<ComponentProps<T>>

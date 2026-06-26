@@ -15,7 +15,7 @@ export function ChatScreen({ chatView }: { chatView: React.ReactNode }) {
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col">{chatView}</div>
       {busy && (
         <div className="pointer-events-none absolute bottom-24 left-6 z-[3] flex items-center gap-3">
-          <LivingOrb label="Agent đang xử lý" size={42} state="thinking" />
+          <LivingOrb label="Agent đang xử lý" size={42} />
           <span className="text-[11px] tracking-[.18em] text-[color:var(--ae-azure-soft)]">ĐANG XỬ LÝ…</span>
         </div>
       )}

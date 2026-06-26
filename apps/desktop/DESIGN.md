@@ -165,3 +165,35 @@ Mirrors the repo TS style (see root `AGENTS.md`):
 - [ ] Flat — no card-in-card, no gratuitous row dividers?
 - [ ] All four locales updated for any new/changed string?
 - [ ] `cursor-pointer`, focus ring, and `Esc`-to-close behave?
+
+## AETHER — sanctioned isolated cinematic subtree (`src/aether/`)
+
+`src/aether/` is a **sanctioned isolated subtree** for the AETHER cinematic desktop
+shell. It carries its own `--ae-*` geometry/colour token scale (see
+`src/aether/ui/theme/`) that is intentionally separate from the product-wide
+`--ui-*` tokens. This does **not** violate "one source per concern": the `--ae-*`
+scale is the single source for the cinematic shell, and `geometry.ts` is the single
+numeric source feeding the CSS tokens. Outside `aether/`, keep using `--ui-*`.
+
+**Bridge points (test-pinned in `src/aether/ui/theme/geometry.test.ts`)** — where the
+isolated `--ae-*` scale must agree with the rest of the app:
+
+- `--ae-titlebar-inset` ← `TITLEBAR_HEIGHT` from `src/app/shell/titlebar.ts`
+  (`GEOMETRY.titlebarInset === TITLEBAR_HEIGHT === 34`).
+- `--ae-page-*` ↔ `layout-constants.ts` page gutters (`GEOMETRY.page`).
+- `--ae-nav-w` ↔ the native nav width mirrored in `electron/main.cjs`
+  (`GEOMETRY.nav.width`).
+
+**WebGL cinematic layer (SP-0).** A single shared R3F `<Canvas frameloop="demand">`
+(`ui/motion/aether-canvas.tsx`) is mounted at the shell root (z0, full-bleed) behind
+`.ae-shell-bg`. It hosts the ambient-field shader plane and the WebGL Living Orb
+(GLSL template strings in `ui/motion/shaders/`, with in-shader bloom). The brand hex
+values inside the GLSL uniforms (navy `#07397d`, azure `#4aa3ff`) are the **sanctioned
+in-shader exception** to "tokens not literals". Perf guards: DPR capped to `[1, 1.75]`
+(pure `pickDpr`), self-pause on `document.hidden`/idle (pure `shouldRenderFrame`, since
+`backgroundThrottling` is false in main), GL disposed on unmount, `invalidate()` on
+demand. The Canvas is **multi-layer gated**: `AetherCanvas` returns `null` when
+`useMotionEnabled()` is false (reduced-motion + remote-display + WebGL probe), and the
+CSS orb / `.ae-shell-bg` is the always-present accessible fallback. The CSS orb stays
+the `role="status"` a11y node in every mode and tracks `$orbState`
+(`thinking|idle|paused`); Boot keeps its own boot-store state.
