@@ -20,5 +20,6 @@ describe('AetherCanvas gating + perf predicates', () => {
     expect(shouldRenderFrame(false, false)).toBe(true)
     expect(shouldRenderFrame(true, false)).toBe(false)
     expect(shouldRenderFrame(false, true)).toBe(false)
+    expect(shouldRenderFrame(true, true)).toBe(false)
   })
 })

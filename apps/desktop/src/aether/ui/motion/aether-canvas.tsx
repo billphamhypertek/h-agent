@@ -1,7 +1,7 @@
 // apps/desktop/src/aether/ui/motion/aether-canvas.tsx
 import { useStore } from '@nanostores/react'
-import { Canvas, invalidate } from '@react-three/fiber'
-import { useEffect } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { useEffect, useState } from 'react'
 import { $motionActive, $orbState } from '@/aether/domain/motion/motion-store'
 import { AmbientField } from './ambient-field'
 import { LivingOrbGL } from './living-orb-gl'
@@ -15,18 +15,21 @@ export function shouldRenderFrame(hidden: boolean, idle: boolean): boolean {
 }
 
 // Shared, single Canvas at the shell root (z0, full-bleed). Returns null when the
-// multi-layer gate is closed — the CSS orb / .ae-bloom path is the fallback.
+// multi-layer gate is closed — the CSS orb / .ae-shell-bg path is the fallback.
 export function AetherCanvas({ enabled }: { enabled: boolean }) {
   const orbState = useStore($orbState)
+  // Hooks must run before the early return; visibility drives the frameloop.
+  const [visible, setVisible] = useState(!document.hidden)
 
   useEffect(() => {
     if (!enabled) return
     $motionActive.set(true)
-    // backgroundThrottling:false ⇒ self-pause on hidden; invalidate to resume on demand.
-    const onVisibility = () => { if (!document.hidden) invalidate() }
-    document.addEventListener('visibilitychange', onVisibility)
+    // backgroundThrottling:false ⇒ we must self-pause: toggle visibility so the
+    // frameloop runs continuously while shown and fully stops (~0 CPU) when hidden.
+    const onVis = () => setVisible(!document.hidden)
+    document.addEventListener('visibilitychange', onVis)
     return () => {
-      document.removeEventListener('visibilitychange', onVisibility)
+      document.removeEventListener('visibilitychange', onVis)
       $motionActive.set(false)
     }
   }, [enabled])
@@ -36,10 +39,9 @@ export function AetherCanvas({ enabled }: { enabled: boolean }) {
   return (
     <div className="absolute inset-0 z-0" aria-hidden style={{ pointerEvents: 'none' }}>
       <Canvas
-        frameloop="demand"
+        frameloop={shouldRenderFrame(!visible, false) ? 'always' : 'never'}
         dpr={[1, 1.75]}
         gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
-        onCreated={() => invalidate()}
       >
         <AmbientField />
         <group position={[0, 0, 1.5]}>
