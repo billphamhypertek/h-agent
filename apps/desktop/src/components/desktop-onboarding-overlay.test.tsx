@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { $desktopOnboarding, type DesktopOnboardingState, type OnboardingContext } from '@/store/onboarding'
 import type { OAuthProvider } from '@/types/aether'
 
-import { Picker } from './desktop-onboarding-overlay'
+import { DesktopOnboardingOverlay, Picker } from './desktop-onboarding-overlay'
 
 function provider(id: string, name = id): OAuthProvider {
   return {
@@ -52,6 +52,54 @@ afterEach(() => {
     firstRunSkipped: false,
     manual: false,
     localEndpoint: false
+  })
+})
+
+describe('DesktopOnboardingOverlay gate', () => {
+  const noopCtx: OnboardingContext = { requestGateway: async () => undefined as never }
+
+  // The controller now mounts this overlay unconditionally over AetherShell, so
+  // a configured install must render nothing — otherwise it would blanket the
+  // app with a blocking layer on every launch.
+  it('renders nothing once a provider is configured', () => {
+    $desktopOnboarding.set({
+      configured: true,
+      flow: { status: 'idle' },
+      mode: 'oauth',
+      providers: null,
+      reason: null,
+      requested: false,
+      firstRunSkipped: false,
+      manual: false,
+      localEndpoint: false
+    })
+
+    const { container } = render(
+      <DesktopOnboardingOverlay enabled={false} onCompleted={() => {}} requestGateway={noopCtx.requestGateway} />
+    )
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  // "Choose later" on first run must also stay out of the way on relaunch.
+  it('renders nothing after the first-run skip', () => {
+    $desktopOnboarding.set({
+      configured: null,
+      flow: { status: 'idle' },
+      mode: 'oauth',
+      providers: null,
+      reason: null,
+      requested: false,
+      firstRunSkipped: true,
+      manual: false,
+      localEndpoint: false
+    })
+
+    const { container } = render(
+      <DesktopOnboardingOverlay enabled={false} onCompleted={() => {}} requestGateway={noopCtx.requestGateway} />
+    )
+
+    expect(container.firstChild).toBeNull()
   })
 })
 
