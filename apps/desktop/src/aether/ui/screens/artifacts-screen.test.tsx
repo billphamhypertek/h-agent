@@ -11,6 +11,7 @@ import {
   $artifactQuery,
   $selectedArtifact,
   $previewStatus,
+  $fileOutputs,
 } from '@/aether/domain/artifacts/artifacts-store'
 
 import { ArtifactsScreen } from './artifacts-screen'
@@ -41,6 +42,7 @@ beforeEach(() => {
   $artifactQuery.set('')
   $selectedArtifact.set(null)
   $previewStatus.set('idle')
+  $fileOutputs.set(null)
 })
 afterEach(cleanup)
 
@@ -194,5 +196,15 @@ describe('ArtifactsScreen preview (static, prompt-cache safe)', () => {
       // a real `subscribe`/`onMessage`/`WebSocket`/`getGatewayWsUrl` still fails.
       expect(src).not.toMatch(/\bsubscribe\b|\bonMessage\b|\bWebSocket\b|\bgetGatewayWsUrl\b/)
     }
+  })
+})
+
+describe('ArtifactsScreen file outputs', () => {
+  it('lists file outputs when present', () => {
+    $artifacts.set([])
+    $artifactsStatus.set('empty')
+    $fileOutputs.set([{ name: 'report.md', path: '/out/report.md', isDirectory: false }])
+    render(<ArtifactsScreen />)
+    expect(screen.getByText('report.md')).toBeTruthy()
   })
 })

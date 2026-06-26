@@ -8,6 +8,7 @@ import {
   $selectedArtifact,
   $selectedPreview,
   $previewStatus,
+  $fileOutputs,
   loadArtifacts,
   searchArtifacts,
   openArtifact,
@@ -43,6 +44,7 @@ export function ArtifactsScreen() {
   const selected = useStore($selectedArtifact)
   const preview = useStore($selectedPreview)
   const previewStatus = useStore($previewStatus)
+  const fileOutputs = useStore($fileOutputs)
 
   useEffect(() => {
     if ($artifactsStatus.get() === 'idle') {
@@ -85,6 +87,23 @@ export function ArtifactsScreen() {
           value={query}
         />
       </div>
+
+      {fileOutputs && fileOutputs.length > 0 && (
+        <div className="z-[2] mt-3">
+          <div className={SECTION_LABEL}>TỆP KẾT QUẢ · CHỈ ĐỌC</div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {fileOutputs.map(f => (
+              <span
+                className="rounded-[10px] px-3 py-1.5 text-[11.5px] text-[#D7ECFA]"
+                key={f.path}
+                style={{ background: 'rgba(120,195,245,.06)', border: '1px solid rgba(120,200,255,.12)' }}
+              >
+                {f.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="z-[2] mt-4 grid min-h-0 flex-1 grid-cols-[1.4fr_1fr] gap-3.5">
         <div className="min-h-0 overflow-auto">

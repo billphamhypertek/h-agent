@@ -8,9 +8,11 @@ import {
   $artifactQuery,
   $selectedArtifact,
   $previewStatus,
+  $fileOutputs,
   loadArtifacts,
   searchArtifacts,
   openArtifact,
+  loadFileOutputs,
   type ArtifactsDeps,
 } from './artifacts-store'
 
@@ -137,5 +139,31 @@ describe('artifacts-store', () => {
     expect(getSessionMessages).toHaveBeenCalledWith('a1')
     expect($selectedArtifact.get()?.id).toBe('a1')
     expect($previewStatus.get()).toBe('ready')
+  })
+})
+
+describe('loadFileOutputs', () => {
+  it('keeps only files (drops directories) from readDir', async () => {
+    $fileOutputs.set(null)
+    const readDir = vi.fn(async () => ({
+      entries: [
+        { name: 'report.md', path: '/out/report.md', isDirectory: false },
+        { name: 'subdir', path: '/out/subdir', isDirectory: true },
+      ],
+    }))
+
+    await loadFileOutputs('/out', { readDir: readDir as never })
+
+    expect(readDir).toHaveBeenCalledWith('/out')
+    expect($fileOutputs.get()?.map(e => e.name)).toEqual(['report.md'])
+  })
+
+  it('sets an empty list when readDir reports an error', async () => {
+    $fileOutputs.set(null)
+    const readDir = vi.fn(async () => ({ entries: [], error: 'EACCES' }))
+
+    await loadFileOutputs('/out', { readDir: readDir as never })
+
+    expect($fileOutputs.get()).toEqual([])
   })
 })
