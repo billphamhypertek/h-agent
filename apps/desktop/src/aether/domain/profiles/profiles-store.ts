@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
-import { getProfiles } from '@/aether-api'
-import type { ProfileInfo } from '@/types/aether'
+import { createProfile, deleteProfile, getProfiles, renameProfile } from '@/aether-api'
+import type { ProfileCreatePayload, ProfileInfo } from '@/types/aether'
 
 // NOTE: None of the Profiles endpoints are profile-scoped — they all run on the
 // primary backend and take the target profile in the path or body. So this
@@ -43,4 +43,30 @@ export async function loadProfiles(deps: ProfilesDeps = defaultDeps()): Promise<
   } catch {
     $profilesStatus.set('error')
   }
+}
+
+export async function createProfileAction(
+  name: string,
+  options: Omit<ProfileCreatePayload, 'name'> = {},
+  deps: ProfilesDeps = defaultDeps()
+): Promise<void> {
+  await createProfile({ name, ...options })
+  await loadProfiles(deps)
+}
+
+export async function renameProfileAction(
+  name: string,
+  newName: string,
+  deps: ProfilesDeps = defaultDeps()
+): Promise<void> {
+  await renameProfile(name, newName)
+  await loadProfiles(deps)
+}
+
+export async function deleteProfileAction(
+  name: string,
+  deps: ProfilesDeps = defaultDeps()
+): Promise<void> {
+  await deleteProfile(name)
+  await loadProfiles(deps)
 }

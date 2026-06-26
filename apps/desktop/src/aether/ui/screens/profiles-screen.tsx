@@ -7,6 +7,10 @@ import {
   $profilesStatus,
   loadProfiles
 } from '@/aether/domain/profiles/profiles-store'
+// NOTE: mutation actions are called via this namespace import (not named
+// bindings) so the screen tests can `vi.spyOn(store, 'createProfileAction'…)`
+// and have the button clicks hit the spies. Same pattern as Cron/Agents.
+import * as profilesStore from '@/aether/domain/profiles/profiles-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import type { ProfileInfo } from '@/types/aether'
 
@@ -25,6 +29,11 @@ export function ProfilesScreen() {
   const status = useStore($profilesStatus)
   const active = useStore($activeProfile)
   const [selected, setSelected] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [renaming, setRenaming] = useState(false)
+  const [renameValue, setRenameValue] = useState('')
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   useEffect(() => {
     if ($profilesStatus.get() === 'idle') { void loadProfiles() }
@@ -53,6 +62,39 @@ export function ProfilesScreen() {
             <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
               DANH SÁCH HỒ SƠ
             </span>
+          </div>
+
+          <div className="mb-2.5">
+            <button
+              className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+              onClick={() => setCreating(v => !v)}
+              type="button"
+            >
+              Tạo hồ sơ
+            </button>
+            {creating && (
+              <div className="mt-2 flex gap-2">
+                <input
+                  className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                  data-testid="ae-new-profile-name"
+                  onChange={e => setNewName(e.target.value)}
+                  placeholder="Tên hồ sơ mới"
+                  value={newName}
+                />
+                <button
+                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                  disabled={!newName.trim()}
+                  onClick={async () => {
+                    await profilesStore.createProfileAction(newName.trim())
+                    setNewName('')
+                    setCreating(false)
+                  }}
+                  type="button"
+                >
+                  Tạo
+                </button>
+              </div>
+            )}
           </div>
 
           {status === 'loading' && <ProfileSkeleton />}
@@ -126,8 +168,80 @@ export function ProfilesScreen() {
           <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
             CHI TIẾT
           </div>
-          <div className="mt-2 text-[12px] text-[color:var(--ae-dim)]">
-            {selectedName ? `Hồ sơ: ${selectedName}` : 'Chọn một hồ sơ để xem chi tiết.'}
+          <div className="mt-2 flex flex-col gap-3 overflow-auto">
+            <div className="text-[13px] font-semibold text-white">
+              {selectedName ? `Hồ sơ: ${selectedName}` : 'Chọn một hồ sơ để xem chi tiết.'}
+            </div>
+
+            {selectedName && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                  onClick={() => { setRenaming(v => !v); setRenameValue(selectedName) }}
+                  type="button"
+                >
+                  Đổi tên
+                </button>
+                <button
+                  className="rounded-[9px] border border-[rgba(255,176,32,.4)] px-3 py-1.5 text-[12px] text-[color:var(--ae-warn)]"
+                  onClick={() => setConfirmingDelete(true)}
+                  type="button"
+                >
+                  Xoá
+                </button>
+              </div>
+            )}
+
+            {selectedName && renaming && (
+              <div className="flex gap-2">
+                <input
+                  className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                  data-testid="ae-rename-profile-name"
+                  onChange={e => setRenameValue(e.target.value)}
+                  value={renameValue}
+                />
+                <button
+                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                  disabled={!renameValue.trim() || renameValue.trim() === selectedName}
+                  onClick={async () => {
+                    await profilesStore.renameProfileAction(selectedName, renameValue.trim())
+                    setSelected(renameValue.trim())
+                    setRenaming(false)
+                  }}
+                  type="button"
+                >
+                  Lưu tên
+                </button>
+              </div>
+            )}
+
+            {selectedName && confirmingDelete && (
+              <div className="flex flex-col gap-2 rounded-[11px] border border-[rgba(255,176,32,.3)] p-2.5">
+                <span className="text-[12px] text-[color:var(--ae-warn)]">
+                  Xoá hồ sơ "{selectedName}"? Hành động này không thể hoàn tác.
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    className="rounded-[9px] bg-[var(--ae-warn)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                    onClick={async () => {
+                      await profilesStore.deleteProfileAction(selectedName)
+                      setSelected(null)
+                      setConfirmingDelete(false)
+                    }}
+                    type="button"
+                  >
+                    Xác nhận xoá
+                  </button>
+                  <button
+                    className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                    onClick={() => setConfirmingDelete(false)}
+                    type="button"
+                  >
+                    Huỷ
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </GlassSlab>
       </div>

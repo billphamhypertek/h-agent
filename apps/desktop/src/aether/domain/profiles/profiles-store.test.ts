@@ -6,7 +6,10 @@ import {
   $activeProfile,
   $profiles,
   $profilesStatus,
-  loadProfiles
+  createProfileAction,
+  deleteProfileAction,
+  loadProfiles,
+  renameProfileAction
 } from './profiles-store'
 
 const ROWS: ProfileInfo[] = [
@@ -57,5 +60,56 @@ describe('loadProfiles', () => {
     mockApi(() => { throw new Error('boom') })
     await loadProfiles()
     expect($profilesStatus.get()).toBe('error')
+  })
+})
+
+describe('profile mutations call REST then re-fetch', () => {
+  it('createProfileAction POSTs /api/profiles then reloads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles' && req.method === 'POST') { return { ok: true, name: 'qa', path: '/h/qa' } }
+      if (req.path === '/api/profiles') { return { profiles: ROWS } }
+      if (req.path === '/api/profiles/active') { return { active: 'default', current: 'default' } }
+      throw new Error(`unexpected ${req.method ?? 'GET'} ${req.path}`)
+    })
+
+    await createProfileAction('qa')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles',
+      method: 'POST',
+      body: { name: 'qa' }
+    }))
+    expect($profilesStatus.get()).toBe('ready') // re-fetch ran
+  })
+
+  it('renameProfileAction PATCHes with new_name then reloads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/coder' && req.method === 'PATCH') { return { ok: true, name: 'coder2', path: '/h/coder2' } }
+      if (req.path === '/api/profiles') { return { profiles: ROWS } }
+      return { active: 'default', current: 'default' }
+    })
+
+    await renameProfileAction('coder', 'coder2')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles/coder',
+      method: 'PATCH',
+      body: { new_name: 'coder2' }
+    }))
+  })
+
+  it('deleteProfileAction DELETEs then reloads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/coder' && req.method === 'DELETE') { return { ok: true, path: '/h/coder' } }
+      if (req.path === '/api/profiles') { return { profiles: ROWS } }
+      return { active: 'default', current: 'default' }
+    })
+
+    await deleteProfileAction('coder')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles/coder',
+      method: 'DELETE'
+    }))
   })
 })

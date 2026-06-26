@@ -1,6 +1,7 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import * as store from '@/aether/domain/profiles/profiles-store'
 import { $activeProfile, $profiles, $profilesStatus } from '@/aether/domain/profiles/profiles-store'
 import type { ProfileInfo } from '@/types/aether'
 
@@ -44,5 +45,39 @@ describe('ProfilesScreen', () => {
     $profilesStatus.set('error')
     render(<ProfilesScreen />)
     expect(screen.getByRole('button', { name: /Thử lại/ })).toBeTruthy()
+  })
+})
+
+describe('ProfilesScreen mutations', () => {
+  it('create flow calls createProfileAction with the typed name', async () => {
+    const spy = vi.spyOn(store, 'createProfileAction').mockResolvedValue()
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByRole('button', { name: /Tạo hồ sơ/ }))
+    fireEvent.change(screen.getByTestId('ae-new-profile-name'), { target: { value: 'qa' } })
+    fireEvent.click(screen.getByRole('button', { name: /^Tạo$/ }))
+    expect(spy).toHaveBeenCalledWith('qa')
+    spy.mockRestore()
+  })
+
+  it('rename flow calls renameProfileAction for the selected profile', () => {
+    $activeProfile.set('coder')
+    const spy = vi.spyOn(store, 'renameProfileAction').mockResolvedValue()
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+    fireEvent.click(screen.getByRole('button', { name: /Đổi tên/ }))
+    fireEvent.change(screen.getByTestId('ae-rename-profile-name'), { target: { value: 'coder2' } })
+    fireEvent.click(screen.getByRole('button', { name: /^Lưu tên$/ }))
+    expect(spy).toHaveBeenCalledWith('coder', 'coder2')
+    spy.mockRestore()
+  })
+
+  it('delete flow calls deleteProfileAction for the selected profile', () => {
+    const spy = vi.spyOn(store, 'deleteProfileAction').mockResolvedValue()
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+    fireEvent.click(screen.getByRole('button', { name: /Xoá/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Xác nhận xoá/ }))
+    expect(spy).toHaveBeenCalledWith('coder')
+    spy.mockRestore()
   })
 })
