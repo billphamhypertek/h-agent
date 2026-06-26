@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { AetherShell } from '@/aether'
+import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { loadBriefing } from '@/aether/domain/briefing/briefing-store'
 import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
-import { formatRefValue } from '../components/assistant-ui/directive-text'
 import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo } from '../aether-api'
+import { formatRefValue } from '../components/assistant-ui/directive-text'
+import { DesktopOnboardingOverlay } from '../components/desktop-onboarding-overlay'
 import { type ChatMessage, chatMessageText, preserveLocalAssistantErrors, toChatMessages } from '../lib/chat-messages'
 import { storedSessionIdForNotification } from '../lib/session-ids'
 import {
@@ -79,9 +81,9 @@ import { useGatewayRequest } from './gateway/hooks/use-gateway-request'
 import { useKeybinds } from './hooks/use-keybinds'
 import { $terminalTakeover } from './right-sidebar/store'
 import { routeSessionId, sessionRoute } from './routes'
+import { useAetherConfig } from './session/hooks/use-aether-config'
 import { useContextSuggestions } from './session/hooks/use-context-suggestions'
 import { useCwdActions } from './session/hooks/use-cwd-actions'
-import { useAetherConfig } from './session/hooks/use-aether-config'
 import { useMessageStream } from './session/hooks/use-message-stream'
 import { useModelControls } from './session/hooks/use-model-controls'
 import { usePreviewRouting } from './session/hooks/use-preview-routing'
@@ -169,6 +171,10 @@ export function DesktopController() {
   const terminalTakeover = useStore($terminalTakeover)
   const panesFlipped = useStore($panesFlipped)
   const profileScope = useStore($profileScope)
+  // Drives the first-run onboarding gate below. AetherShell owns the boot
+  // screen (BootSequence) until $bootDone flips; only after that do we let the
+  // onboarding overlay evaluate readiness, so the two never stack.
+  const bootDone = useStore($bootDone)
 
   const routedSessionId = routeSessionId(location.pathname)
   const routeToken = `${location.pathname}:${location.search}:${location.hash}`
@@ -894,5 +900,26 @@ export function DesktopController() {
     />
   )
 
-  return <AetherShell chatView={chatView} />
+  return (
+    <>
+      <AetherShell chatView={chatView} />
+      {/* First-run / no-provider gate. The new AetherShell render tree dropped
+          this overlay when it replaced the legacy controller shell, so a fresh
+          install booted straight into an empty shell with no way to configure a
+          provider. Mount it once the boot sequence is done (so it never stacks
+          over BootSequence); it self-dismisses when a provider is already
+          configured and surfaces the picker otherwise. */}
+      {bootDone && !isSecondaryWindow() && (
+        <DesktopOnboardingOverlay
+          enabled={gatewayState === 'open'}
+          onCompleted={() => {
+            void refreshAetherConfig()
+            void refreshCurrentModel()
+            void queryClient.invalidateQueries({ queryKey: ['model-options'] })
+          }}
+          requestGateway={requestGateway}
+        />
+      )}
+    </>
+  )
 }
