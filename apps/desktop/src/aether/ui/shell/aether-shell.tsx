@@ -13,6 +13,7 @@ import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
 import { CronScreen } from '@/aether/ui/screens/cron-screen'
+import { MemoryScreen } from '@/aether/ui/screens/memory-screen'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
 import { ProfilesScreen } from '@/aether/ui/screens/profiles-screen'
 import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
@@ -60,7 +61,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<StubScreen title="Artifacts" />} path={ARTIFACTS_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Command Center" />} path={COMMAND_CENTER_ROUTE.slice(1)} />
               <Route element={<CronScreen />} path="cron" />
-              <Route element={<StubScreen title="Memory" />} path={MEMORY_ROUTE.slice(1)} />
+              <Route element={<MemoryScreen />} path={MEMORY_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Messaging" />} path={MESSAGING_ROUTE.slice(1)} />
               <Route element={<ProfilesScreen />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<SettingsScreen />} path="settings" />
