@@ -1,7 +1,7 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { MessagingPlatformInfo } from '@/types/aether'
+import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus } from '@/aether/domain/messaging/messaging-store'
 import * as store from '@/aether/domain/messaging/messaging-store'
 
@@ -80,6 +80,23 @@ describe('MessagingScreen config form', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Lưu' }))
 
     expect(spy).toHaveBeenCalledWith('telegram', { env: { TELEGRAM_BOT_TOKEN: 'tok123' } })
+    spy.mockRestore()
+  })
+})
+
+describe('MessagingScreen test connection', () => {
+  it('shows the test result message after clicking Test', async () => {
+    const result: MessagingPlatformTestResponse = { ok: true, state: 'connected', message: 'Kết nối tốt' }
+    const spy = vi.spyOn(store, 'testPlatform').mockResolvedValue(result)
+    $platforms.set([withFields])
+    $platformsStatus.set('ready')
+
+    render(<MessagingScreen />)
+    fireEvent.click(screen.getByTestId('ae-messaging-card'))
+    fireEvent.click(screen.getByRole('button', { name: 'Kiểm tra kết nối' }))
+
+    await waitFor(() => expect(screen.getByText('Kết nối tốt')).toBeTruthy())
+    expect(spy).toHaveBeenCalledWith('telegram')
     spy.mockRestore()
   })
 })

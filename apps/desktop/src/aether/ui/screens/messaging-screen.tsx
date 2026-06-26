@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useState } from 'react'
 
-import type { MessagingPlatformInfo } from '@/types/aether'
+import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus, loadPlatforms } from '@/aether/domain/messaging/messaging-store'
 import * as messagingStore from '@/aether/domain/messaging/messaging-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
@@ -53,6 +53,8 @@ function StatusBadge({ platform }: { platform: MessagingPlatformInfo }) {
 function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
   const [edits, setEdits] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
+  const [testResult, setTestResult] = useState<MessagingPlatformTestResponse | null>(null)
+  const [testing, setTesting] = useState(false)
 
   const trimmed = Object.fromEntries(
     Object.entries(edits).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v)
@@ -69,6 +71,18 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
       setEdits({})
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function onTest() {
+    setTesting(true)
+
+    try {
+      setTestResult(await messagingStore.testPlatform(platform.id))
+    } catch {
+      setTestResult({ ok: false, state: null, message: 'Kiểm tra thất bại.' })
+    } finally {
+      setTesting(false)
     }
   }
 
@@ -101,7 +115,21 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
           </label>
         )
       })}
+      {testResult && (
+        <div className="text-[11px]" style={{ color: testResult.ok ? 'var(--ae-ok)' : 'var(--ae-warn)' }}>
+          {testResult.message}
+        </div>
+      )}
       <div className="flex items-center justify-end gap-2">
+        <button
+          className="rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
+          disabled={testing}
+          onClick={() => void onTest()}
+          style={{ border: '1px solid rgba(120,200,255,.28)' }}
+          type="button"
+        >
+          {testing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}
+        </button>
         <button
           className="rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
           disabled={!hasEdits || saving}

@@ -3,6 +3,7 @@ import { atom } from 'nanostores'
 import type {
   MessagingPlatformInfo,
   MessagingPlatformsResponse,
+  MessagingPlatformTestResponse,
   MessagingPlatformUpdate,
 } from '@/types/aether'
 
@@ -57,4 +58,16 @@ export async function updatePlatform(
   })
 
   await loadPlatforms(deps)
+}
+
+export async function testPlatform(
+  platformId: string,
+  deps?: MessagingDeps
+): Promise<MessagingPlatformTestResponse> {
+  const api = resolveApi(deps)
+
+  return api<MessagingPlatformTestResponse>({
+    path: `/api/messaging/platforms/${encodeURIComponent(platformId)}/test`,
+    method: 'POST',
+  })
 }

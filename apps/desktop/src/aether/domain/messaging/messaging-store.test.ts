@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { $platforms, $platformsStatus, loadPlatforms } from './messaging-store'
 import { updatePlatform } from './messaging-store'
+import { testPlatform } from './messaging-store'
 
 beforeEach(() => {
   $platforms.set(null)
@@ -64,5 +65,19 @@ describe('updatePlatform', () => {
     })
     expect(calls[1]).toMatchObject({ path: '/api/messaging/platforms' })
     expect($platformsStatus.get()).toBe('ready')
+  })
+})
+
+describe('testPlatform', () => {
+  it('POSTs to the test endpoint and returns the result', async () => {
+    const api = vi.fn(async (req: { path: string; method?: string }) => {
+      expect(req).toMatchObject({ path: '/api/messaging/platforms/telegram/test', method: 'POST' })
+
+      return { ok: true, state: 'connected', message: 'OK' }
+    })
+
+    const result = await testPlatform('telegram', { api: api as never })
+
+    expect(result).toEqual({ ok: true, state: 'connected', message: 'OK' })
   })
 })
