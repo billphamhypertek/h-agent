@@ -13,6 +13,11 @@
   --ae-glass: rgba(150, 205, 245, 0.1);
   --ae-glass-2: rgba(120, 190, 240, 0.06);
   --ae-font-display: 'Orbitron', system-ui, sans-serif;
+  /* geometry — titlebar + nav (mirrors geometry.ts; geometry.test.ts pins CSS == TS) */
+  --ae-titlebar-inset: 0px; /* runtime hook overrides via inline style on the rail */
+  --ae-nav-w: 62px;
+  --ae-nav-item: 38px;
+  --ae-nav-gap: 5px;
 }
 [data-aether-theme='aether'][data-aether-mode='light'] {
   --ae-ink: #0c2444;
