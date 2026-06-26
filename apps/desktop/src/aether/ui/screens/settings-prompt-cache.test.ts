@@ -12,7 +12,9 @@ const FILES = [
   'aether/ui/screens/settings/providers-tab.tsx',
   'aether/domain/settings/oauth-store.ts',
   'aether/ui/screens/settings/env-tab.tsx',
-  'aether/domain/settings/env-store.ts'
+  'aether/domain/settings/env-store.ts',
+  'aether/ui/screens/settings/tools-tab.tsx',
+  'aether/domain/settings/toolsets-store.ts'
 ]
 
 const FORBIDDEN = [

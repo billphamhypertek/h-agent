@@ -5,6 +5,7 @@ import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { EnvTab } from './settings/env-tab'
 import { ModelTab } from './settings/model-tab'
 import { ProvidersTab } from './settings/providers-tab'
+import { ToolsTab } from './settings/tools-tab'
 
 type TabId = 'appearance' | 'env' | 'model' | 'providers' | 'tools'
 
@@ -51,7 +52,7 @@ export function SettingsScreen() {
           {tab === 'model' && <ModelTab />}
           {tab === 'providers' && <ProvidersTab />}
           {tab === 'env' && <EnvTab />}
-          {tab === 'tools' && <Soon label="Công cụ" />}
+          {tab === 'tools' && <ToolsTab />}
           {tab === 'appearance' && <Soon label="Giao diện" />}
         </div>
       </div>
