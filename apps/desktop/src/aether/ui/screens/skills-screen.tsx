@@ -6,6 +6,8 @@ import { $skills, $skillsStatus, loadSkills, toggleSkillEnabled } from '@/aether
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import type { SkillInfo } from '@/types/aether'
 
+import { SkillsHubPanel } from './skills-hub-panel'
+
 function SkillCard({ skill }: { skill: SkillInfo }) {
   return (
     <GlassSlab className="flex flex-col gap-2" data-testid="ae-skill-card" size="sm">
@@ -127,6 +129,8 @@ export function SkillsScreen() {
           ))}
         </div>
       )}
+
+      <SkillsHubPanel />
     </div>
   )
 }
