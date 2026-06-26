@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { MemoryProviderConfig } from '@/aether-api'
+import type { MemoryProviderConfig, MemoryProviderOAuthStatus } from '@/aether-api'
 
 import {
   $memoryConfig,
   $memoryConfigStatus,
   $memoryEntries,
   $memoryEntriesStatus,
+  $memoryOAuth,
   $memoryProvider,
   $memoryStatus,
   loadMemoryConfig,
@@ -126,5 +127,39 @@ describe('mutations', () => {
       body: { target: 'memory' }
     })
     expect(api).toHaveBeenNthCalledWith(2, { path: '/api/memory' })
+  })
+})
+
+const OAUTH_PENDING: MemoryProviderOAuthStatus = { auth: 'oauth', connected: false, detail: 'Đang chờ', state: 'pending' }
+const OAUTH_DONE: MemoryProviderOAuthStatus = { auth: 'oauth', connected: true, detail: 'Đã kết nối', state: 'connected' }
+
+describe('memory oauth', () => {
+  beforeEach(() => $memoryOAuth.set(null))
+
+  it('loadMemoryOAuthStatus stores the provider oauth status', async () => {
+    const oauthStatus = vi.fn().mockResolvedValue(OAUTH_DONE)
+    const { loadMemoryOAuthStatus } = await import('./memory-store')
+    await loadMemoryOAuthStatus('mem0', { oauthStatus })
+    expect(oauthStatus).toHaveBeenCalledWith('mem0')
+    expect($memoryOAuth.get()).toEqual(OAUTH_DONE)
+  })
+
+  it('startMemoryOAuth advances pending → connected via a status re-fetch', async () => {
+    const oauthStart = vi.fn().mockResolvedValue(OAUTH_PENDING)
+    const oauthStatus = vi.fn().mockResolvedValue(OAUTH_DONE)
+    const { startMemoryOAuth } = await import('./memory-store')
+    await startMemoryOAuth('mem0', { oauthStart, oauthStatus })
+    expect(oauthStart).toHaveBeenCalledWith('mem0')
+    expect(oauthStatus).toHaveBeenCalledWith('mem0')
+    expect($memoryOAuth.get()).toEqual(OAUTH_DONE)
+  })
+
+  it('startMemoryOAuth that returns connected does not re-poll', async () => {
+    const oauthStart = vi.fn().mockResolvedValue(OAUTH_DONE)
+    const oauthStatus = vi.fn()
+    const { startMemoryOAuth } = await import('./memory-store')
+    await startMemoryOAuth('mem0', { oauthStart, oauthStatus })
+    expect(oauthStatus).not.toHaveBeenCalled()
+    expect($memoryOAuth.get()).toEqual(OAUTH_DONE)
   })
 })

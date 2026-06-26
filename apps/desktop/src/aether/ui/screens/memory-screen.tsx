@@ -7,6 +7,7 @@ import {
   $memoryConfigStatus,
   $memoryEntries,
   $memoryEntriesStatus,
+  $memoryOAuth,
   $memoryProvider,
   loadMemoryConfig,
   loadMemoryStatus
@@ -47,6 +48,7 @@ export function MemoryScreen() {
   const provider = useStore($memoryProvider)
   const config = useStore($memoryConfig)
   const configStatus = useStore($memoryConfigStatus)
+  const oauth = useStore($memoryOAuth)
 
   useEffect(() => {
     if ($memoryEntriesStatus.get() === 'idle') {
@@ -59,6 +61,13 @@ export function MemoryScreen() {
     if (provider && $memoryConfigStatus.get() === 'idle') {
       void loadMemoryConfig(provider)
     }
+  }, [provider])
+
+  // Probe the provider's OAuth flow once the active provider resolves.
+  // Called via the namespace so tests can spy/no-op it (see screen tests) and
+  // so a pre-set $memoryOAuth fixture isn't clobbered by a real REST probe.
+  useEffect(() => {
+    if (provider) { void memoryStore.loadMemoryOAuthStatus(provider) }
   }, [provider])
 
   if (entriesStatus === 'loading' || entriesStatus === 'idle') {
@@ -160,6 +169,26 @@ export function MemoryScreen() {
           </button>
         )}
       </GlassSlab>
+
+      {oauth?.auth === 'oauth' && (
+        <GlassSlab className="flex flex-col gap-2" size="md">
+          <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
+            KẾT NỐI OAUTH
+          </div>
+          <div className="text-[12px] text-[#D7ECFA]">{oauth.detail}</div>
+          {!oauth.connected && (
+            <button
+              className="w-fit rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+              data-testid="ae-memory-oauth-start"
+              disabled={oauth.state === 'pending'}
+              onClick={() => { if (provider) { void memoryStore.startMemoryOAuth(provider) } }}
+              type="button"
+            >
+              {oauth.state === 'pending' ? 'Đang kết nối…' : 'Kết nối'}
+            </button>
+          )}
+        </GlassSlab>
+      )}
 
       <GlassSlab className="flex flex-col gap-2" size="md">
         <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">

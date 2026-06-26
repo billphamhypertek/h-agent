@@ -7,6 +7,7 @@ import {
   $memoryConfigStatus,
   $memoryEntries,
   $memoryEntriesStatus,
+  $memoryOAuth,
   $memoryProvider,
   type MemoryStatus
 } from '@/aether/domain/memory/memory-store'
@@ -40,7 +41,18 @@ const CONFIG: MemoryProviderConfig = {
   ]
 }
 
-afterEach(cleanup)
+// The OAuth probe effect runs on every mount and hits the real REST fn, which
+// has no aetherDesktop bridge under jsdom. No-op it file-wide so it never
+// throws an unhandled rejection or clobbers a pre-set $memoryOAuth fixture.
+beforeEach(() => {
+  vi.spyOn(store, 'loadMemoryOAuthStatus').mockResolvedValue()
+})
+
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+  $memoryOAuth.set(null)
+})
 
 describe('MemoryScreen — ready', () => {
   beforeEach(() => {
@@ -125,6 +137,38 @@ describe('MemoryScreen — interactions', () => {
     fireEvent.click(screen.getByTestId('ae-memory-reset'))
     expect(spy).toHaveBeenCalledWith('all')
     confirmSpy.mockRestore()
+    spy.mockRestore()
+  })
+})
+
+describe('MemoryScreen — oauth panel', () => {
+  beforeEach(() => {
+    $memoryEntries.set(STATUS)
+    $memoryEntriesStatus.set('ready')
+    $memoryProvider.set('mem0')
+    $memoryConfig.set(CONFIG)
+    $memoryConfigStatus.set('ready')
+  })
+
+  it('renders the OAuth panel only for oauth-typed providers', () => {
+    $memoryOAuth.set({ auth: 'oauth', connected: false, detail: 'Chưa kết nối', state: 'idle' })
+    render(<MemoryScreen />)
+    expect(screen.getByText(/KẾT NỐI OAUTH/i)).toBeTruthy()
+    expect(screen.getByTestId('ae-memory-oauth-start')).toBeTruthy()
+  })
+
+  it('hides the OAuth panel for apikey providers', () => {
+    $memoryOAuth.set({ auth: 'apikey', connected: false, detail: '', state: 'idle' })
+    render(<MemoryScreen />)
+    expect(screen.queryByText(/KẾT NỐI OAUTH/i)).toBeNull()
+  })
+
+  it('starts OAuth on click', () => {
+    $memoryOAuth.set({ auth: 'oauth', connected: false, detail: 'Chưa kết nối', state: 'idle' })
+    const spy = vi.spyOn(store, 'startMemoryOAuth').mockResolvedValue()
+    render(<MemoryScreen />)
+    fireEvent.click(screen.getByTestId('ae-memory-oauth-start'))
+    expect(spy).toHaveBeenCalledWith('mem0')
     spy.mockRestore()
   })
 })

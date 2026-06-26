@@ -124,5 +124,24 @@ export async function resetMemory(target: MemoryResetTarget, deps: MemoryStoreDe
   await loadMemoryStatus(deps)
 }
 
+export async function loadMemoryOAuthStatus(provider: string, deps: MemoryStoreDeps = {}): Promise<void> {
+  const oauthStatus = deps.oauthStatus ?? getMemoryProviderOAuthStatus
+  const status = await oauthStatus(provider)
+  $memoryOAuth.set(status)
+}
+
+export async function startMemoryOAuth(provider: string, deps: MemoryStoreDeps = {}): Promise<void> {
+  const oauthStart = deps.oauthStart ?? startMemoryProviderOAuth
+  const started = await oauthStart(provider)
+  $memoryOAuth.set(started)
+
+  // Advance the state machine: a pending start needs a status re-fetch to learn
+  // whether the external flow completed. A start that already resolved
+  // connected/error is terminal — no extra poll.
+  if (started.state === 'pending') {
+    await loadMemoryOAuthStatus(provider, deps)
+  }
+}
+
 // Re-exported so later tasks (save/switch/reset/oauth) wire to the same module.
 export { getMemoryProviderOAuthStatus, saveMemoryProviderConfig, startMemoryProviderOAuth }
