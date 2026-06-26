@@ -4,6 +4,8 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { $agents, $agentsStatus } from '@/aether/domain/agents/agents-store'
+import type { AgentsView } from '@/aether/domain/agents/agents-view'
 import { $bootDone, $bootProgress } from '@/aether/domain/boot/boot-store'
 import { $briefingStatus } from '@/aether/domain/briefing/briefing-store'
 import { $commandPaletteOpen, closeCommandPalette } from '@/store/command-palette'
@@ -111,5 +113,26 @@ describe('AetherShell ⌘K wiring', () => {
     renderShell(HUD_ROUTE)
     // radix Dialog renders the palette search input once open.
     expect(screen.getByPlaceholderText(/Search sessions, views, and actions/i)).toBeTruthy()
+  })
+})
+
+describe('AetherShell Agents route', () => {
+  beforeEach(() => {
+    $bootDone.set(true)
+    $gatewayState.set('open')
+    $agentsStatus.set('ready')
+    $agents.set({
+      runningCount: 0,
+      sessions: [],
+      cron: [{ id: 'j1', name: 'Brief sáng', schedule: 'Mỗi 8h', enabled: true, nextRunAt: null, lastError: null }],
+      skills: [],
+      enabledSkillCount: 0,
+    } satisfies AgentsView)
+  })
+
+  it('renders the AgentsScreen (read-only mission control) on /agents', () => {
+    renderShell('/agents')
+    expect(screen.getByText(/Mission control · Agent/)).toBeTruthy()
+    expect(screen.getByText(/Chỉ xem/)).toBeTruthy()
   })
 })
