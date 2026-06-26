@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
+import { AppearanceTab } from './settings/appearance-tab'
 import { EnvTab } from './settings/env-tab'
 import { ModelTab } from './settings/model-tab'
 import { ProvidersTab } from './settings/providers-tab'
@@ -16,14 +17,6 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'tools', label: 'Công cụ' },
   { id: 'appearance', label: 'Giao diện' }
 ]
-
-function Soon({ label }: { label: string }) {
-  return (
-    <GlassSlab size="md">
-      <div className="text-[12px] text-[color:var(--ae-dim)]">{label} — sắp ra mắt.</div>
-    </GlassSlab>
-  )
-}
 
 export function SettingsScreen() {
   const [tab, setTab] = useState<TabId>('model')
@@ -53,7 +46,7 @@ export function SettingsScreen() {
           {tab === 'providers' && <ProvidersTab />}
           {tab === 'env' && <EnvTab />}
           {tab === 'tools' && <ToolsTab />}
-          {tab === 'appearance' && <Soon label="Giao diện" />}
+          {tab === 'appearance' && <AppearanceTab />}
         </div>
       </div>
     </div>

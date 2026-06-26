@@ -14,7 +14,9 @@ const FILES = [
   'aether/ui/screens/settings/env-tab.tsx',
   'aether/domain/settings/env-store.ts',
   'aether/ui/screens/settings/tools-tab.tsx',
-  'aether/domain/settings/toolsets-store.ts'
+  'aether/domain/settings/toolsets-store.ts',
+  'aether/ui/screens/settings/appearance-tab.tsx',
+  'aether/domain/settings/config-store.ts'
 ]
 
 const FORBIDDEN = [
