@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { $skills, $skillsStatus } from '@/aether/domain/skills/skills-store'
 import type { SkillInfo } from '@/types/aether'
@@ -47,5 +47,35 @@ describe('SkillsScreen — list states', () => {
     $skillsStatus.set('loading')
     render(<SkillsScreen />)
     expect(screen.getByTestId('ae-skills-skeleton')).toBeTruthy()
+  })
+})
+
+describe('SkillsScreen — toggle interaction', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    delete (window as { aetherDesktop?: unknown }).aetherDesktop
+  })
+
+  it('clicking a card switch calls /api/skills/toggle then re-fetches', async () => {
+    // First call = toggle PUT; second call = re-fetch GET /api/skills.
+    const api = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, name: 'code-review', enabled: true })
+      .mockResolvedValueOnce(SAMPLE.map(s => (s.name === 'code-review' ? { ...s, enabled: true } : s)))
+    ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
+
+    $skills.set(SAMPLE)
+    $skillsStatus.set('ready')
+    render(<SkillsScreen />)
+
+    fireEvent.click(screen.getByRole('switch', { name: /code-review/ }))
+
+    await waitFor(() => expect(api).toHaveBeenCalledTimes(2))
+    expect(api.mock.calls[0][0]).toMatchObject({
+      path: '/api/skills/toggle',
+      method: 'PUT',
+      body: { name: 'code-review', enabled: true },
+    })
+    expect(api.mock.calls[1][0]).toMatchObject({ path: '/api/skills' })
   })
 })
