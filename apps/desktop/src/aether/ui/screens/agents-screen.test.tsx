@@ -1,8 +1,10 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { AgentsView } from '@/aether/domain/agents/agents-view'
 import { $agents, $agentsStatus } from '@/aether/domain/agents/agents-store'
 import * as agentsStore from '@/aether/domain/agents/agents-store'
+import { $busy, $gatewayState } from '@/store/session'
 
 import { AgentsScreen } from './agents-screen'
 
@@ -42,5 +44,57 @@ describe('AgentsScreen states', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
     expect(spy).toHaveBeenCalledTimes(1)
     spy.mockRestore()
+  })
+})
+
+function readyView(): AgentsView {
+  return {
+    runningCount: 1,
+    sessions: [
+      { id: 'live', title: 'Phiên trực tiếp', source: 'desktop', profile: 'default', model: 'sonnet', isActive: true, lastActive: 900, messageCount: 4 },
+      { id: 'past', title: 'Phiên cũ', source: 'cron', profile: 'work', model: null, isActive: false, lastActive: 100, messageCount: 2 },
+    ],
+    cron: [{ id: 'j1', name: 'Brief sáng', schedule: 'Mỗi 8h', enabled: true, nextRunAt: '2026-06-27T08:00:00Z', lastError: null }],
+    skills: [{ name: 'web-search', category: 'core', enabled: true }],
+    enabledSkillCount: 1,
+  }
+}
+
+describe('AgentsScreen ready sections', () => {
+  beforeEach(() => {
+    $agents.set(readyView())
+    $agentsStatus.set('ready')
+    $busy.set(false)
+    $gatewayState.set('open')
+  })
+
+  it('renders sessions, cron and skills sections', () => {
+    render(<AgentsScreen />)
+    expect(screen.getByTestId('ae-agents-sessions')).toBeTruthy()
+    expect(screen.getByTestId('ae-agents-cron')).toBeTruthy()
+    expect(screen.getByTestId('ae-agents-skills')).toBeTruthy()
+    expect(screen.getByText('Phiên trực tiếp')).toBeTruthy()
+    expect(screen.getByText('Brief sáng')).toBeTruthy()
+    expect(screen.getByText('web-search')).toBeTruthy()
+  })
+
+  it('presence indicator reflects $orbState (idle when connected & not busy)', () => {
+    render(<AgentsScreen />)
+    expect(screen.getByTestId('ae-agents-presence').getAttribute('data-orb')).toBe('idle')
+  })
+
+  it('presence indicator flips to thinking when busy', () => {
+    $busy.set(true)
+    render(<AgentsScreen />)
+    expect(screen.getByTestId('ae-agents-presence').getAttribute('data-orb')).toBe('thinking')
+  })
+
+  it('still shows the read-only badge and no CRUD buttons in ready state', () => {
+    render(<AgentsScreen />)
+    expect(screen.getByText(/Chỉ xem/)).toBeTruthy()
+    // The only button on the ready screen must NOT be a create/edit/delete control.
+    for (const btn of screen.queryAllByRole('button')) {
+      expect(btn.textContent ?? '').not.toMatch(/Tạo|Sửa|Xóa|Xoá|Create|Edit|Delete/)
+    }
   })
 })
