@@ -14,6 +14,7 @@ import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
 import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
+import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
 import { CommandPalette } from '@/app/command-palette'
 import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, HUD_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, PROFILES_ROUTE } from '@/app/routes'
@@ -61,7 +62,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<StubScreen title="Messaging" />} path={MESSAGING_ROUTE.slice(1)} />
               <Route element={<StubScreen title="Profiles" />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<SettingsScreen />} path="settings" />
-              <Route element={<StubScreen title="Skills" />} path="skills" />
+              <Route element={<SkillsScreen />} path="skills" />
               <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />
             </Routes>
           </PageTransition>
