@@ -56,6 +56,7 @@ import {
   ARTIFACTS_ROUTE,
   BRIEF_ROUTE,
   COMMAND_CENTER_ROUTE,
+  CONTENT_ROUTE,
   CRON_ROUTE,
   DEV_ROUTE,
   HUD_ROUTE,
@@ -233,6 +234,7 @@ export function aetherGoToItems(go: (path: string) => () => void, t: ReturnType<
     { icon: Cpu, id: 'nav-dev', keywords: ['dev', 'devops', 'server', 'deploy', 'cockpit'], label: 'Dev', run: go(DEV_ROUTE) },
     { icon: MessageCircle, id: 'nav-inbox', keywords: ['inbox', 'email', 'crm', 'deal', 'pipeline'], label: 'Inbox', run: go(INBOX_ROUTE) },
     { icon: BarChart3, id: 'nav-ops', keywords: ['ops', 'vận hành', 'finance', 'tài chính', 'lịch', 'task'], label: 'Vận hành', run: go(OPS_ROUTE) },
+    { icon: FileText, id: 'nav-content', keywords: ['content', 'nội dung', 'calendar', 'lịch', 'idea', 'post'], label: 'Content', run: go(CONTENT_ROUTE) },
     { icon: FileText, id: 'nav-brief', keywords: ['brief', 'morning', 'brief sáng', 'tóm tắt'], label: 'Brief sáng', run: go(BRIEF_ROUTE) },
     {
       action: 'view.showTerminal',

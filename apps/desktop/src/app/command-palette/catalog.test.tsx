@@ -5,6 +5,7 @@ import {
   AGENTS_ROUTE,
   ARTIFACTS_ROUTE,
   BRIEF_ROUTE,
+  CONTENT_ROUTE,
   CRON_ROUTE,
   DEV_ROUTE,
   HUD_ROUTE,
@@ -65,6 +66,7 @@ describe('command palette AETHER catalog', () => {
       DEV_ROUTE,
       INBOX_ROUTE,
       OPS_ROUTE,
+      CONTENT_ROUTE,
       PROFILES_ROUTE,
       AGENTS_ROUTE
     ]) {
@@ -106,6 +108,15 @@ describe('command palette AETHER catalog', () => {
     expect(ops).toBeTruthy()
     ops?.run?.()
     expect(navigate).toHaveBeenCalledWith(OPS_ROUTE)
+  })
+
+  it('selecting the Content item navigates to /content', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const content = aetherGoToItems(go, tStub).find(item => item.id === 'nav-content')
+    expect(content).toBeTruthy()
+    content?.run?.()
+    expect(navigate).toHaveBeenCalledWith(CONTENT_ROUTE)
   })
 })
 

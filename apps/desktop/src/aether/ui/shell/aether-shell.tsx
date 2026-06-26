@@ -13,6 +13,7 @@ import { ArtifactsScreen } from '@/aether/ui/screens/artifacts-screen'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
 import { ChatScreen } from '@/aether/ui/screens/chat-screen'
 import { CommandCenter } from '@/aether/ui/screens/command-center'
+import { ContentScreen } from '@/aether/ui/screens/content-screen'
 import { CronScreen } from '@/aether/ui/screens/cron-screen'
 import { DevScreen } from '@/aether/ui/screens/dev-screen'
 import { InboxScreen } from '@/aether/ui/screens/inbox-screen'
@@ -25,7 +26,7 @@ import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
 import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
 import { CommandPalette } from '@/app/command-palette'
-import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PROFILES_ROUTE } from '@/app/routes'
+import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PROFILES_ROUTE } from '@/app/routes'
 import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
@@ -71,6 +72,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<MemoryScreen />} path={MEMORY_ROUTE.slice(1)} />
               <Route element={<MessagingScreen />} path={MESSAGING_ROUTE.slice(1)} />
               <Route element={<OpsScreen />} path={OPS_ROUTE.slice(1)} />
+              <Route element={<ContentScreen />} path={CONTENT_ROUTE.slice(1)} />
               <Route element={<ProfilesScreen />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<SettingsScreen />} path="settings" />
               <Route element={<SkillsScreen />} path="skills" />
