@@ -42,7 +42,7 @@ export default defineConfig({
       'react/jsx-dev-runtime': path.resolve(__dirname, '../../node_modules/react/jsx-dev-runtime.js'),
       'react/jsx-runtime': path.resolve(__dirname, '../../node_modules/react/jsx-runtime.js')
     },
-    dedupe: ['react', 'react-dom']
+    dedupe: ['react', 'react-dom', 'three']
   },
   server: {
     host: '127.0.0.1',
