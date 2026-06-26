@@ -34,8 +34,9 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
 
   return (
     <div className="ae-depth-enter relative flex h-screen min-h-0 w-screen overflow-hidden">
+      <div className="ae-shell-bg" />
       <NavRail activeRoute={location.pathname} online={status === 'online'} onNavigate={r => navigate(r)} />
-      <div className="flex min-w-0 flex-1 flex-col p-[16px_22px_18px]">
+      <div className="relative z-[1] flex min-w-0 flex-1 flex-col p-[var(--ae-page-t)_var(--ae-page-x)_var(--ae-page-b)]">
         <TopBar title={title} />
         <div className="relative mt-3 min-h-0 flex-1">
           <PageTransition routeKey={location.pathname}>

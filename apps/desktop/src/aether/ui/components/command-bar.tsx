@@ -15,7 +15,11 @@ export function CommandBar({ placeholder = 'Nói hoặc gõ lệnh cho Aether…
         </svg>
       </div>
       <span className="flex-1 text-sm text-[#A9CFE8]">{placeholder}</span>
-      <span className="rounded-[9px] border border-[color:var(--ae-line)] bg-[rgba(120,200,255,.1)] px-[11px] py-1.5 font-mono text-xs text-[color:var(--ae-azure-soft)]">
+      <span
+        aria-disabled="true"
+        title="Sắp ra mắt"
+        className="cursor-not-allowed rounded-[var(--ae-radius-sm)] border border-[color:var(--ae-line)] bg-[rgba(120,200,255,.06)] px-[11px] py-1.5 font-mono text-xs text-[color:var(--ae-dim)] opacity-60"
+      >
         ⌘K
       </span>
     </div>

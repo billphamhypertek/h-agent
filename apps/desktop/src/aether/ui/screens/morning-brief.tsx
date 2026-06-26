@@ -16,7 +16,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
   const worstServer = (briefing?.servers ?? []).find(s => s.status !== 'ok')
 
   return (
-    <div className="ae-screen flex h-full flex-col p-[16px_22px_18px]">
+    <div className="ae-screen-bare flex h-full min-w-0 flex-col">
       <div className="ae-grid-floor" />
       <div className="ae-bloom" style={{ left: '14%', top: '34%' }} />
       <div className="ae-vignette" />

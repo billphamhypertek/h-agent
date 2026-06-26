@@ -20,7 +20,7 @@ export function CommandCenter({ onCommandPalette }: { onCommandPalette?: () => v
   const worstServer = servers.find(s => s.status !== 'ok')
 
   return (
-    <div className="ae-screen flex h-full flex-col p-[18px_22px]">
+    <div className="ae-screen-bare flex h-full min-w-0 flex-col">
       <div className="ae-grid-floor" />
       <div className="ae-bloom" style={{ left: '8%', top: '30%' }} />
       <div className="ae-vignette" />

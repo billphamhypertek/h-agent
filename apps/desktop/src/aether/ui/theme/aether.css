@@ -52,7 +52,7 @@
   --ae-glass-2: rgba(255, 255, 255, 0.42);
 }
 
-/* full-bleed cinematic background for AETHER screens */
+/* full-bleed cinematic background for AETHER screens (Boot overlay still uses this) */
 .ae-screen {
   position: relative;
   isolation: isolate;
@@ -67,6 +67,28 @@
   background:
     radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.12), transparent 55%),
     linear-gradient(180deg, #f3f7ff 0%, #e9f1ff 100%);
+}
+
+/* full-bleed cinematic background owned by the shell root (z0) */
+.ae-shell-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.16), transparent 55%),
+    radial-gradient(100% 90% at 80% 110%, rgba(7, 57, 125, 0.18), transparent 60%),
+    linear-gradient(180deg, #082046 0%, #05132f 48%, #020c1d 100%);
+}
+[data-aether-mode='light'] .ae-shell-bg {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(74, 163, 255, 0.12), transparent 55%),
+    linear-gradient(180deg, #f3f7ff 0%, #e9f1ff 100%);
+}
+/* transparent screen variant — fills the padded content area, lets the shell bg bleed through */
+.ae-screen-bare {
+  position: relative;
+  color: var(--ae-ink);
 }
 
 .ae-grid-floor {
