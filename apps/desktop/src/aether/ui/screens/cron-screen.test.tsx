@@ -1,7 +1,8 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { $cronJobs, $cronJobsStatus } from '@/aether/domain/cron/cron-store'
+import * as store from '@/aether/domain/cron/cron-store'
 import type { CronJob } from '@/types/aether'
 
 import { CronScreen } from './cron-screen'
@@ -44,5 +45,27 @@ describe('CronScreen', () => {
     $cronJobsStatus.set('error')
     render(<CronScreen />)
     expect(screen.getByRole('button', { name: 'Thử lại' })).toBeTruthy()
+  })
+})
+
+describe('CronScreen controls', () => {
+  it('clicking pause calls pauseCronJobAction with the job id', () => {
+    const spy = vi.spyOn(store, 'pauseCronJobAction').mockResolvedValue()
+    $cronJobs.set(jobs)
+    $cronJobsStatus.set('ready')
+    render(<CronScreen />)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Tạm dừng' })[0])
+    expect(spy).toHaveBeenCalledWith('a')
+    spy.mockRestore()
+  })
+
+  it('clicking trigger calls triggerCronJobAction', () => {
+    const spy = vi.spyOn(store, 'triggerCronJobAction').mockResolvedValue()
+    $cronJobs.set(jobs)
+    $cronJobsStatus.set('ready')
+    render(<CronScreen />)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Chạy ngay' })[0])
+    expect(spy).toHaveBeenCalledWith('a')
+    spy.mockRestore()
   })
 })

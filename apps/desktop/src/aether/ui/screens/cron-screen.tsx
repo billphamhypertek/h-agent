@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
 import { $cronJobs, $cronJobsStatus, loadCronJobs } from '@/aether/domain/cron/cron-store'
+import * as cronStore from '@/aether/domain/cron/cron-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import type { CronJob } from '@/types/aether'
 
@@ -111,6 +112,43 @@ export function CronScreen() {
                     <span>Gần nhất: {formatTime(job.last_run_at)}</span>
                   </div>
                   {job.last_error && <div className="mt-1 text-[11px] text-[color:var(--ae-warn)]">{job.last_error}</div>}
+                </div>
+                <div className="flex flex-none items-center gap-1.5">
+                  {state === 'paused' ? (
+                    <button
+                      aria-label="Tiếp tục"
+                      className="rounded-[9px] px-2.5 py-1 text-[11px] text-[color:var(--ae-ok)]"
+                      onClick={() => void cronStore.resumeCronJobAction(job.id)}
+                      type="button"
+                    >
+                      Tiếp tục
+                    </button>
+                  ) : (
+                    <button
+                      aria-label="Tạm dừng"
+                      className="rounded-[9px] px-2.5 py-1 text-[11px] text-[color:var(--ae-warn)]"
+                      onClick={() => void cronStore.pauseCronJobAction(job.id)}
+                      type="button"
+                    >
+                      Tạm dừng
+                    </button>
+                  )}
+                  <button
+                    aria-label="Chạy ngay"
+                    className="rounded-[9px] px-2.5 py-1 text-[11px] text-[color:var(--ae-azure-soft)]"
+                    onClick={() => void cronStore.triggerCronJobAction(job.id)}
+                    type="button"
+                  >
+                    Chạy ngay
+                  </button>
+                  <button
+                    aria-label="Xóa"
+                    className="rounded-[9px] px-2.5 py-1 text-[11px] text-[color:var(--ae-dim)] hover:text-[color:var(--ae-warn)]"
+                    onClick={() => void cronStore.deleteCronJobAction(job.id)}
+                    type="button"
+                  >
+                    Xóa
+                  </button>
                 </div>
               </GlassSlab>
             )
