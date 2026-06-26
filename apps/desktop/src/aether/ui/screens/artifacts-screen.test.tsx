@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { SessionInfo } from '@/types/aether'
 import {
@@ -75,5 +75,38 @@ describe('ArtifactsScreen', () => {
     $artifactsStatus.set('loading')
     render(<ArtifactsScreen />)
     expect(screen.getAllByTestId('ae-artifact-skeleton').length).toBeGreaterThan(0)
+  })
+})
+
+describe('ArtifactsScreen search interaction', () => {
+  afterEach(() => {
+    // restore the global stub between cases
+    // @ts-expect-error test shim
+    delete globalThis.window.aetherDesktop
+  })
+
+  it('typing in the search box queries searchSessions with the text', async () => {
+    const api = vi.fn(async (req: { path: string }) => {
+      if (req.path.startsWith('/api/sessions/search')) {
+        return { results: [] }
+      }
+
+      return { limit: 60, offset: 0, total: 0, sessions: [] }
+    })
+    // @ts-expect-error test shim — only the api method is exercised here
+    globalThis.window.aetherDesktop = { api, readDir: vi.fn() }
+
+    render(<ArtifactsScreen />)
+    const box = screen.getByPlaceholderText(/Tìm/)
+    fireEvent.change(box, { target: { value: 'design spec' } })
+
+    // searchArtifacts is async; flush microtasks.
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect($artifactQuery.get()).toBe('design spec')
+    expect(api).toHaveBeenCalledWith(
+      expect.objectContaining({ path: expect.stringContaining('/api/sessions/search?q=design%20spec') }),
+    )
   })
 })
