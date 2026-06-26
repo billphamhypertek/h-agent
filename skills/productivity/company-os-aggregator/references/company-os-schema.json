@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CompanyOs",
+  "type": "object",
+  "required": ["generatedAt", "priorities", "servers", "bento", "feed", "vitals"],
+  "properties": {
+    "generatedAt": { "type": "string" },
+    "greetingName": { "type": "string" },
+    "priorities": { "type": "array", "items": { "type": "object" } },
+    "servers": { "type": "array", "items": { "type": "object" } },
+    "bento": { "type": "object" },
+    "feed": { "type": "array" },
+    "vitals": { "type": "object" },
+    "dev": {
+      "type": "object",
+      "properties": {
+        "servers": { "type": "array", "items": { "type": "object", "required": ["name", "status", "cpu", "mem", "disk"] } },
+        "deploys": { "type": "array", "items": { "type": "object", "required": ["id", "service", "status", "at"] } },
+        "incidents": { "type": "array", "items": { "type": "object", "required": ["id", "title", "severity"] } }
+      }
+    },
+    "inbox": {
+      "type": "object",
+      "properties": {
+        "threads": { "type": "array", "items": { "type": "object", "required": ["id", "sender", "subject"] } },
+        "deals": { "type": "array", "items": { "type": "object", "required": ["id", "name", "stage"] } }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "calendar": { "type": "array", "items": { "type": "object", "required": ["id", "channel", "title", "at"] } },
+        "ideas": { "type": "array", "items": { "type": "object", "required": ["id", "title", "stage"] } }
+      }
+    },
+    "ops": {
+      "type": "object",
+      "properties": {
+        "calendar": { "type": "array", "items": { "type": "object", "required": ["id", "title", "at"] } },
+        "tasks": { "type": "array", "items": { "type": "object", "required": ["id", "title"] } },
+        "finance": { "type": "object" },
+        "notes": { "type": "array", "items": { "type": "object", "required": ["id", "title"] } }
+      }
+    }
+  }
+}
