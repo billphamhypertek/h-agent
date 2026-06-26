@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
+import { EnvTab } from './settings/env-tab'
 import { ModelTab } from './settings/model-tab'
 import { ProvidersTab } from './settings/providers-tab'
 
@@ -49,7 +50,7 @@ export function SettingsScreen() {
         <div className="min-h-0 flex-1 overflow-auto">
           {tab === 'model' && <ModelTab />}
           {tab === 'providers' && <ProvidersTab />}
-          {tab === 'env' && <Soon label="Khóa môi trường" />}
+          {tab === 'env' && <EnvTab />}
           {tab === 'tools' && <Soon label="Công cụ" />}
           {tab === 'appearance' && <Soon label="Giao diện" />}
         </div>
