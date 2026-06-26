@@ -90,5 +90,39 @@ export async function loadMemoryConfig(provider: string, deps: MemoryStoreDeps =
   }
 }
 
+export type MemoryResetTarget = 'all' | 'memory' | 'user'
+
+export async function saveMemoryConfig(
+  provider: string,
+  values: Record<string, string>,
+  deps: MemoryStoreDeps = {}
+): Promise<void> {
+  const saveConfig = deps.saveConfig ?? saveMemoryProviderConfig
+  $memoryConfigStatus.set('loading')
+  await saveConfig(provider, values)
+  await loadMemoryConfig(provider, deps)
+}
+
+export async function switchMemoryProvider(provider: string, deps: MemoryStoreDeps = {}): Promise<void> {
+  const api = resolveApi(deps)
+  await api<{ ok: boolean; active: string }>({
+    path: '/api/memory/provider',
+    method: 'PUT',
+    body: { provider }
+  })
+  await loadMemoryStatus(deps)
+  await loadMemoryConfig(provider, deps)
+}
+
+export async function resetMemory(target: MemoryResetTarget, deps: MemoryStoreDeps = {}): Promise<void> {
+  const api = resolveApi(deps)
+  await api<{ ok: boolean; deleted: string[] }>({
+    path: '/api/memory/reset',
+    method: 'POST',
+    body: { target }
+  })
+  await loadMemoryStatus(deps)
+}
+
 // Re-exported so later tasks (save/switch/reset/oauth) wire to the same module.
 export { getMemoryProviderOAuthStatus, saveMemoryProviderConfig, startMemoryProviderOAuth }

@@ -87,3 +87,44 @@ describe('loadMemoryConfig', () => {
     expect($memoryConfigStatus.get()).toBe('error')
   })
 })
+
+describe('mutations', () => {
+  it('saveMemoryConfig PUTs values then re-fetches config', async () => {
+    const saveConfig = vi.fn().mockResolvedValue({ ok: true })
+    const getConfig = vi.fn().mockResolvedValue(CONFIG)
+    const { saveMemoryConfig } = await import('./memory-store')
+    await saveMemoryConfig('mem0', { MEM0_API_KEY: 'mem0-abc' }, { saveConfig, getConfig })
+    expect(saveConfig).toHaveBeenCalledWith('mem0', { MEM0_API_KEY: 'mem0-abc' })
+    expect(getConfig).toHaveBeenCalledWith('mem0')
+  })
+
+  it('switchMemoryProvider PUTs /api/memory/provider then re-fetches status + config', async () => {
+    const api = vi.fn()
+      .mockResolvedValueOnce({ ok: true, active: 'zep' }) // PUT provider
+      .mockResolvedValueOnce(STATUS) // GET /api/memory
+    const getConfig = vi.fn().mockResolvedValue(CONFIG)
+    const { switchMemoryProvider } = await import('./memory-store')
+    await switchMemoryProvider('zep', { api, getConfig })
+    expect(api).toHaveBeenNthCalledWith(1, {
+      path: '/api/memory/provider',
+      method: 'PUT',
+      body: { provider: 'zep' }
+    })
+    expect(api).toHaveBeenNthCalledWith(2, { path: '/api/memory' })
+    expect(getConfig).toHaveBeenCalledWith('zep')
+  })
+
+  it('resetMemory POSTs /api/memory/reset then re-fetches status', async () => {
+    const api = vi.fn()
+      .mockResolvedValueOnce({ ok: true, deleted: ['memory'] }) // POST reset
+      .mockResolvedValueOnce(STATUS) // GET /api/memory
+    const { resetMemory } = await import('./memory-store')
+    await resetMemory('memory', { api })
+    expect(api).toHaveBeenNthCalledWith(1, {
+      path: '/api/memory/reset',
+      method: 'POST',
+      body: { target: 'memory' }
+    })
+    expect(api).toHaveBeenNthCalledWith(2, { path: '/api/memory' })
+  })
+})

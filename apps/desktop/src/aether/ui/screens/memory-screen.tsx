@@ -11,6 +11,7 @@ import {
   loadMemoryConfig,
   loadMemoryStatus
 } from '@/aether/domain/memory/memory-store'
+import * as memoryStore from '@/aether/domain/memory/memory-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 // Sentinel select value for the built-in/default provider (avoid '' label maps).
@@ -107,8 +108,11 @@ export function MemoryScreen() {
           className="w-full max-w-sm rounded-[10px] border border-[rgba(120,200,255,.18)] bg-[rgba(8,28,58,.45)] p-[8px_11px] text-[12.5px] text-white outline-none"
           data-testid="ae-memory-provider-select"
           value={provider ?? BUILTIN}
-          // onChange wired in Task 4 (switch-provider).
-          onChange={() => { /* Task 4 */ }}
+          onChange={e => {
+            const v = e.target.value === BUILTIN ? '' : e.target.value
+            $memoryConfigStatus.set('idle')
+            void memoryStore.switchMemoryProvider(v)
+          }}
         >
           <option value={BUILTIN}>(mặc định)</option>
           {(entries?.providers ?? []).map(p => (
@@ -135,6 +139,26 @@ export function MemoryScreen() {
               )}
             </label>
           ))}
+        {configStatus === 'ready' && (
+          <button
+            className="mt-1 w-fit rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+            data-testid="ae-memory-save"
+            onClick={() => {
+              if (!provider) { return }
+              const values: Record<string, string> = {}
+              for (const field of config?.fields ?? []) {
+                const el = document.querySelector<HTMLInputElement | HTMLSelectElement>(
+                  `[data-testid="ae-memory-field-${field.key}"]`
+                )
+                if (el) { values[field.key] = el.value }
+              }
+              void memoryStore.saveMemoryConfig(provider, values)
+            }}
+            type="button"
+          >
+            Lưu cấu hình
+          </button>
+        )}
       </GlassSlab>
 
       <GlassSlab className="flex flex-col gap-2" size="md">
@@ -145,6 +169,18 @@ export function MemoryScreen() {
           Provider đang dùng: <b>{entries?.active || '(mặc định)'}</b> · {entries?.builtin_files.memory ?? 0} tệp
           memory · {entries?.builtin_files.user ?? 0} tệp user
         </div>
+        <button
+          className="w-fit rounded-[11px] border border-[rgba(255,176,32,.4)] p-[8px_16px] text-[12.5px] text-[color:var(--ae-warn)]"
+          data-testid="ae-memory-reset"
+          onClick={() => {
+            if (window.confirm('Xoá toàn bộ bộ nhớ? Hành động này không thể hoàn tác.')) {
+              void memoryStore.resetMemory('all')
+            }
+          }}
+          type="button"
+        >
+          Đặt lại bộ nhớ
+        </button>
       </GlassSlab>
     </div>
   )

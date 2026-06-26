@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { MemoryProviderConfig } from '@/aether-api'
 import {
@@ -10,6 +10,7 @@ import {
   $memoryProvider,
   type MemoryStatus
 } from '@/aether/domain/memory/memory-store'
+import * as store from '@/aether/domain/memory/memory-store'
 
 import { MemoryScreen } from './memory-screen'
 
@@ -88,5 +89,42 @@ describe('MemoryScreen — non-ready states', () => {
     $memoryEntriesStatus.set('error')
     render(<MemoryScreen />)
     expect(screen.getByRole('button', { name: /Thử lại/i })).toBeTruthy()
+  })
+})
+
+describe('MemoryScreen — interactions', () => {
+  beforeEach(() => {
+    $memoryEntries.set(STATUS)
+    $memoryEntriesStatus.set('ready')
+    $memoryProvider.set('mem0')
+    $memoryConfig.set(CONFIG)
+    $memoryConfigStatus.set('ready')
+  })
+
+  it('switches provider on select change', () => {
+    const spy = vi.spyOn(store, 'switchMemoryProvider').mockResolvedValue()
+    render(<MemoryScreen />)
+    fireEvent.change(screen.getByTestId('ae-memory-provider-select'), { target: { value: 'zep' } })
+    expect(spy).toHaveBeenCalledWith('zep')
+    spy.mockRestore()
+  })
+
+  it('saves config field values on Save', () => {
+    const spy = vi.spyOn(store, 'saveMemoryConfig').mockResolvedValue()
+    render(<MemoryScreen />)
+    fireEvent.change(screen.getByTestId('ae-memory-field-MEM0_API_KEY'), { target: { value: 'mem0-xyz' } })
+    fireEvent.click(screen.getByTestId('ae-memory-save'))
+    expect(spy).toHaveBeenCalledWith('mem0', { MEM0_API_KEY: 'mem0-xyz' })
+    spy.mockRestore()
+  })
+
+  it('resets only after confirm', () => {
+    const spy = vi.spyOn(store, 'resetMemory').mockResolvedValue()
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    render(<MemoryScreen />)
+    fireEvent.click(screen.getByTestId('ae-memory-reset'))
+    expect(spy).toHaveBeenCalledWith('all')
+    confirmSpy.mockRestore()
+    spy.mockRestore()
   })
 })
