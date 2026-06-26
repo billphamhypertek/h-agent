@@ -35,11 +35,11 @@ AETHER 提供了一个 Nix flake，支持三个层级的集成：
 
 ```bash
 # 直接运行（首次使用时构建，之后使用缓存）
-nix run github:NousResearch/hermes-agent -- setup
-nix run github:NousResearch/hermes-agent -- chat
+nix run github:billphamhypertek/h-agent -- setup
+nix run github:billphamhypertek/h-agent -- chat
 
 # 或持久化安装
-nix profile install github:NousResearch/hermes-agent
+nix profile install github:billphamhypertek/h-agent
 aether setup
 aether chat
 ```
@@ -50,7 +50,7 @@ aether chat
 <summary><strong>从本地克隆构建</strong></summary>
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/billphamhypertek/h-agent.git
 cd aether-agent
 nix build
 ./result/bin/aether setup
@@ -75,7 +75,7 @@ nix build
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    aether-agent.url = "github:NousResearch/hermes-agent";
+    aether-agent.url = "github:billphamhypertek/h-agent";
   };
 
   outputs = { nixpkgs, aether-agent, ... }: {
@@ -685,7 +685,7 @@ services.aether-agent = {
 
 ```nix
 {
-  inputs.aether-agent.url = "github:NousResearch/hermes-agent";
+  inputs.aether-agent.url = "github:billphamhypertek/h-agent";
   outputs = { aether-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ aether-agent.overlays.default ];
     # 然后：

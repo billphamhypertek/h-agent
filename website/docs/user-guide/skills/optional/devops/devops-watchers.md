@@ -81,7 +81,7 @@ Watch a GitHub repo (set `GITHUB_TOKEN` in `${AETHER_HOME:-~/.aether}/.env` to a
 
 ```bash
 python $AETHER_HOME/skills/devops/watchers/scripts/watch_github.py \
-  --name aether-issues --repo NousResearch/hermes-agent --scope issues
+  --name aether-issues --repo billphamhypertek/h-agent --scope issues
 ```
 
 Poll an arbitrary JSON API:

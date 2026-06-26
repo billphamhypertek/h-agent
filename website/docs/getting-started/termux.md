@@ -80,7 +80,7 @@ Why these packages?
 ### 2. Clone AETHER
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/billphamhypertek/h-agent.git
 cd aether-agent
 ```
 

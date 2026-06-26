@@ -123,7 +123,7 @@ tail -f ~/.aether/logs/update.log
 aether version
 ```
 
-与 [GitHub releases 页面](https://github.com/NousResearch/hermes-agent/releases) 上的最新版本进行比较。
+与 [GitHub releases 页面](https://github.com/billphamhypertek/h-agent/releases) 上的最新版本进行比较。
 
 ### 从消息平台更新
 

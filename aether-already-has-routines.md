@@ -153,7 +153,7 @@ Full automation blueprints gallery: [aether.hypertek.vn/docs/reference/automatio
 
 Documentation: [aether.hypertek.vn](https://aether.hypertek.vn)
 
-GitHub: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)
+GitHub: [github.com/billphamhypertek/h-agent](https://github.com/billphamhypertek/h-agent)
 
 ---
 

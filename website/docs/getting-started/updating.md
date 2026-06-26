@@ -153,7 +153,7 @@ You no longer need to wrap `aether update` in `screen` or `tmux` to survive a te
 aether version
 ```
 
-Compare against the latest release at the [GitHub releases page](https://github.com/NousResearch/hermes-agent/releases).
+Compare against the latest release at the [GitHub releases page](https://github.com/billphamhypertek/h-agent/releases).
 
 ### Updating from Messaging Platforms
 

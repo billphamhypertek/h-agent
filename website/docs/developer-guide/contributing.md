@@ -75,7 +75,7 @@ system `python3 -m aether_cli.main` can pick up unrelated system Python
 packages.
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/billphamhypertek/h-agent.git
 cd aether-agent
 
 # Create venv with Python 3.11
@@ -128,7 +128,7 @@ scripts/run_tests.sh
 - **Comments**: Only when explaining non-obvious intent, trade-offs, or API quirks
 - **Error handling**: Catch specific exceptions. Use `logger.warning()`/`logger.error()` with `exc_info=True` for unexpected errors
 - **Cross-platform**: Never assume Unix (see below)
-- **Profile-safe paths**: Never hardcode `~/.aether` — use `get_aether_home()` from `aether_constants` for code paths and `display_aether_home()` for user-facing messages. See [AGENTS.md](https://github.com/NousResearch/hermes-agent/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
+- **Profile-safe paths**: Never hardcode `~/.aether` — use `get_aether_home()` from `aether_constants` for code paths and `display_aether_home()` for user-facing messages. See [AGENTS.md](https://github.com/billphamhypertek/h-agent/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
 
 ## Cross-Platform Compatibility
 
@@ -264,7 +264,7 @@ fix(security): prevent shell injection in sudo password piping
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/NousResearch/hermes-agent/issues)
+- Use [GitHub Issues](https://github.com/billphamhypertek/h-agent/issues)
 - Include: OS, Python version, AETHER version (`aether version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates
@@ -278,4 +278,4 @@ fix(security): prevent shell injection in sudo password piping
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](https://github.com/NousResearch/hermes-agent/blob/main/LICENSE).
+By contributing, you agree that your contributions will be licensed under the [MIT License](https://github.com/billphamhypertek/h-agent/blob/main/LICENSE).

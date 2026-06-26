@@ -448,7 +448,7 @@ own model call — for any reason, structured or not — `ctx.llm`.
 
 ## Reference
 
-* Implementation: [`agent/plugin_llm.py`](https://github.com/NousResearch/hermes-agent/blob/main/agent/plugin_llm.py)
-* Tests: [`tests/agent/test_plugin_llm.py`](https://github.com/NousResearch/hermes-agent/blob/main/tests/agent/test_plugin_llm.py)
+* Implementation: [`agent/plugin_llm.py`](https://github.com/billphamhypertek/h-agent/blob/main/agent/plugin_llm.py)
+* Tests: [`tests/agent/test_plugin_llm.py`](https://github.com/billphamhypertek/h-agent/blob/main/tests/agent/test_plugin_llm.py)
 * Auxiliary client (the engine under the hood): see
   [Provider Runtime](/developer-guide/provider-runtime).

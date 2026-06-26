@@ -80,7 +80,7 @@ pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgr
 ### 2. 克隆 AETHER
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/billphamhypertek/h-agent.git
 cd aether-agent
 ```
 

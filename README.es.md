@@ -8,7 +8,7 @@
 </p>
 <p align="center">
   <a href="https://aether.hypertek.vn/docs/"><img src="https://img.shields.io/badge/Docs-aether--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentación"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
+  <a href="https://github.com/billphamhypertek/h-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
   <a href="https://nousresearch.com"><img src="https://img.shields.io/badge/Creado%20por-Nous%20Research-blueviolet?style=for-the-badge" alt="Creado por Nous Research"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
@@ -41,7 +41,7 @@ curl -fsSL https://aether.hypertek.vn/install.sh | bash
 
 ### Windows (nativo, PowerShell)
 
-> **Nota:** En Windows nativo, AETHER funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/NousResearch/hermes-agent/issues).
+> **Nota:** En Windows nativo, AETHER funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/billphamhypertek/h-agent/issues).
 
 Ejecuta esto en PowerShell:
 
@@ -184,7 +184,7 @@ Consulta `aether claw migrate --help` para todas las opciones, o usa la habilida
 Inicio rápido para colaboradores — clona y comienza con `setup-aether.sh`:
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/billphamhypertek/h-agent.git
 cd aether-agent
 ./setup-aether.sh     # instala uv, crea venv, instala .[all], enlaza ~/.local/bin/aether
 ./aether              # detecta automáticamente el venv, no necesitas hacer `source` primero
@@ -204,7 +204,7 @@ scripts/run_tests.sh
 
 ## Comunidad
 
-- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
+- 🐛 [Issues](https://github.com/billphamhypertek/h-agent/issues)
 
 ---
 

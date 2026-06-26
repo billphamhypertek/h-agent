@@ -81,7 +81,7 @@ python $AETHER_HOME/skills/devops/watchers/scripts/watch_rss.py \
 
 ```bash
 python $AETHER_HOME/skills/devops/watchers/scripts/watch_github.py \
-  --name aether-issues --repo NousResearch/hermes-agent --scope issues
+  --name aether-issues --repo billphamhypertek/h-agent --scope issues
 ```
 
 轮询任意 JSON API：

@@ -295,7 +295,7 @@ export default function UserStoriesCollage(): JSX.Element {
       <div className={styles.footer}>
         Built something with AETHER?{' '}
         <a
-          href="https://github.com/NousResearch/hermes-agent/edit/main/website/src/data/userStories.json"
+          href="https://github.com/billphamhypertek/h-agent/edit/main/website/src/data/userStories.json"
           target="_blank"
           rel="noopener noreferrer"
         >
