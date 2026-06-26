@@ -1,6 +1,10 @@
 import { atom } from 'nanostores'
 
-import type { MessagingPlatformInfo, MessagingPlatformsResponse } from '@/types/aether'
+import type {
+  MessagingPlatformInfo,
+  MessagingPlatformsResponse,
+  MessagingPlatformUpdate,
+} from '@/types/aether'
 
 export type MessagingApi = <T>(request: {
   body?: unknown
@@ -37,4 +41,20 @@ export async function loadPlatforms(deps?: MessagingDeps): Promise<void> {
     $platforms.set(null)
     $platformsStatus.set('error')
   }
+}
+
+export async function updatePlatform(
+  platformId: string,
+  body: MessagingPlatformUpdate,
+  deps?: MessagingDeps
+): Promise<void> {
+  const api = resolveApi(deps)
+
+  await api<{ ok: boolean; platform: string }>({
+    path: `/api/messaging/platforms/${encodeURIComponent(platformId)}`,
+    method: 'PUT',
+    body,
+  })
+
+  await loadPlatforms(deps)
 }

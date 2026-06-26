@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 import type { MessagingPlatformInfo } from '@/types/aether'
 import { $platforms, $platformsStatus, loadPlatforms } from '@/aether/domain/messaging/messaging-store'
+import * as messagingStore from '@/aether/domain/messaging/messaging-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 type BadgeTone = 'good' | 'warn' | 'bad' | 'muted'
@@ -46,6 +47,72 @@ function StatusBadge({ platform }: { platform: MessagingPlatformInfo }) {
       <span className="h-[6px] w-[6px] rounded-full" style={{ background: TONE_COLOR[tone] }} />
       {statusLabel(platform)}
     </span>
+  )
+}
+
+function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
+  const [edits, setEdits] = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
+
+  const trimmed = Object.fromEntries(
+    Object.entries(edits).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v)
+  )
+  const hasEdits = Object.keys(trimmed).length > 0
+
+  async function onSave() {
+    if (!hasEdits) { return }
+
+    setSaving(true)
+
+    try {
+      await messagingStore.updatePlatform(platform.id, { env: trimmed })
+      setEdits({})
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {platform.error_message && (
+        <div className="rounded-[10px] px-2.5 py-1.5 text-[11px]" style={{ border: '1px solid var(--ae-warn)', color: 'var(--ae-warn)' }}>
+          {platform.error_message}
+        </div>
+      )}
+      {platform.env_vars.map(field => {
+        const fieldId = `ae-msg-${platform.id}-${field.key}`
+
+        return (
+          <label className="flex flex-col gap-1" htmlFor={fieldId} key={field.key}>
+            <span className="text-[11px] font-semibold text-[#D7ECFA]">
+              {field.prompt || field.key}
+              {field.required && <span style={{ color: 'var(--ae-warn)' }}> *</span>}
+            </span>
+            <input
+              aria-label={field.prompt || field.key}
+              className="rounded-[9px] bg-[rgba(8,24,44,.55)] px-2.5 py-1.5 text-[12px] text-white outline-none"
+              id={fieldId}
+              onChange={event => setEdits(current => ({ ...current, [field.key]: event.target.value }))}
+              placeholder={field.is_set ? field.redacted_value ?? 'Đã lưu — nhập để thay thế' : field.prompt}
+              style={{ border: '1px solid rgba(120,200,255,.18)' }}
+              type={field.is_password ? 'password' : 'text'}
+              value={edits[field.key] ?? ''}
+            />
+          </label>
+        )
+      })}
+      <div className="flex items-center justify-end gap-2">
+        <button
+          className="rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
+          disabled={!hasEdits || saving}
+          onClick={() => void onSave()}
+          style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+          type="button"
+        >
+          {saving ? 'Đang lưu…' : 'Lưu'}
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -113,7 +180,7 @@ export function MessagingScreen() {
             </button>
             {selectedId === platform.id && (
               <div className="border-t border-[rgba(120,200,255,.12)] pt-2 text-[11.5px] text-[color:var(--ae-dim)]" data-testid="ae-messaging-detail">
-                {/* Per-platform config form is added in Task 3. */}
+                <PlatformConfig platform={platform} />
               </div>
             )}
           </GlassSlab>

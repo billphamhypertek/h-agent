@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { $platforms, $platformsStatus, loadPlatforms } from './messaging-store'
+import { updatePlatform } from './messaging-store'
 
 beforeEach(() => {
   $platforms.set(null)
@@ -40,5 +41,28 @@ describe('loadPlatforms', () => {
 
     expect($platformsStatus.get()).toBe('error')
     expect($platforms.get()).toBeNull()
+  })
+})
+
+describe('updatePlatform', () => {
+  it('PUTs the update then re-fetches the list', async () => {
+    const calls: { path: string; method?: string; body?: unknown }[] = []
+    const api = vi.fn(async (req: { path: string; method?: string; body?: unknown }) => {
+      calls.push(req)
+
+      if (req.method === 'PUT') { return { ok: true, platform: 'telegram' } }
+
+      return { platforms: [{ id: 'telegram', name: 'Telegram', enabled: true, configured: true, state: 'connected', description: '', docs_url: '', gateway_running: true, env_vars: [] }] }
+    })
+
+    await updatePlatform('telegram', { env: { TELEGRAM_BOT_TOKEN: 'abc' } }, { api: api as never })
+
+    expect(calls[0]).toMatchObject({
+      path: '/api/messaging/platforms/telegram',
+      method: 'PUT',
+      body: { env: { TELEGRAM_BOT_TOKEN: 'abc' } },
+    })
+    expect(calls[1]).toMatchObject({ path: '/api/messaging/platforms' })
+    expect($platformsStatus.get()).toBe('ready')
   })
 })

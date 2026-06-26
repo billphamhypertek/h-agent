@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { MessagingPlatformInfo } from '@/types/aether'
 import { $platforms, $platformsStatus } from '@/aether/domain/messaging/messaging-store'
+import * as store from '@/aether/domain/messaging/messaging-store'
 
 import { MessagingScreen } from './messaging-screen'
 
@@ -56,5 +57,29 @@ describe('MessagingScreen', () => {
 
     expect(screen.getByText(/Không tải được/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Thử lại' })).toBeTruthy()
+  })
+})
+
+const withFields: MessagingPlatformInfo = {
+  id: 'telegram', name: 'Telegram', description: 'Bot chat', docs_url: 'https://x',
+  enabled: true, configured: false, state: 'not_configured', gateway_running: true,
+  env_vars: [
+    { key: 'TELEGRAM_BOT_TOKEN', prompt: 'Bot token', description: 'Token', is_password: true, is_set: false, required: true, advanced: false, redacted_value: null, url: null },
+  ],
+}
+
+describe('MessagingScreen config form', () => {
+  it('saves edited env via updatePlatform', async () => {
+    const spy = vi.spyOn(store, 'updatePlatform').mockResolvedValue(undefined)
+    $platforms.set([withFields])
+    $platformsStatus.set('ready')
+
+    render(<MessagingScreen />)
+    fireEvent.click(screen.getByTestId('ae-messaging-card'))
+    fireEvent.change(screen.getByLabelText('Bot token'), { target: { value: 'tok123' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Lưu' }))
+
+    expect(spy).toHaveBeenCalledWith('telegram', { env: { TELEGRAM_BOT_TOKEN: 'tok123' } })
+    spy.mockRestore()
   })
 })
