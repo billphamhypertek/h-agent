@@ -12,6 +12,7 @@ import {
   MEMORY_ROUTE,
   MESSAGING_ROUTE,
   NEW_CHAT_ROUTE,
+  OPS_ROUTE,
   PROFILES_ROUTE,
   SETTINGS_ROUTE,
   SKILLS_ROUTE
@@ -63,6 +64,7 @@ describe('command palette AETHER catalog', () => {
       CRON_ROUTE,
       DEV_ROUTE,
       INBOX_ROUTE,
+      OPS_ROUTE,
       PROFILES_ROUTE,
       AGENTS_ROUTE
     ]) {
@@ -95,6 +97,15 @@ describe('command palette AETHER catalog', () => {
     expect(inbox).toBeTruthy()
     inbox?.run?.()
     expect(navigate).toHaveBeenCalledWith(INBOX_ROUTE)
+  })
+
+  it('selecting the Ops item navigates to /ops', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const ops = aetherGoToItems(go, tStub).find(item => item.id === 'nav-ops')
+    expect(ops).toBeTruthy()
+    ops?.run?.()
+    expect(navigate).toHaveBeenCalledWith(OPS_ROUTE)
   })
 })
 
