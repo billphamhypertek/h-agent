@@ -6,6 +6,7 @@ import {
   ARTIFACTS_ROUTE,
   BRIEF_ROUTE,
   CRON_ROUTE,
+  DEV_ROUTE,
   HUD_ROUTE,
   MEMORY_ROUTE,
   MESSAGING_ROUTE,
@@ -59,6 +60,7 @@ describe('command palette AETHER catalog', () => {
       MESSAGING_ROUTE,
       ARTIFACTS_ROUTE,
       CRON_ROUTE,
+      DEV_ROUTE,
       PROFILES_ROUTE,
       AGENTS_ROUTE
     ]) {
@@ -73,6 +75,15 @@ describe('command palette AETHER catalog', () => {
     expect(memory).toBeTruthy()
     memory?.run?.()
     expect(navigate).toHaveBeenCalledWith(MEMORY_ROUTE)
+  })
+
+  it('selecting the Dev item navigates to /dev', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const dev = aetherGoToItems(go, tStub).find(item => item.id === 'nav-dev')
+    expect(dev).toBeTruthy()
+    dev?.run?.()
+    expect(navigate).toHaveBeenCalledWith(DEV_ROUTE)
   })
 })
 

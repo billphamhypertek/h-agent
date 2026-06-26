@@ -57,6 +57,7 @@ import {
   BRIEF_ROUTE,
   COMMAND_CENTER_ROUTE,
   CRON_ROUTE,
+  DEV_ROUTE,
   HUD_ROUTE,
   MEMORY_ROUTE,
   MESSAGING_ROUTE,
@@ -227,6 +228,7 @@ export function aetherGoToItems(go: (path: string) => () => void, t: ReturnType<
       run: go(NEW_CHAT_ROUTE)
     },
     { icon: Activity, id: 'nav-home', keywords: ['home', 'hud', 'trang chủ', 'command center'], label: 'Trang chủ', run: go(HUD_ROUTE) },
+    { icon: Cpu, id: 'nav-dev', keywords: ['dev', 'devops', 'server', 'deploy', 'cockpit'], label: 'Dev', run: go(DEV_ROUTE) },
     { icon: FileText, id: 'nav-brief', keywords: ['brief', 'morning', 'brief sáng', 'tóm tắt'], label: 'Brief sáng', run: go(BRIEF_ROUTE) },
     {
       action: 'view.showTerminal',
