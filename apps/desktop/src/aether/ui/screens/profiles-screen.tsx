@@ -5,6 +5,8 @@ import {
   $activeProfile,
   $profiles,
   $profilesStatus,
+  $profileSoul,
+  $profileSoulStatus,
   loadProfiles
 } from '@/aether/domain/profiles/profiles-store'
 // NOTE: mutation actions are called via this namespace import (not named
@@ -34,6 +36,9 @@ export function ProfilesScreen() {
   const [renaming, setRenaming] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const soul = useStore($profileSoul)
+  const soulStatus = useStore($profileSoulStatus)
+  const [soulDraft, setSoulDraft] = useState('')
 
   useEffect(() => {
     if ($profilesStatus.get() === 'idle') { void loadProfiles() }
@@ -41,6 +46,14 @@ export function ProfilesScreen() {
 
   const rows: ProfileInfo[] = profiles ?? []
   const selectedName = selected ?? active
+
+  useEffect(() => {
+    if (selectedName) { void profilesStore.loadProfileSoul(selectedName) }
+  }, [selectedName])
+
+  useEffect(() => {
+    setSoulDraft(soul?.content ?? '')
+  }, [soul])
 
   return (
     <div className="ae-screen-bare flex h-full min-w-0 flex-col">
@@ -240,6 +253,38 @@ export function ProfilesScreen() {
                     Huỷ
                   </button>
                 </div>
+              </div>
+            )}
+
+            {selectedName && (
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
+                  SOUL (BỐI CẢNH)
+                </span>
+                {soulStatus === 'loading' && (
+                  <div className="h-[120px] animate-pulse rounded-[11px] bg-[rgba(120,195,245,.06)]" />
+                )}
+                {soulStatus === 'error' && (
+                  <span className="text-[12px] text-[color:var(--ae-warn)]">Không tải được soul.</span>
+                )}
+                {soulStatus === 'ready' && (
+                  <>
+                    <textarea
+                      className="min-h-[120px] w-full resize-y rounded-[11px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] p-2.5 text-[12px] leading-[1.5] text-white"
+                      data-testid="ae-soul-editor"
+                      onChange={e => setSoulDraft(e.target.value)}
+                      value={soulDraft}
+                    />
+                    <button
+                      className="self-start rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                      disabled={soulDraft === (soul?.content ?? '')}
+                      onClick={() => void profilesStore.saveProfileSoul(selectedName, soulDraft)}
+                      type="button"
+                    >
+                      Lưu soul
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

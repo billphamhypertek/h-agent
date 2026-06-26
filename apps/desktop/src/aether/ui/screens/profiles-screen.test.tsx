@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as store from '@/aether/domain/profiles/profiles-store'
-import { $activeProfile, $profiles, $profilesStatus } from '@/aether/domain/profiles/profiles-store'
+import { $activeProfile, $profiles, $profilesStatus, $profileSoul, $profileSoulStatus } from '@/aether/domain/profiles/profiles-store'
 import type { ProfileInfo } from '@/types/aether'
 
 import { ProfilesScreen } from './profiles-screen'
@@ -79,5 +79,30 @@ describe('ProfilesScreen mutations', () => {
     fireEvent.click(screen.getByRole('button', { name: /Xác nhận xoá/ }))
     expect(spy).toHaveBeenCalledWith('coder')
     spy.mockRestore()
+  })
+})
+
+describe('ProfilesScreen soul editor', () => {
+  it('renders the soul content for the selected profile and saves edits', () => {
+    $activeProfile.set('coder')
+    $profileSoul.set({ content: 'Bạn là trợ lý.', exists: true })
+    $profileSoulStatus.set('ready')
+    // loadProfileSoul fires from the select effect; stub it so the real REST
+    // call doesn't run (no mockApi here) and clobber the pre-set 'ready' status.
+    const loadSpy = vi.spyOn(store, 'loadProfileSoul').mockResolvedValue()
+    const spy = vi.spyOn(store, 'saveProfileSoul').mockResolvedValue()
+
+    render(<ProfilesScreen />)
+    fireEvent.click(screen.getByTestId('ae-profile-row-coder'))
+
+    const textarea = screen.getByTestId('ae-soul-editor') as HTMLTextAreaElement
+    expect(textarea.value).toBe('Bạn là trợ lý.')
+
+    fireEvent.change(textarea, { target: { value: 'Bạn là kỹ sư.' } })
+    fireEvent.click(screen.getByRole('button', { name: /Lưu soul/ }))
+
+    expect(spy).toHaveBeenCalledWith('coder', 'Bạn là kỹ sư.')
+    spy.mockRestore()
+    loadSpy.mockRestore()
   })
 })

@@ -1,15 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ProfileInfo } from '@/types/aether'
+import type { ProfileInfo, ProfileSoul } from '@/types/aether'
 
 import {
   $activeProfile,
   $profiles,
   $profilesStatus,
+  $profileSoul,
+  $profileSoulStatus,
   createProfileAction,
   deleteProfileAction,
   loadProfiles,
-  renameProfileAction
+  loadProfileSoul,
+  renameProfileAction,
+  saveProfileSoul
 } from './profiles-store'
 
 const ROWS: ProfileInfo[] = [
@@ -111,5 +115,49 @@ describe('profile mutations call REST then re-fetch', () => {
       path: '/api/profiles/coder',
       method: 'DELETE'
     }))
+  })
+})
+
+describe('soul editor sub-store', () => {
+  beforeEach(() => {
+    $profileSoul.set(null)
+    $profileSoulStatus.set('idle')
+  })
+
+  it('loadProfileSoul GETs /soul and stores content', async () => {
+    const soul: ProfileSoul = { content: 'Bạn là trợ lý.', exists: true }
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/coder/soul') { return soul }
+      throw new Error(`unexpected ${req.path}`)
+    })
+
+    await loadProfileSoul('coder')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({ path: '/api/profiles/coder/soul' }))
+    expect($profileSoul.get()).toEqual(soul)
+    expect($profileSoulStatus.get()).toBe('ready')
+  })
+
+  it('saveProfileSoul PUTs content then re-loads', async () => {
+    const api = mockApi(req => {
+      if (req.path === '/api/profiles/coder/soul' && req.method === 'PUT') { return { ok: true } }
+      if (req.path === '/api/profiles/coder/soul') { return { content: 'updated', exists: true } }
+      throw new Error(`unexpected ${req.method ?? 'GET'} ${req.path}`)
+    })
+
+    await saveProfileSoul('coder', 'updated')
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/api/profiles/coder/soul',
+      method: 'PUT',
+      body: { content: 'updated' }
+    }))
+    expect($profileSoul.get()?.content).toBe('updated')
+  })
+
+  it('loadProfileSoul sets error on failure', async () => {
+    mockApi(() => { throw new Error('nope') })
+    await loadProfileSoul('coder')
+    expect($profileSoulStatus.get()).toBe('error')
   })
 })
