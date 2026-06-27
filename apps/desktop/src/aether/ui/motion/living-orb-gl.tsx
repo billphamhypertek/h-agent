@@ -5,7 +5,13 @@ import { Color, ShaderMaterial } from 'three'
 import type { OrbState } from '@/aether/domain/motion/motion-store'
 import { AETHER_ORB_FRAG, AETHER_ORB_VERT } from './shaders/orb'
 
-const STATE_VALUE: Record<OrbState, number> = { thinking: 1, idle: 0, paused: 0.4 }
+export const STATE_VALUE: Record<OrbState, number> = {
+  idle: 0,
+  paused: 0.4,
+  listening: 0.7,
+  speaking: 0.9,
+  thinking: 1,
+}
 
 export function LivingOrbGL({ state = 'idle', size = 1 }: { state?: OrbState; size?: number }) {
   const matRef = useRef<ShaderMaterial>(null)
