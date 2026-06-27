@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ChatMessage } from '@/lib/chat-messages'
 import { $messages } from '@/store/session'
@@ -11,10 +11,16 @@ import { $voiceActive, $voiceListening, $voiceSession } from '@/aether/domain/vo
 
 import { VoiceScreen } from './voice-screen'
 
+// VoiceScreen calls useNavigate(); a bare render with no Router context would
+// throw. Mock only useNavigate, preserve the rest of react-router-dom.
+const navigateMock = vi.fn()
+vi.mock('react-router-dom', async orig => ({ ...(await orig<typeof import('react-router-dom')>()), useNavigate: () => navigateMock }))
+
 const msg = (id: string, role: ChatMessage['role'], text: string): ChatMessage => ({ id, role, parts: [{ type: 'text', text }] })
 
 afterEach(() => {
   cleanup()
+  navigateMock.mockReset()
   $messages.set([])
   $voiceActive.set(false)
   $voiceListening.set(false)
@@ -55,6 +61,12 @@ describe('VoiceScreen', () => {
   it('renders an honest empty hint when there is no conversation yet', () => {
     render(<VoiceScreen />)
     expect(screen.getByTestId('ae-voice-empty')).toBeTruthy()
+  })
+
+  it('navigates in-app to Settings → Voice (HashRouter-safe, not a raw href)', () => {
+    render(<VoiceScreen />)
+    fireEvent.click(screen.getByText('Settings → Voice'))
+    expect(navigateMock).toHaveBeenCalledWith('/settings?tab=config:voice')
   })
 
   it('is presentation-only: source never imports the voice loop or send-path', () => {

@@ -40,6 +40,8 @@ describe('$voiceActive enable flag', () => {
 })
 
 describe('$voiceSession published view', () => {
+  beforeEach(() => $voiceSession.set({ status: 'idle', level: 0, muted: false }))
+
   it('defaults to idle/0/unmuted', () => {
     expect($voiceSession.get()).toEqual({ status: 'idle', level: 0, muted: false })
   })

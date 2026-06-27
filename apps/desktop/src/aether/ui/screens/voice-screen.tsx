@@ -1,14 +1,17 @@
 // src/aether/ui/screens/voice-screen.tsx
 import { useStore } from '@nanostores/react'
+import { useNavigate } from 'react-router-dom'
 
 import { $orbState } from '@/aether/domain/motion/motion-store'
+import type { VoiceSessionStatus } from '@/aether/domain/voice/voice-presence'
 import { $voiceActive, $voiceSession, toggleVoiceActive } from '@/aether/domain/voice/voice-presence'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
+import { SETTINGS_ROUTE } from '@/app/routes'
 import { chatMessageText } from '@/lib/chat-messages'
 import { $messages } from '@/store/session'
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABEL: Record<VoiceSessionStatus, string> = {
   idle: 'Sẵn sàng',
   listening: 'Đang nghe…',
   transcribing: 'Đang phiên âm…',
@@ -17,6 +20,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 export function VoiceScreen() {
+  const navigate = useNavigate()
   const orbState = useStore($orbState)
   const session = useStore($voiceSession)
   const active = useStore($voiceActive)
@@ -60,11 +64,15 @@ export function VoiceScreen() {
           {active ? 'Dừng' : 'Nghe'}
         </button>
         <div className="h-[6px] w-[120px] overflow-hidden rounded-full bg-[rgba(120,200,255,.16)]" data-testid="ae-voice-level">
-          <div className="h-full bg-[color:var(--ae-azure)]" style={{ width: `${Math.round(Math.min(1, session.level) * 100)}%` }} />
+          <div className="h-full bg-[color:var(--ae-azure)]" style={{ width: `${Math.round(Math.max(0, Math.min(1, session.level)) * 100)}%` }} />
         </div>
-        <a className="text-[11.5px] text-[color:var(--ae-dim)] underline" href="/settings?tab=config:voice">
+        <button
+          className="text-[11.5px] text-[color:var(--ae-dim)] underline"
+          onClick={() => navigate(`${SETTINGS_ROUTE}?tab=config:voice`)}
+          type="button"
+        >
           Settings → Voice
-        </a>
+        </button>
       </div>
     </div>
   )
