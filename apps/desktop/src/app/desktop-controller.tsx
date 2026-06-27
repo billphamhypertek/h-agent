@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { AetherShell } from '@/aether'
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { loadBriefing } from '@/aether/domain/briefing/briefing-store'
+import { useVoiceSession } from '@/aether/domain/voice/use-voice-session'
 import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
@@ -723,6 +724,11 @@ export function DesktopController() {
     sttEnabled,
     updateSessionState
   })
+
+  // SP-3: run the hands-free voice loop app-globally so the /voice screen can be
+  // pure presentation. submitText/transcribeVoiceAudio come from usePromptActions
+  // above; the loop only runs while $voiceActive is set by the Voice screen.
+  useVoiceSession({ submitText, transcribeVoiceAudio })
 
   // The popped-out pet drives two actions back into the app: send a prompt, and
   // open the most recent thread. Both are registered ONCE through refs that track
