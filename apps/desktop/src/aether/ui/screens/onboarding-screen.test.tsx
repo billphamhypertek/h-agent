@@ -43,3 +43,17 @@ describe('AetherOnboarding gate', () => {
     expect(spy).toHaveBeenCalled()
   })
 })
+
+describe('AetherOnboarding finish', () => {
+  it('confirming_model → "Bắt đầu" calls confirmOnboardingModel', () => {
+    const spy = vi.spyOn(onboarding, 'confirmOnboardingModel').mockImplementation(() => {})
+    onboarding.$desktopOnboarding.set({
+      ...base,
+      configured: false,
+      flow: { status: 'confirming_model', currentModel: 'nous-1', label: 'Nous', providerSlug: 'nous', saving: false },
+    })
+    render(<AetherOnboarding enabled requestGateway={vi.fn()} />)
+    fireEvent.click(screen.getByTestId('ae-onboarding-begin'))
+    expect(spy).toHaveBeenCalled()
+  })
+})
