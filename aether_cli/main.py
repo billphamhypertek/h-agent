@@ -524,6 +524,7 @@ load_aether_dotenv(project_env=PROJECT_ROOT / ".env")
 # separate config.yaml reads (saves ~17ms on every CLI startup — the second
 # `load_config()` was doing a full deep-merge for one boolean lookup).
 _FORCE_IPV4_EARLY = False
+_AUTO_IPV4_EARLY = True  # opt-out via network.auto_ipv4_fallback: false
 try:
     import yaml as _yaml_early
 
@@ -548,12 +549,22 @@ try:
                 if _early_redact is not None:
                     os.environ["AETHER_REDACT_SECRETS"] = str(_early_redact).lower()
         _early_net_cfg = _early_cfg_raw.get("network", {})
-        if isinstance(_early_net_cfg, dict) and _early_net_cfg.get("force_ipv4"):
-            _FORCE_IPV4_EARLY = True
+        if isinstance(_early_net_cfg, dict):
+            if _early_net_cfg.get("force_ipv4"):
+                _FORCE_IPV4_EARLY = True
+            if _early_net_cfg.get("auto_ipv4_fallback") is False:
+                _AUTO_IPV4_EARLY = False
         del _early_cfg_raw
     del _cfg_path
 except Exception:
     pass  # best-effort — redaction stays at default (enabled) on config errors
+
+# GUI/dashboard backends (the desktop app's spawned server, `aether gui`) are
+# long-running and bootstrap with GUI logging mode. We also gate the IPv6 egress
+# probe below on this so short-lived CLI commands never pay for it.
+_IS_GUI_BACKEND = next(
+    (arg for arg in sys.argv[1:] if not arg.startswith("-")), ""
+) in {"dashboard", "gui", "desktop"}
 
 # Initialize centralized file logging early — all `aether` subcommands
 # (chat, setup, gateway, config, etc.) write to agent.log + errors.log.
@@ -562,14 +573,7 @@ except Exception:
 try:
     from aether_logging import setup_logging as _setup_logging
 
-    _setup_logging(
-        mode=(
-            "gui"
-            if next((arg for arg in sys.argv[1:] if not arg.startswith("-")), "")
-            in {"dashboard", "gui", "desktop"}
-            else "cli"
-        )
-    )
+    _setup_logging(mode="gui" if _IS_GUI_BACKEND else "cli")
 except Exception:
     pass  # best-effort — don't crash the CLI if logging setup fails
 
@@ -583,6 +587,26 @@ if _FORCE_IPV4_EARLY:
         _apply_ipv4(force=True)
     except Exception:
         pass  # best-effort — don't crash if aether_constants not importable yet
+elif _AUTO_IPV4_EARLY and _IS_GUI_BACKEND:
+    # Not force-pinned: auto-enable IPv4 on GUI/dashboard backends whose host
+    # advertises IPv6 but can't actually route it. Otherwise model-catalog /
+    # models.dev fetches stall 15-45s per call (Python has no happy-eyeballs)
+    # and blow past the desktop's 15s IPC timeout, erroring every screen. The
+    # probe is a ~1.5s-budget TCP connect, only on these long-running backends.
+    try:
+        from aether_constants import apply_ipv4_preference as _apply_ipv4
+        from aether_constants import ipv6_egress_broken as _ipv6_egress_broken
+
+        if _ipv6_egress_broken():
+            _apply_ipv4(force=True)
+            import logging as _logging_ipv4
+
+            _logging_ipv4.getLogger("aether_cli.network").warning(
+                "IPv6 egress appears broken; auto-enabled IPv4 preference. "
+                "Set network.auto_ipv4_fallback: false in config.yaml to opt out."
+            )
+    except Exception:
+        pass  # best-effort — never block startup on the probe
 
 import logging
 import threading

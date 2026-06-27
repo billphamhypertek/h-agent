@@ -725,6 +725,65 @@ def apply_ipv4_preference(force: bool = False) -> None:
     socket.getaddrinfo = _ipv4_getaddrinfo  # type: ignore[assignment]
 
 
+# Public IPv6 anycast resolvers (Cloudflare, then Google), reached over TLS/443.
+# Used ONLY to test whether outbound IPv6 connects — no payload is sent. Stable,
+# globally routable literals so the probe never depends on DNS (which is itself
+# what breaks under bad IPv6).
+_IPV6_PROBE_TARGETS = (
+    ("2606:4700:4700::1111", 443),
+    ("2001:4860:4860::8888", 443),
+)
+
+
+def _probe_ipv6_target(host: str, port: int, timeout: float) -> str:
+    """Attempt a bare IPv6 TCP connect. Returns ``"ok"``/``"fail"``/``"no_stack"``."""
+    import socket
+
+    try:
+        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    except OSError:
+        return "no_stack"  # host has no usable IPv6 stack — nothing to probe
+    try:
+        sock.settimeout(timeout)
+        sock.connect((host, port))
+        return "ok"
+    except OSError:
+        return "fail"  # stack exists but the route is dead / unreachable
+    finally:
+        try:
+            sock.close()
+        except OSError:
+            pass
+
+
+def ipv6_egress_broken(targets=_IPV6_PROBE_TARGETS, timeout: float = 1.5, _connect=None) -> bool:
+    """Return True when this host advertises IPv6 but cannot actually route it.
+
+    Networks that hand out AAAA records yet drop IPv6 egress make Python's
+    getaddrinfo-ordered HTTP clients (requests/urllib/httpx — none do RFC 8305
+    "happy eyeballs") stall ~15-45s per call before falling back to IPv4. That
+    is exactly what makes a dashboard backend's model-catalog fetches blow past
+    the desktop's 15s IPC timeout. Detecting it lets the caller pre-emptively
+    enable IPv4 preference (see :func:`apply_ipv4_preference`).
+
+    Returns False when IPv6 works (any probe connects) or when there is no IPv6
+    stack at all (nothing to fall back from — plain IPv4 is already fast). Only
+    True when an IPv6 socket opens but every probe fails to connect.
+
+    ``_connect`` is injectable for testing; it must return one of
+    ``"ok"`` / ``"fail"`` / ``"no_stack"``.
+    """
+    connect = _connect or _probe_ipv6_target
+    saw_stack = False
+    for host, port in targets:
+        status = connect(host, port, timeout)
+        if status == "ok":
+            return False
+        if status == "fail":
+            saw_stack = True
+    return saw_stack
+
+
 # ─── Streaming Response Constants ────────────────────────────────────────────
 
 # Response ID for partial stream stubs used during error recovery

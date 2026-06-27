@@ -2518,6 +2518,12 @@ DEFAULT_CONFIG = {
         # Python tries AAAA records first and hangs for the full TCP timeout
         # before falling back to IPv4.  Set to true to skip IPv6 entirely.
         "force_ipv4": False,
+        # Auto-fallback to IPv4 when IPv6 egress is detected as broken.  A quick
+        # startup probe (GUI/dashboard backends only) decides this, so hosts on
+        # networks that advertise AAAA records but can't route IPv6 self-heal
+        # without the user knowing about ``force_ipv4``.  Set to false to opt out
+        # (e.g. IPv6-only hosts that don't want the probe).
+        "auto_ipv4_fallback": True,
     },
 
     # Gateway settings — control how messaging platforms (Telegram, Discord,

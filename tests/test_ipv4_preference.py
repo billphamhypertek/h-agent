@@ -110,3 +110,45 @@ class TestConfigDefault:
         from aether_cli.config import DEFAULT_CONFIG
         assert "network" in DEFAULT_CONFIG
         assert DEFAULT_CONFIG["network"]["force_ipv4"] is False
+
+    def test_auto_ipv4_fallback_default_true(self):
+        """Auto-fallback is opt-out: on by default so broken-IPv6 hosts self-heal."""
+        from aether_cli.config import DEFAULT_CONFIG
+        assert DEFAULT_CONFIG["network"]["auto_ipv4_fallback"] is True
+
+
+class TestIPv6EgressBroken:
+    """Tests for ipv6_egress_broken() — the broken-IPv6 auto-detector.
+
+    The detector decides whether to auto-enable IPv4 preference. Network access
+    is injected via ``_connect`` so the decision logic is tested without sockets.
+    ``_connect(host, port, timeout)`` returns one of "ok" / "fail" / "no_stack".
+    """
+
+    def test_broken_when_stack_present_but_all_probes_fail(self):
+        """IPv6 socket opens but no probe connects → broken (force IPv4)."""
+        from aether_constants import ipv6_egress_broken
+        assert ipv6_egress_broken(_connect=lambda h, p, t: "fail") is True
+
+    def test_healthy_when_any_probe_connects(self):
+        """At least one IPv6 probe connects → IPv6 works → not broken."""
+        from aether_constants import ipv6_egress_broken
+        results = iter(["fail", "ok"])
+        assert ipv6_egress_broken(_connect=lambda h, p, t: next(results)) is False
+
+    def test_not_broken_when_no_ipv6_stack(self):
+        """No IPv6 stack at all → nothing to fall back from → not broken."""
+        from aether_constants import ipv6_egress_broken
+        assert ipv6_egress_broken(_connect=lambda h, p, t: "no_stack") is False
+
+    def test_probes_stop_early_on_first_success(self):
+        """Short-circuits — a working IPv6 target avoids probing the rest."""
+        from aether_constants import ipv6_egress_broken
+        calls = []
+
+        def _connect(host, port, timeout):
+            calls.append(host)
+            return "ok"
+
+        ipv6_egress_broken(targets=(("a", 443), ("b", 443)), _connect=_connect)
+        assert calls == ["a"]
