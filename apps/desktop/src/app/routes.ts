@@ -19,12 +19,15 @@ export const CONTENT_ROUTE = '/content'
 export type AppView =
   | 'agents'
   | 'artifacts'
+  | 'brief'
   | 'chat'
   | 'command-center'
   | 'content'
   | 'cron'
   | 'dev'
+  | 'hud'
   | 'inbox'
+  | 'memory'
   | 'messaging'
   | 'ops'
   | 'profiles'
@@ -34,11 +37,14 @@ export type AppView =
 export type AppRouteId =
   | 'agents'
   | 'artifacts'
+  | 'brief'
   | 'command-center'
   | 'content'
   | 'cron'
   | 'dev'
+  | 'hud'
   | 'inbox'
+  | 'memory'
   | 'messaging'
   | 'new'
   | 'ops'
@@ -62,6 +68,12 @@ export const APP_ROUTES = [
   { id: 'cron', path: CRON_ROUTE, view: 'cron' },
   { id: 'profiles', path: PROFILES_ROUTE, view: 'profiles' },
   { id: 'agents', path: AGENTS_ROUTE, view: 'agents' },
+  // Full-screen shell routes (aether-shell.tsx). They must be listed here so
+  // RESERVED_PATHS covers them — otherwise routeSessionId() treats e.g. /brief
+  // as a session id and the chat view loops on GET /api/sessions/brief (404).
+  { id: 'hud', path: HUD_ROUTE, view: 'hud' },
+  { id: 'brief', path: BRIEF_ROUTE, view: 'brief' },
+  { id: 'memory', path: MEMORY_ROUTE, view: 'memory' },
   { id: 'dev', path: DEV_ROUTE, view: 'dev' },
   { id: 'inbox', path: INBOX_ROUTE, view: 'inbox' },
   { id: 'ops', path: OPS_ROUTE, view: 'ops' },
