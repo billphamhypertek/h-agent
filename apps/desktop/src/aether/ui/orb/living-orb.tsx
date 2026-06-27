@@ -1,12 +1,12 @@
 // apps/desktop/src/aether/ui/orb/living-orb.tsx
 import { useStore } from '@nanostores/react'
 
-import { $orbState } from '@/aether/domain/motion/motion-store'
+import { $orbState, type OrbState } from '@/aether/domain/motion/motion-store'
 import { cn } from '@/lib/utils'
 
 export interface LivingOrbProps {
   /** Force a specific state (Boot uses this). When omitted, the orb tracks the runtime `$orbState`. */
-  state?: 'idle' | 'thinking' | 'listening' | 'paused'
+  state?: OrbState
   size?: number
   label?: string
   className?: string

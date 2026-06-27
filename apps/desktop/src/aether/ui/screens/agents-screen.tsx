@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 
 import { $agents, $agentsStatus } from '@/aether/domain/agents/agents-store'
 import * as agentsStore from '@/aether/domain/agents/agents-store'
-import { $orbState } from '@/aether/domain/motion/motion-store'
+import { $orbState, type OrbState } from '@/aether/domain/motion/motion-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 function ReadOnlyBadge() {
@@ -14,13 +14,17 @@ function ReadOnlyBadge() {
   )
 }
 
-const ORB_LABEL: Record<'thinking' | 'idle' | 'paused', string> = {
+const ORB_LABEL: Record<OrbState, string> = {
+  speaking: 'Đang trả lời',
+  listening: 'Đang nghe',
   thinking: 'Đang xử lý',
   idle: 'Sẵn sàng',
   paused: 'Mất kết nối',
 }
 
-const ORB_COLOR: Record<'thinking' | 'idle' | 'paused', string> = {
+const ORB_COLOR: Record<OrbState, string> = {
+  speaking: 'var(--ae-azure-bright)',
+  listening: 'var(--ae-azure-soft)',
   thinking: 'var(--ae-azure)',
   idle: 'var(--ae-ok)',
   paused: 'var(--ae-warn)',

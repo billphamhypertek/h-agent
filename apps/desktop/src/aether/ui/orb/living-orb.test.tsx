@@ -1,9 +1,21 @@
 // apps/desktop/src/aether/ui/orb/living-orb.test.tsx
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
+
+import type { OrbState } from '@/aether/domain/motion/motion-store'
+
 import { LivingOrb } from './living-orb'
 
 afterEach(cleanup)
+
+const ALL_STATES: OrbState[] = ['speaking', 'listening', 'thinking', 'idle', 'paused']
+
+describe('LivingOrb forced state → class', () => {
+  it.each(ALL_STATES)('renders ae-orb--%s for a forced state', state => {
+    render(<LivingOrb state={state} />)
+    expect(screen.getByRole('status').className).toContain(`ae-orb--${state}`)
+  })
+})
 
 describe('LivingOrb', () => {
   it('renders an accessible status with the state label', () => {
