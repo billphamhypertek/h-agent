@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, OPS_ROUTE } from '@/app/routes'
+import { BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, OPS_ROUTE, VOICE_ROUTE } from '@/app/routes'
 
 export interface NavItem {
   id: string
@@ -29,4 +29,5 @@ export const AETHER_NAV_ITEMS: NavItem[] = [
   { id: 'inbox', route: INBOX_ROUTE, label: 'Inbox', icon: I('M4 6h16v12H4zM4 7l8 6 8-6') },
   { id: 'ops', route: OPS_ROUTE, label: 'Vận hành', icon: I('M4 19h16M6 19V9m4 10V5m4 14v-7m4 7V8') },
   { id: 'content', route: CONTENT_ROUTE, label: 'Content', icon: I('M4 5h16v14H4zM4 9h16M9 9v10') },
+  { id: 'voice', route: VOICE_ROUTE, label: 'Voice', icon: I('M12 4v10m0 0a3 3 0 0 0 3-3V7a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3zM6 11a6 6 0 0 0 12 0M12 17v3') },
 ]

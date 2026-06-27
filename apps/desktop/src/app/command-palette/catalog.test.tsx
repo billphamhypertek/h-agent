@@ -16,7 +16,8 @@ import {
   OPS_ROUTE,
   PROFILES_ROUTE,
   SETTINGS_ROUTE,
-  SKILLS_ROUTE
+  SKILLS_ROUTE,
+  VOICE_ROUTE
 } from '@/app/routes'
 
 import { aetherActionItems, aetherGoToItems } from './index'
@@ -50,6 +51,7 @@ describe('command palette AETHER catalog', () => {
     const routes = aetherGoToItems(go, tStub).map(item => {
       navigate.mockClear()
       item.run?.()
+
       return navigate.mock.calls[0]?.[0]
     })
 
@@ -67,6 +69,7 @@ describe('command palette AETHER catalog', () => {
       INBOX_ROUTE,
       OPS_ROUTE,
       CONTENT_ROUTE,
+      VOICE_ROUTE,
       PROFILES_ROUTE,
       AGENTS_ROUTE
     ]) {
@@ -117,6 +120,15 @@ describe('command palette AETHER catalog', () => {
     expect(content).toBeTruthy()
     content?.run?.()
     expect(navigate).toHaveBeenCalledWith(CONTENT_ROUTE)
+  })
+
+  it('selecting the Voice item navigates to /voice', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const voice = aetherGoToItems(go, tStub).find(item => item.id === 'nav-voice')
+    expect(voice).toBeTruthy()
+    voice?.run?.()
+    expect(navigate).toHaveBeenCalledWith(VOICE_ROUTE)
   })
 })
 

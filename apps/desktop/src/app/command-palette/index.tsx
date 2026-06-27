@@ -4,11 +4,11 @@ import { Dialog as DialogPrimitive } from 'radix-ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { getAetherConfigRecord, listAllProfileSessions } from '@/aether-api'
 import { HUD_HEADING, HUD_ITEM, HUD_POSITION, HUD_SURFACE, HUD_TEXT } from '@/app/floating-hud'
 import { setTerminalTakeover } from '@/app/right-sidebar/store'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { KbdCombo } from '@/components/ui/kbd'
-import { getAetherConfigRecord, listAllProfileSessions } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { sessionTitle } from '@/lib/chat-runtime'
 import {
@@ -27,6 +27,7 @@ import {
   Info,
   KeyRound,
   MessageCircle,
+  Mic,
   Monitor,
   Moon,
   Package,
@@ -68,7 +69,8 @@ import {
   PROFILES_ROUTE,
   sessionRoute,
   SETTINGS_ROUTE,
-  SKILLS_ROUTE
+  SKILLS_ROUTE,
+  VOICE_ROUTE
 } from '../routes'
 import { FIELD_LABELS, SECTIONS } from '../settings/constants'
 import { fieldCopyForSchemaKey } from '../settings/field-copy'
@@ -235,6 +237,13 @@ export function aetherGoToItems(go: (path: string) => () => void, t: ReturnType<
     { icon: MessageCircle, id: 'nav-inbox', keywords: ['inbox', 'email', 'crm', 'deal', 'pipeline'], label: 'Inbox', run: go(INBOX_ROUTE) },
     { icon: BarChart3, id: 'nav-ops', keywords: ['ops', 'vận hành', 'finance', 'tài chính', 'lịch', 'task'], label: 'Vận hành', run: go(OPS_ROUTE) },
     { icon: FileText, id: 'nav-content', keywords: ['content', 'nội dung', 'calendar', 'lịch', 'idea', 'post'], label: 'Content', run: go(CONTENT_ROUTE) },
+    {
+      icon: Mic,
+      id: 'nav-voice',
+      keywords: ['voice', 'giọng nói', 'nghe', 'hands-free'],
+      label: 'Voice',
+      run: go(VOICE_ROUTE),
+    },
     { icon: FileText, id: 'nav-brief', keywords: ['brief', 'morning', 'brief sáng', 'tóm tắt'], label: 'Brief sáng', run: go(BRIEF_ROUTE) },
     {
       action: 'view.showTerminal',

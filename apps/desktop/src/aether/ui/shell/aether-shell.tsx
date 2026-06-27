@@ -5,9 +5,9 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { useBootProgress } from '@/aether/domain/boot/use-boot-progress'
 import { useConnectionStatus } from '@/aether/domain/connection/use-connection-status'
+import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { AetherCanvas } from '@/aether/ui/motion/aether-canvas'
 import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
-import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { AgentsScreen } from '@/aether/ui/screens/agents-screen'
 import { ArtifactsScreen } from '@/aether/ui/screens/artifacts-screen'
 import { BootSequence } from '@/aether/ui/screens/boot-sequence'
@@ -25,8 +25,9 @@ import { ProfilesScreen } from '@/aether/ui/screens/profiles-screen'
 import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
 import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { StubScreen } from '@/aether/ui/screens/stub-screen'
+import { VoiceScreen } from '@/aether/ui/screens/voice-screen'
 import { CommandPalette } from '@/app/command-palette'
-import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PROFILES_ROUTE } from '@/app/routes'
+import { ARTIFACTS_ROUTE, BRIEF_ROUTE, COMMAND_CENTER_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
 import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
@@ -73,6 +74,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<MessagingScreen />} path={MESSAGING_ROUTE.slice(1)} />
               <Route element={<OpsScreen />} path={OPS_ROUTE.slice(1)} />
               <Route element={<ContentScreen />} path={CONTENT_ROUTE.slice(1)} />
+              <Route element={<VoiceScreen />} path={VOICE_ROUTE.slice(1)} />
               <Route element={<ProfilesScreen />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<SettingsScreen />} path="settings" />
               <Route element={<SkillsScreen />} path="skills" />
