@@ -8,6 +8,8 @@
 
 **Tech Stack:** React 18, nanostores, `@testing-library/react`, vitest + jsdom. Reused runtime: `useVoiceConversation` (`src/app/chat/composer/hooks/`), `$voicePlayback` (`src/store/voice-playback.ts`), `usePromptActions` (`src/app/session/hooks/`).
 
+> **Codebase-verified (2026-06-27).** Every anchor below was checked against the live tree: `useVoiceConversation` params/return + self-start effect (`use-voice-conversation.ts:377–387`); `usePromptActions` exposes `submitText`/`transcribeVoiceAudio` (`desktop-controller.tsx:702–725`); `pendingResponse`/`consumePendingResponse`/`submitVoiceTurn` (`composer/index.tsx:1797–1846`); Slice-1 `voice-presence.ts` (`$voiceListening`/`setVoiceListening`), `OrbState` already includes `listening`/`speaking`, `$orbState` is a read-only `computed`; `LivingOrb` props `{ state, size, label }` + `role="status"`; `GlassSlab` `size: 'sm' | 'md' | 'lg'`; tokens `--ae-azure` / `--ae-azure-soft` / `--ae-dim` (`aether.css`); routes/nav/shell shapes. Corrections folded into this draft: command-palette icons come from `@/lib/icons` (which re-exports `Mic`), **not** `lucide-react`; the Settings deep-link is `?tab=config:voice` (not `?tab=voice`); the catalog test (`catalog.test.tsx`) must gain a `nav-voice` entry (Task 5 Step 7); the orb-state test now drives `$voiceListening` instead of poking the read-only `computed`.
+
 ## Global Constraints
 
 - **0 changes to Python core** (`aether_cli/*`, gateway handlers). Renderer-only; the `voice.*` gateway handlers already exist. (SP-3 spec §2/§3)
@@ -33,7 +35,8 @@
 - `src/app/routes.ts` — **MODIFY.** `VOICE_ROUTE='/voice'`; `AppView`/`AppRouteId` += `'voice'`; `APP_ROUTES` entry.
 - `src/aether/ui/shell/nav-items.tsx` — **MODIFY.** Voice nav item.
 - `src/aether/ui/shell/aether-shell.tsx` — **MODIFY.** `<Route>` for `/voice`.
-- `src/app/command-palette/index.tsx` — **MODIFY.** "Voice" go-to entry.
+- `src/app/command-palette/index.tsx` — **MODIFY.** "Voice" go-to entry (icon `Mic` from `@/lib/icons`).
+- `src/app/command-palette/catalog.test.tsx` — **MODIFY (test).** Add `VOICE_ROUTE` to the "every route" loop + a `nav-voice` navigate test.
 
 Dependency order: **T1 voice-presence stores** → **T2 useVoiceSession** → **T3 mount in controller** → **T4 voice-screen** → **T5 route/nav/shell/⌘K wiring**.
 
@@ -136,7 +139,7 @@ git commit -m "feat(aether): voice-presence gains \$voiceActive + \$voiceSession
 - Consumes: `useVoiceConversation` from `@/app/chat/composer/hooks/use-voice-conversation` (params `{ busy, enabled, onFatalError, onSubmit, onTranscribeAudio, pendingResponse, consumePendingResponse }`; returns `{ end, level, muted, start, status, stopTurn, toggleMute }`); `$busy`/`$messages` from `@/store/session`; `chatMessageText` from `@/lib/chat-messages`; `$voiceActive`/`setVoiceActive`/`setVoiceListening`/`setVoiceSession` from `./voice-presence`.
 - Produces: `export function useVoiceSession(deps: { submitText: (text: string) => Promise<boolean> | void; transcribeVoiceAudio: (audio: Blob) => Promise<string> }): void`. Side-effects only — runs the loop, publishes `$voiceListening` + `$voiceSession`, and ends the loop when `$voiceActive` flips false.
 
-**Behavior mirrors `composer/index.tsx` lines 1797–1862** (`pendingResponse`/`consumePendingResponse`/`submitVoiceTurn`), at the session-store level.
+**Behavior mirrors `composer/index.tsx` lines 1797–1846** (`pendingResponse` 1797–1816 · `consumePendingResponse` 1818–1825 · `submitVoiceTurn` 1827–1836 · `useVoiceConversation` call 1838–1846), at the session-store level.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -268,7 +271,9 @@ export function useVoiceSession(deps: {
 }
 ```
 
-> **Execution note (verify, not a placeholder):** confirm in `use-voice-conversation.ts` that the loop **self-starts** when `enabled` goes true (the composer never calls `start()` explicitly on enable — it only calls `end()` on disable). If the hook needs an explicit `start()`, add it to the `active` effect. The test mocks the hook, so this is verified against the real hook at integration time (Task 3 manual run).
+> **Verified against the real hook (2026-06-27 audit):** `use-voice-conversation.ts:377–387` already self-start/-stop off the `enabled` prop:
+> `useEffect(() => { if (enabled && !wasEnabledRef.current) void start(); if (!enabled && wasEnabledRef.current) void end(); wasEnabledRef.current = enabled }, [enabled, end, start])`.
+> So the adapter does **not** call `start()` itself — flipping `$voiceActive` true (→ `enabled` true) is enough. The `active` effect below (calling `conversation.end()` on disable) is therefore **redundant** with the hook's own `end()` and may be dropped; it is idempotent and harmless if kept. No behavioral change needed.
 
 - [ ] **Step 4: Run → pass**
 
@@ -346,8 +351,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import type { ChatMessage } from '@/lib/chat-messages'
 import { $messages } from '@/store/session'
-import { $orbState } from '@/aether/domain/motion/motion-store'
-import { $voiceActive, $voiceSession } from '@/aether/domain/voice/voice-presence'
+import { $voiceActive, $voiceListening, $voiceSession } from '@/aether/domain/voice/voice-presence'
 
 import { VoiceScreen } from './voice-screen'
 
@@ -357,6 +361,7 @@ afterEach(() => {
   cleanup()
   $messages.set([])
   $voiceActive.set(false)
+  $voiceListening.set(false)
   $voiceSession.set({ status: 'idle', level: 0, muted: false })
 })
 
@@ -376,10 +381,19 @@ describe('VoiceScreen', () => {
     expect($voiceActive.get()).toBe(true)
   })
 
-  it('shows the orb (status role) reflecting the live orb state', () => {
-    $orbState.set?.('speaking') // computed; if read-only in test, assert the orb renders
+  it('renders the Living Orb (role=status)', () => {
     render(<VoiceScreen />)
     expect(screen.getByRole('status')).toBeTruthy()
+  })
+
+  it('orb reflects the live listening state', () => {
+    // $orbState is a `computed`; drive it through its real source. motion-store
+    // priority (speaking > listening > thinking > idle > paused) gives `listening`
+    // precedence over gateway state, so setting $voiceListening alone is
+    // deterministic regardless of $gatewayState in jsdom.
+    $voiceListening.set(true)
+    const { container } = render(<VoiceScreen />)
+    expect(container.querySelector('.ae-orb--listening')).toBeTruthy()
   })
 
   it('renders an honest empty hint when there is no conversation yet', () => {
@@ -396,7 +410,7 @@ describe('VoiceScreen', () => {
 })
 ```
 
-> Note: `$orbState` is a `computed` (read-only). If `$orbState.set` is undefined at runtime the `?.` no-ops; the assertion only checks the orb renders. Drop that line if it confuses the linter.
+> Note: the listening assertion drives `$orbState` through its real input (`$voiceListening`) rather than poking the read-only `computed` — this is the screen-level half of spec §8's "orb-state reflect đúng"; the `speaking`/priority derivation itself is unit-tested in `motion-store.test.ts` (Slice 1). `LivingOrb` renders the wrapper `div.ae-orb--<state>` with `role="status"` in both the GL and CSS-fallback paths, so the `querySelector` is stable under jsdom (where the motion gate is off and the CSS fallback renders).
 
 - [ ] **Step 2: Run → fail**
 
@@ -470,7 +484,7 @@ export function VoiceScreen() {
         <div className="h-[6px] w-[120px] overflow-hidden rounded-full bg-[rgba(120,200,255,.16)]" data-testid="ae-voice-level">
           <div className="h-full bg-[color:var(--ae-azure)]" style={{ width: `${Math.round(Math.min(1, session.level) * 100)}%` }} />
         </div>
-        <a className="text-[11.5px] text-[color:var(--ae-dim)] underline" href="/settings?tab=voice">
+        <a className="text-[11.5px] text-[color:var(--ae-dim)] underline" href="/settings?tab=config:voice">
           Settings → Voice
         </a>
       </div>
@@ -500,7 +514,8 @@ git commit -m "feat(aether): Voice/Ambient screen (orb + transcript + Nghe/Dừn
 - Modify: `src/aether/ui/shell/nav-items.tsx`
 - Modify: `src/aether/ui/shell/aether-shell.tsx`
 - Modify: `src/app/command-palette/index.tsx`
-- Test: `src/aether/ui/shell/aether-shell-voice-route.test.tsx` (new, mirrors existing `aether-shell-*-route.test.tsx`)
+- Test: `src/aether/ui/shell/aether-shell-voice-route.test.tsx` (new, mirrors existing `aether-shell-content-route.test.tsx`)
+- Test: `src/app/command-palette/catalog.test.tsx` (modify — add `VOICE_ROUTE` to the route loop + a `nav-voice` navigate test)
 
 **Interfaces:**
 - Consumes: `VOICE_ROUTE` (new) across nav/shell/palette.
@@ -510,15 +525,24 @@ git commit -m "feat(aether): Voice/Ambient screen (orb + transcript + Nghe/Dừn
 
 ```typescript
 // src/aether/ui/shell/aether-shell-voice-route.test.tsx
+// Mirrors the existing aether-shell-content-route.test.tsx pattern.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-describe('aether-shell wires /voice to the real screen', () => {
-  it('mounts VoiceScreen, not a stub', () => {
-    const src = readFileSync(join(__dirname, 'aether-shell.tsx'), 'utf8')
-    expect(src.includes('VoiceScreen')).toBe(true)
+describe('aether-shell voice route', () => {
+  const src = readFileSync(join(__dirname, 'aether-shell.tsx'), 'utf8')
+
+  it('imports VoiceScreen', () => {
+    expect(src.includes('import { VoiceScreen }')).toBe(true)
+  })
+
+  it('renders <VoiceScreen /> on the voice path', () => {
+    expect(/<Route element=\{<VoiceScreen \/>\} path=\{VOICE_ROUTE\.slice\(1\)\} \/>/.test(src)).toBe(true)
+  })
+
+  it('no longer leaves Voice as a stub', () => {
     expect(src.includes('<StubScreen title="Voice" />')).toBe(false)
   })
 })
@@ -556,28 +580,49 @@ Add `VOICE_ROUTE` to the `@/app/routes` import, and inside `<Routes>` (next to t
               <Route element={<VoiceScreen />} path={VOICE_ROUTE.slice(1)} />
 ```
 
-- [ ] **Step 6: Edit `command-palette/index.tsx`** — add a Voice go-to entry inside `aetherGoToItems` (mirror the existing nav items), e.g.:
+- [ ] **Step 6: Edit `command-palette/index.tsx`** — add a Voice go-to entry inside `aetherGoToItems` (mirror the existing nav items):
 
 ```tsx
     {
-      icon: Mic, // import { Mic } from the existing lucide-react import group
+      icon: Mic,
       id: 'nav-voice',
       keywords: ['voice', 'giọng nói', 'nghe', 'hands-free'],
       label: 'Voice',
       run: go(VOICE_ROUTE),
     },
 ```
-(Add `VOICE_ROUTE` to the `@/app/routes` import and `Mic` to the icon import; if `Mic` is unavailable, reuse an existing icon already imported in that file.)
+Imports to add at the top of the file:
+- `VOICE_ROUTE` → add to the existing `from '@/app/routes'` import.
+- `Mic` → add to the existing `from '@/lib/icons'` import. (Verified: this file's icons come from `@/lib/icons`, **not** `lucide-react` directly, and `@/lib/icons` already re-exports `Mic` — aliased from `IconMicrophone` at `src/lib/icons.ts:58/163`.)
 
-- [ ] **Step 7: Run all the touched suites + typecheck**
+The label is the literal string `'Voice'`, so the `tStub` / `t` translation object needs no new key.
 
-Run: `npx vitest run --environment jsdom src/aether && npx tsc -p . --noEmit`
-Expected: shell-voice-route test PASS; full aether suite green; tsc clean. If the command palette has a catalog test asserting nav entries, update it to include `nav-voice`.
+- [ ] **Step 7: Update the command-palette catalog test** — `src/app/command-palette/catalog.test.tsx` already (a) asserts a go-to entry for every AETHER route and (b) has a per-item navigate test for each pillar. Both need `VOICE_ROUTE`.
 
-- [ ] **Step 8: Commit**
+Add `VOICE_ROUTE` to the `from '@/app/routes'` import, append `VOICE_ROUTE` to the route array inside the `it('contains a Go-to entry for every AETHER route', …)` loop, and add this per-item test alongside the existing `nav-dev` / `nav-inbox` / `nav-content` ones:
+
+```tsx
+  it('selecting the Voice item navigates to /voice', () => {
+    const navigate = vi.fn()
+    const go = (path: string) => () => navigate(path)
+    const voice = aetherGoToItems(go, tStub).find(item => item.id === 'nav-voice')
+    expect(voice).toBeTruthy()
+    voice?.run?.()
+    expect(navigate).toHaveBeenCalledWith(VOICE_ROUTE)
+  })
+```
+
+(The `tStub` already covers the keys `aetherGoToItems` reads, and the Voice label is a literal string, so no `tStub` change is needed.)
+
+- [ ] **Step 8: Run all the touched suites + typecheck**
+
+Run: `npx vitest run --environment jsdom src/aether src/app/command-palette src/app/routes.reserved.test.ts && npx tsc -p . --noEmit`
+Expected: `aether-shell-voice-route` + `catalog` tests PASS; full aether suite green; `routes.reserved` + `nav-rail` stay green (Voice is appended at the **end** of `AETHER_NAV_ITEMS` so item indices `[0]`/`[1]` are untouched, and `/voice` is auto-reserved because it is now in `APP_ROUTES`); tsc clean.
+
+- [ ] **Step 9: Commit**
 
 ```bash
-git add apps/desktop/src/app/routes.ts apps/desktop/src/aether/ui/shell/nav-items.tsx apps/desktop/src/aether/ui/shell/aether-shell.tsx apps/desktop/src/app/command-palette/index.tsx apps/desktop/src/aether/ui/shell/aether-shell-voice-route.test.tsx
+git add apps/desktop/src/app/routes.ts apps/desktop/src/aether/ui/shell/nav-items.tsx apps/desktop/src/aether/ui/shell/aether-shell.tsx apps/desktop/src/app/command-palette/index.tsx apps/desktop/src/app/command-palette/catalog.test.tsx apps/desktop/src/aether/ui/shell/aether-shell-voice-route.test.tsx
 git commit -m "feat(aether): mount Voice on /voice (route + nav + shell + ⌘K)"
 ```
 
@@ -585,7 +630,7 @@ git commit -m "feat(aether): mount Voice on /voice (route + nav + shell + ⌘K)"
 
 ## Self-Review (plan vs SP-3 spec §5.1, §6, §8, §9 item 2)
 
-- **`VOICE_ROUTE='/voice'` + nav + shell + ⌘K** — Task 5. ✓
+- **`VOICE_ROUTE='/voice'` + nav + shell + ⌘K** — Task 5; `catalog.test.tsx` now guards the `nav-voice` ⌘K entry (Step 7). ✓
 - **Hands-free on the active Chat session, reuse `useVoiceConversation`/`$voicePlayback`/mic level** — Tasks 2–3 (controller) + Task 4 (presentation reads published state). ✓
 - **Large state-reactive Living Orb (`listening`/`speaking`)** — Task 4 renders `<LivingOrb state={orbState}>`; Slice 1 supplies the states. ✓
 - **Transcript of the active session, read-only** — Task 4 from `$messages` + `chatMessageText`. ✓
