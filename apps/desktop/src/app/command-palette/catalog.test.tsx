@@ -19,6 +19,7 @@ import {
   SKILLS_ROUTE,
   VOICE_ROUTE
 } from '@/app/routes'
+import * as onboarding from '@/store/onboarding'
 
 import { aetherActionItems, aetherGoToItems } from './index'
 
@@ -159,5 +160,13 @@ describe('command palette per-screen actions', () => {
     expect(item).toBeTruthy()
     item?.run?.()
     expect(navigate).toHaveBeenCalledWith('/cron?new=1')
+  })
+
+  it('offers an action that reopens onboarding in manual mode', () => {
+    const spy = vi.spyOn(onboarding, 'startManualOnboarding').mockImplementation(() => {})
+    const item = aetherActionItems(go, t).find(i => i.id === 'action-onboarding')
+    expect(item).toBeTruthy()
+    item?.run?.()
+    expect(spy).toHaveBeenCalled()
   })
 })

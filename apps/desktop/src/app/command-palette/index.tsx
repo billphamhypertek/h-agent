@@ -46,6 +46,7 @@ import {
 import { cn } from '@/lib/utils'
 import { $commandPaletteOpen, $commandPalettePage, closeCommandPalette, setCommandPaletteOpen } from '@/store/command-palette'
 import { $bindings } from '@/store/keybinds'
+import * as onboardingStore from '@/store/onboarding'
 import { openPetGenerate } from '@/store/pet-generate'
 import { runGatewayRestart } from '@/store/system-actions'
 import { luminance } from '@/themes/color'
@@ -301,7 +302,8 @@ export function aetherActionItems(go: (path: string) => () => void, _t: ReturnTy
   return [
     { icon: Settings, id: 'act-settings-model', keywords: ['model', 'đổi model', 'change model', 'llm', 'settings'], label: 'Cài đặt: đổi model', run: go(`${SETTINGS_ROUTE}?tab=config:model`) },
     { icon: Wrench, id: 'act-skills-open', keywords: ['skills', 'bật', 'tắt', 'toggle', 'tools'], label: 'Skills: bật/tắt', run: go(SKILLS_ROUTE) },
-    { icon: Clock, id: 'act-cron-create', keywords: ['cron', 'tạo job', 'create', 'schedule', 'new'], label: 'Cron: tạo job', run: go(`${CRON_ROUTE}?new=1`) }
+    { icon: Clock, id: 'act-cron-create', keywords: ['cron', 'tạo job', 'create', 'schedule', 'new'], label: 'Cron: tạo job', run: go(`${CRON_ROUTE}?new=1`) },
+    { icon: KeyRound, id: 'action-onboarding', keywords: ['onboarding', 'thiết lập', 'provider', 'setup'], label: 'Mở lại Onboarding', run: () => onboardingStore.startManualOnboarding() }
   ]
 }
 

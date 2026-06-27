@@ -7,12 +7,12 @@ import { AetherShell } from '@/aether'
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { loadBriefing } from '@/aether/domain/briefing/briefing-store'
 import { useVoiceSession } from '@/aether/domain/voice/use-voice-session'
+import { AetherOnboarding } from '@/aether/ui/screens/onboarding-screen'
 import { useTheme } from '@/themes/context'
 import { useSkinCommand } from '@/themes/use-skin-command'
 
 import { getCronJobs, getSessionMessages, listAllProfileSessions, type SessionInfo } from '../aether-api'
 import { formatRefValue } from '../components/assistant-ui/directive-text'
-import { DesktopOnboardingOverlay } from '../components/desktop-onboarding-overlay'
 import { type ChatMessage, chatMessageText, preserveLocalAssistantErrors, toChatMessages } from '../lib/chat-messages'
 import { storedSessionIdForNotification } from '../lib/session-ids'
 import {
@@ -907,7 +907,7 @@ export function DesktopController() {
           over BootSequence); it self-dismisses when a provider is already
           configured and surfaces the picker otherwise. */}
       {bootDone && !isSecondaryWindow() && (
-        <DesktopOnboardingOverlay
+        <AetherOnboarding
           enabled={gatewayState === 'open'}
           onCompleted={() => {
             void refreshAetherConfig()
