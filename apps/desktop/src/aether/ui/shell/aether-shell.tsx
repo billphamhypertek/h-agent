@@ -21,12 +21,13 @@ import { MemoryScreen } from '@/aether/ui/screens/memory-screen'
 import { MessagingScreen } from '@/aether/ui/screens/messaging-screen'
 import { MorningBrief } from '@/aether/ui/screens/morning-brief'
 import { OpsScreen } from '@/aether/ui/screens/ops-screen'
+import { PlaygroundScreen } from '@/aether/ui/screens/playground-screen'
 import { ProfilesScreen } from '@/aether/ui/screens/profiles-screen'
 import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
 import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { VoiceScreen } from '@/aether/ui/screens/voice-screen'
 import { CommandPalette } from '@/app/command-palette'
-import { ARTIFACTS_ROUTE, BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
+import { ARTIFACTS_ROUTE, BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PLAYGROUND_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
 import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
@@ -85,6 +86,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
               <Route element={<ProfilesScreen />} path={PROFILES_ROUTE.slice(1)} />
               <Route element={<SettingsScreen />} path="settings" />
               <Route element={<SkillsScreen />} path="skills" />
+              <Route element={<PlaygroundScreen />} path={PLAYGROUND_ROUTE.slice(1)} />
               <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />
             </Routes>
           </PageTransition>
