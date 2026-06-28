@@ -98,6 +98,7 @@
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.4",
     "three": "^0.180.0",
+    "troika-three-text": "^0.52.4",
     "tw-shimmer": "^0.4.11",
     "unicode-animations": "^1.0.3",
     "unified": "^11.0.5",
