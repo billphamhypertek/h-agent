@@ -13,6 +13,7 @@ import { $connection, $gatewayState } from '@/store/session'
 import { HUD_ROUTE } from '@/app/routes'
 
 import { AetherShell } from './aether-shell'
+import { $overlay } from './overlay-host'
 
 beforeEach(() => {
   vi.stubGlobal('aetherDesktop', { getBootProgress: vi.fn().mockResolvedValue(null), onBootProgress: () => () => {} })
@@ -134,5 +135,21 @@ describe('AetherShell Agents route', () => {
     renderShell('/agents')
     expect(screen.getByText(/Mission control · Agent/)).toBeTruthy()
     expect(screen.getByText(/Chỉ xem/)).toBeTruthy()
+  })
+})
+
+describe('AetherShell connection overlay (vital-driven, host-rendered)', () => {
+  beforeEach(() => { $bootDone.set(true); $overlay.set(null) })
+  afterEach(() => { $overlay.set(null) })
+
+  it('opens a non-dismissable connection overlay when the gateway is down', () => {
+    $gatewayState.set('error')
+    renderShell(HUD_ROUTE)
+    expect(screen.getByTestId('ae-overlay').getAttribute('data-kind')).toBe('connection')
+  })
+  it('shows no overlay while online', () => {
+    $gatewayState.set('open')
+    renderShell(HUD_ROUTE)
+    expect(screen.queryByTestId('ae-overlay')).toBeNull()
   })
 })

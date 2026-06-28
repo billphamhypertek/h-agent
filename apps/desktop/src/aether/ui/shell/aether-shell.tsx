@@ -1,11 +1,11 @@
 // apps/desktop/src/aether/ui/shell/aether-shell.tsx
 import { useStore } from '@nanostores/react'
+import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { $bootDone } from '@/aether/domain/boot/boot-store'
 import { useBootProgress } from '@/aether/domain/boot/use-boot-progress'
 import { useConnectionStatus } from '@/aether/domain/connection/use-connection-status'
-import { GlassSlab } from '@/aether/ui/components/glass-slab'
 import { AetherCanvas } from '@/aether/ui/motion/aether-canvas'
 import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
 import { AgentsScreen } from '@/aether/ui/screens/agents-screen'
@@ -31,10 +31,15 @@ import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
+import { closeOverlay, OverlayHost, openOverlay } from './overlay-host'
 import { PageTransition } from './page-transition'
 import { TopBar } from './top-bar'
 
-const TITLES: Record<string, string> = { [BRIEF_ROUTE]: 'Brief sáng', [HUD_ROUTE]: 'Trang chủ', '/': 'Trò chuyện' }
+const EXTRA_TITLES: Record<string, string> = { [HUD_ROUTE]: 'Trang chủ', '/': 'Trò chuyện' }
+function titleFor(pathname: string): string {
+  const item = AETHER_NAV_ITEMS.find(i => i.route === pathname)
+  return EXTRA_TITLES[pathname] ?? item?.label ?? 'AETHER'
+}
 
 export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
   useBootProgress()
@@ -44,10 +49,14 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
   const navigate = useNavigate()
   const motionEnabled = useMotionEnabled()
 
+  useEffect(() => {
+    if (status === 'paused') openOverlay({ kind: 'connection', title: 'Mất kết nối', body: 'Đang thử lại…' })
+    else closeOverlay()
+  }, [status])
+
   if (!bootDone) { return <BootSequence /> }
 
-  const activeItem = AETHER_NAV_ITEMS.find(i => i.route === location.pathname)
-  const title = TITLES[location.pathname] ?? activeItem?.label ?? 'AETHER'
+  const title = titleFor(location.pathname)
 
   return (
     <div className="ae-depth-enter relative flex h-screen min-h-0 w-screen overflow-hidden">
@@ -81,11 +90,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
           </PageTransition>
         </div>
       </div>
-      {status === 'paused' && (
-        <div className="absolute inset-0 z-[50] grid place-items-center bg-[rgba(2,12,29,.55)] backdrop-blur-sm">
-          <GlassSlab className="text-sm text-[color:var(--ae-dim)]" size="md">Mất kết nối — đang thử lại…</GlassSlab>
-        </div>
-      )}
+      <OverlayHost />
       <CommandPalette />
     </div>
   )
