@@ -16,6 +16,20 @@ describe('AETHER palette tokens', () => {
     expect(AETHER.warn).toBe('#FFB020')
     expect(AETHER.error).toBe('#ff5d6c')
   })
+  it('exposes the energy accent distinct from the warn semantic', () => {
+    expect(AETHER.energy).toBe('#ff9e2c')
+    expect(AETHER.energy).not.toBe(AETHER.warn)
+  })
+  it('exposes shared node-state colors (online=azure, busy=energy, dormant)', () => {
+    expect(AETHER.stateOnline).toBe(AETHER.azure)
+    expect(AETHER.stateBusy).toBe(AETHER.energy)
+    expect(AETHER.stateDormant).toBe('#6f86ad')
+  })
+  it('exposes sinh-thể (living-engine) colors: particle, halo, sub-orb teal', () => {
+    expect(AETHER.particle).toBe('#bfe3ff')
+    expect(AETHER.suborb).toBe('#2fd6b6')
+    expect(AETHER.halo).toBe('rgba(74,163,255,.35)')
+  })
 })
 
 describe('aether theme preset', () => {

@@ -22,6 +22,16 @@ export const AETHER = {
   ok: '#3DE7A0',
   warn: '#FFB020',
   error: '#ff5d6c',
+  // energy accent — "đang làm" state; semantically separate from `warn`
+  energy: '#ff9e2c',
+  // shared node/agent/vital states
+  stateOnline: '#4aa3ff',
+  stateBusy: '#ff9e2c',
+  stateDormant: '#6f86ad',
+  // sinh-thể (living engine) — particle nucleus / halo / sub-orb
+  particle: '#bfe3ff',
+  suborb: '#2fd6b6',
+  halo: 'rgba(74,163,255,.35)',
 } as const
 
 export type AetherPalette = typeof AETHER

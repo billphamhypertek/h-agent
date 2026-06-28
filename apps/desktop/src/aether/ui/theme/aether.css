@@ -42,6 +42,15 @@
   --ae-space-4: 11px;
   --ae-space-5: 13px;
   --ae-space-6: 18px;
+  /* energy + shared node-state colors (mirrors tokens.ts; tokens.test.ts pins TS) */
+  --ae-energy: #ff9e2c;
+  --ae-state-online: var(--ae-azure);
+  --ae-state-busy: var(--ae-energy);
+  --ae-state-dormant: #6f86ad;
+  /* sinh-thể: particle nucleus / halo / sub-orb (xanh ngọc) */
+  --ae-particle: #bfe3ff;
+  --ae-halo: rgba(74, 163, 255, 0.35);
+  --ae-suborb: #2fd6b6;
   --ae-hairline: 1px var(--ae-line);
 }
 [data-aether-theme='aether'][data-aether-mode='light'] {
