@@ -296,6 +296,13 @@
   transition: transform 0.44s cubic-bezier(0.5, 0.05, 0.1, 1);
 }
 
+/* nav-rail expand-on-hover (62 ↔ 172). Reduced-motion drops the width transition. */
+.ae-rail { transition: width 0.32s var(--ae-ease); will-change: width; }
+.ae-nav-group-header { white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) {
+  [data-aether-theme='aether'] .ae-rail { transition: none !important; }
+}
+
 /* micro-viz */
 .ae-gauge,
 .ae-bar {
