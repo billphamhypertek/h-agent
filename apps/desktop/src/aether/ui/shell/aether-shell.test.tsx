@@ -50,9 +50,9 @@ describe('AetherShell', () => {
   it('reveals the shell + HUD once boot is done', () => {
     $bootDone.set(true)
     renderShell(HUD_ROUTE)
-    // nav rail present (brand nav landmark) and HUD command bar visible
+    // nav rail present (brand nav landmark) and the top-bar ⌘K chip visible
     expect(screen.getByRole('navigation', { name: 'HYPERTEK - AGENT PLATFORM' })).toBeTruthy()
-    expect(screen.getByText('⌘K')).toBeTruthy()
+    expect(screen.getByTestId('ae-cmdk')).toBeTruthy()
   })
 })
 
@@ -100,11 +100,11 @@ describe('AetherShell layering (regression b: shell-level double-pad)', () => {
 describe('AetherShell ⌘K wiring', () => {
   beforeEach(() => { $bootDone.set(true); closeCommandPalette() })
 
-  it('the HUD command bar opens the command palette store on click', () => {
+  it('the top-bar ⌘K opens the command palette store on click', () => {
     expect($commandPaletteOpen.get()).toBe(false)
     renderShell(HUD_ROUTE)
-    // The CommandBar wraps the ⌘K chip; clicking the bar triggers onActivate → openCommandPalette().
-    fireEvent.click(screen.getByText('⌘K').closest('[role="button"]') as HTMLElement)
+    // The top-bar ⌘K chip (ae-cmdk) calls openCommandPalette() on click.
+    fireEvent.click(screen.getByTestId('ae-cmdk'))
     expect($commandPaletteOpen.get()).toBe(true)
   })
 
