@@ -8,7 +8,11 @@ describe('geometry source of truth', () => {
     expect(GEOMETRY.titlebarInset).toBe(34)
   })
   it('exposes nav geometry as the single numeric source', () => {
-    expect(GEOMETRY.nav).toEqual({ width: 62, item: 38, gap: 5 })
+    expect(GEOMETRY.nav).toEqual({ width: 62, widthExpanded: 172, item: 38, gap: 5 })
+  })
+  it('exposes the expanded nav-rail width (62 collapsed ↔ 172 expanded)', () => {
+    expect(GEOMETRY.nav.width).toBe(62)
+    expect(GEOMETRY.nav.widthExpanded).toBe(172)
   })
 })
 

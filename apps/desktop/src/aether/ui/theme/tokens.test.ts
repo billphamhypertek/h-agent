@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { BUILTIN_THEMES } from '@/themes/presets'
 
-import { AETHER } from './tokens'
+import { AETHER, AETHER_MOTION, AETHER_TYPE } from './tokens'
 
 describe('AETHER palette tokens', () => {
   it('uses HyperTek navy #07397d as the brand core', () => {
@@ -43,5 +43,19 @@ describe('aether theme preset', () => {
     expect(BUILTIN_THEMES.aether.darkColors?.background).toBe('#020c1d')
     expect(BUILTIN_THEMES.aether.typography?.fontUrl).toMatch(/Orbitron/)
     expect(BUILTIN_THEMES.aether.typography?.fontUrl).toMatch(/Be\+Vietnam\+Pro/)
+  })
+})
+
+describe('AETHER typography + motion scales', () => {
+  it('exposes a typography scale (sizes px, tracking em, leading unitless)', () => {
+    expect(AETHER_TYPE.text).toEqual({ xs: 11, sm: 12, base: 13, md: 15, lg: 17, xl: 22 })
+    expect(AETHER_TYPE.tracking).toEqual({ tight: 0.01, wide: 0.04, wider: 0.16, widest: 0.2 })
+    expect(AETHER_TYPE.leading).toEqual({ tight: 1.2, snug: 1.35, normal: 1.5 })
+  })
+  it('exposes 6-verb motion durations (ms) + a shared easing', () => {
+    expect(AETHER_MOTION).toEqual({
+      breatheMs: 6000, reachMs: 900, mitosisMs: 1200, flowMs: 1400, inhaleMs: 1000, crystallizeMs: 700,
+      ease: 'cubic-bezier(0.5,0.05,0.1,1)',
+    })
   })
 })

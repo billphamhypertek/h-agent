@@ -35,3 +35,26 @@ export const AETHER = {
 } as const
 
 export type AetherPalette = typeof AETHER
+
+// Typography scale — kills literal text-[17px]/tracking-[.01em] across the shell.
+// Sizes in px, tracking in em, leading unitless. CSS mirrors in aether.css.
+export const AETHER_TYPE = {
+  text: { xs: 11, sm: 12, base: 13, md: 15, lg: 17, xl: 22 },
+  tracking: { tight: 0.01, wide: 0.04, wider: 0.16, widest: 0.2 },
+  leading: { tight: 1.2, snug: 1.35, normal: 1.5 },
+} as const
+
+// 6-verb lifecycle motion — durations in ms (used by the engine timeline) + a
+// shared easing string. CSS mirrors as seconds in aether.css.
+export const AETHER_MOTION = {
+  breatheMs: 6000,
+  reachMs: 900,
+  mitosisMs: 1200,
+  flowMs: 1400,
+  inhaleMs: 1000,
+  crystallizeMs: 700,
+  ease: 'cubic-bezier(0.5,0.05,0.1,1)',
+} as const
+
+export type AetherType = typeof AETHER_TYPE
+export type AetherMotion = typeof AETHER_MOTION

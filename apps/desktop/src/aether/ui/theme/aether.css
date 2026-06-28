@@ -18,6 +18,7 @@
   --ae-nav-w: 62px;
   --ae-nav-item: 38px;
   --ae-nav-gap: 5px;
+  --ae-nav-w-expanded: 172px;
   --ae-radius-xs: 6px;
   --ae-radius-sm: 9px;
   --ae-radius-md: 11px;
@@ -51,6 +52,28 @@
   --ae-particle: #bfe3ff;
   --ae-halo: rgba(74, 163, 255, 0.35);
   --ae-suborb: #2fd6b6;
+  /* typography scale (mirrors AETHER_TYPE in tokens.ts) */
+  --ae-text-xs: 11px;
+  --ae-text-sm: 12px;
+  --ae-text-base: 13px;
+  --ae-text-md: 15px;
+  --ae-text-lg: 17px;
+  --ae-text-xl: 22px;
+  --ae-tracking-tight: 0.01em;
+  --ae-tracking-wide: 0.04em;
+  --ae-tracking-wider: 0.16em;
+  --ae-tracking-widest: 0.2em;
+  --ae-leading-tight: 1.2;
+  --ae-leading-snug: 1.35;
+  --ae-leading-normal: 1.5;
+  /* 6-verb lifecycle motion (mirrors AETHER_MOTION; seconds here, ms in TS) */
+  --ae-ease: cubic-bezier(0.5, 0.05, 0.1, 1);
+  --ae-mo-breathe: 6s;
+  --ae-mo-reach: 0.9s;
+  --ae-mo-mitosis: 1.2s;
+  --ae-mo-flow: 1.4s;
+  --ae-mo-inhale: 1s;
+  --ae-mo-crystallize: 0.7s;
   --ae-hairline: 1px var(--ae-line);
 }
 [data-aether-theme='aether'][data-aether-mode='light'] {
