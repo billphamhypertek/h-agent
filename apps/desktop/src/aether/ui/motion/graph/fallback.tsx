@@ -10,10 +10,12 @@ const toView = (v: number) => 50 + v * 38
 export function GraphFallback({ spec }: { spec: GraphSpec }) {
   return (
     <div className="relative grid h-full w-full place-items-center" data-testid="ae-graph-fallback">
-      <svg className="absolute inset-0 h-full w-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+      <svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100">
         {spec.links.map(l => {
           const p = linkPoints(l, spec.nodes)
-          if (!p) return null
+
+          if (!p) {return null}
+
           return (
             <line
               key={l.id}

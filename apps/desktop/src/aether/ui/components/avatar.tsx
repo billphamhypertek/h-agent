@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 
 export function profileInitial(name: string | null | undefined): string {
   const ch = (name ?? '').trim()[0]
+
   return ch ? ch.toUpperCase() : 'A'
 }
 
@@ -12,6 +13,7 @@ export function profileInitial(name: string | null | undefined): string {
 // active profile — replaces the two divergent hardcoded "B" avatars (nav + top-bar).
 export function Avatar({ className }: { className?: string }) {
   const profile = useStore($activeProfile)
+
   return (
     <div
       className={cn('grid place-items-center rounded-full text-[length:var(--ae-text-base)] font-bold', className)}

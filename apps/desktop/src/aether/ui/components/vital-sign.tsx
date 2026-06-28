@@ -4,8 +4,10 @@ import { cn } from '@/lib/utils'
 export type VitalStatus = 'online' | 'retrying' | 'down'
 
 export function vitalStatus(c: 'connecting' | 'online' | 'paused'): VitalStatus {
-  if (c === 'online') return 'online'
-  if (c === 'connecting') return 'retrying'
+  if (c === 'online') {return 'online'}
+
+  if (c === 'connecting') {return 'retrying'}
+
   return 'down'
 }
 
@@ -16,6 +18,7 @@ const TRACE: Record<VitalStatus, string> = {
   retrying: 'M0 8 H6 l2 -5 l2 9 l2 -4 H16 l2 -5 l2 9 l2 -4 H40',
   down: 'M0 8 H40',
 }
+
 const STROKE: Record<VitalStatus, string> = {
   online: 'var(--ae-state-online)',
   retrying: 'var(--ae-energy)',
@@ -24,6 +27,7 @@ const STROKE: Record<VitalStatus, string> = {
 
 export function VitalSign({ className }: { className?: string }) {
   const status = vitalStatus(useConnectionStatus())
+
   return (
     <svg
       aria-label={`Trạng thái kết nối: ${status}`}

@@ -1,6 +1,7 @@
 // apps/desktop/src/aether/ui/motion/aether-canvas.test.tsx
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
+
 import { AetherCanvas, pickDpr, shouldRenderFrame } from './aether-canvas'
 
 afterEach(cleanup)

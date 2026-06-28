@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { GEOMETRY } from './geometry'
+
 import { TITLEBAR_HEIGHT } from '@/app/shell/titlebar'
+
+import { GEOMETRY } from './geometry'
 
 describe('geometry source of truth', () => {
   it('pins the titlebar inset to titlebar.ts TITLEBAR_HEIGHT (bridge)', () => {

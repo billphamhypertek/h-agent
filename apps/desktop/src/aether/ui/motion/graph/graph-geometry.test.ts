@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { AETHER } from '@/aether/ui/theme/tokens'
 import type { NodeSpec } from '@/aether/domain/engine/graph-model'
+import { AETHER } from '@/aether/ui/theme/tokens'
 
 import { linkPoints, nodeScale, stateColor } from './graph-geometry'
 

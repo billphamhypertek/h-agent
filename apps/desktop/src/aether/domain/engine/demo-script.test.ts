@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { hsgFrame, hsgStandbyGraph, HSG_TARGETS, phaseAt } from './demo-script'
+import { HSG_TARGETS, hsgFrame, hsgStandbyGraph, phaseAt } from './demo-script'
 
 describe('HSG demo script', () => {
   it('progresses through the 6 verbs at the scripted timestamps', () => {

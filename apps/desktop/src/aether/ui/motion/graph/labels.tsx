@@ -19,8 +19,10 @@ function NodeLabel({ node }: { node: NodeSpec }) {
     text.anchorY = 'middle'
     text.position.set(node.x, node.y - 0.16, 0)
     text.sync()
+
     return () => text.dispose()
   }, [text, node])
+
   return <primitive object={text} />
 }
 

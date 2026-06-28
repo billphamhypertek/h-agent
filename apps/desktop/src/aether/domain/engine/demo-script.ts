@@ -23,14 +23,17 @@ export const HSG_TARGETS = ['Inbox', 'CRM', 'Dev', 'Vận hành', 'Content']
 
 export function phaseAt(elapsedMs: number, script: ScriptStep[] = HSG_SCRIPT): LifecyclePhase {
   let phase: LifecyclePhase = 'breathe'
+
   for (const step of script) {
-    if (elapsedMs >= step.atMs) phase = lifecycleReducer(phase, step.event)
+    if (elapsedMs >= step.atMs) {phase = lifecycleReducer(phase, step.event)}
   }
+
   return phase
 }
 
 export function hsgStandbyGraph(): GraphSpec {
   const pts = constellationLayout(HSG_TARGETS.length, 1)
+
   const nodes: NodeSpec[] = HSG_TARGETS.map((label, i) => ({
     id: `t${i}`,
     label,
@@ -38,6 +41,7 @@ export function hsgStandbyGraph(): GraphSpec {
     x: pts[i].x,
     y: pts[i].y,
   }))
+
   return createGraph({
     orbs: [{ id: 'core', kind: 'core', state: 'online', x: 0, y: 0 }],
     nodes,

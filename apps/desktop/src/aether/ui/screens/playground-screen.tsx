@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useRef } from 'react'
 
-import { hsgFrame, hsgStandbyGraph, HSG_TOTAL_MS } from '@/aether/domain/engine/demo-script'
+import { HSG_TOTAL_MS, hsgFrame, hsgStandbyGraph } from '@/aether/domain/engine/demo-script'
 import { $graphSpec, clearGraphSpec, setGraphSpec } from '@/aether/domain/motion/graph-store'
 import { GraphFallback } from '@/aether/ui/motion/graph/fallback'
 import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
@@ -16,18 +16,22 @@ export function PlaygroundScreen() {
 
   useEffect(() => {
     setGraphSpec(hsgStandbyGraph())
+
     return () => clearGraphSpec()
   }, [])
 
   useEffect(() => {
-    if (!motionEnabled) return
+    if (!motionEnabled) {return}
     let raf = 0
+
     const tick = (t: number) => {
-      if (startRef.current == null) startRef.current = t
+      if (startRef.current == null) {startRef.current = t}
       setGraphSpec(hsgFrame((t - startRef.current) % HSG_TOTAL_MS))
       raf = requestAnimationFrame(tick)
     }
+
     raf = requestAnimationFrame(tick)
+
     return () => cancelAnimationFrame(raf)
   }, [motionEnabled])
 

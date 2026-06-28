@@ -32,13 +32,15 @@ import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
-import { closeOverlay, OverlayHost, openOverlay } from './overlay-host'
+import { closeOverlay, openOverlay, OverlayHost } from './overlay-host'
 import { PageTransition } from './page-transition'
 import { TopBar } from './top-bar'
 
 const EXTRA_TITLES: Record<string, string> = { [HUD_ROUTE]: 'Trang chủ', '/': 'Trò chuyện' }
+
 function titleFor(pathname: string): string {
   const item = AETHER_NAV_ITEMS.find(i => i.route === pathname)
+
   return EXTRA_TITLES[pathname] ?? item?.label ?? 'AETHER'
 }
 
@@ -51,8 +53,8 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
   const motionEnabled = useMotionEnabled()
 
   useEffect(() => {
-    if (status === 'paused') openOverlay({ kind: 'connection', title: 'Mất kết nối', body: 'Đang thử lại…' })
-    else closeOverlay()
+    if (status === 'paused') {openOverlay({ kind: 'connection', title: 'Mất kết nối', body: 'Đang thử lại…' })}
+    else {closeOverlay()}
   }, [status])
 
   if (!bootDone) { return <BootSequence /> }

@@ -25,7 +25,7 @@ export const AETHER_ICONS: Record<IconName, string> = {
 
 export function Icon({ name, size = 18, className }: { name: IconName; size?: number; className?: string }) {
   return (
-    <svg className={className} fill="none" height={size} viewBox="0 0 24 24" width={size} aria-hidden>
+    <svg aria-hidden className={className} fill="none" height={size} viewBox="0 0 24 24" width={size}>
       <path d={AETHER_ICONS[name]} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} />
     </svg>
   )

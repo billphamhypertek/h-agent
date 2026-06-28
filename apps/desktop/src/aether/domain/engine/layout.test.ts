@@ -10,6 +10,7 @@ describe('constellationLayout', () => {
   it('places `count` points on the circle of the given radius', () => {
     const pts = constellationLayout(5, 2)
     expect(pts).toHaveLength(5)
+
     for (const p of pts) {
       expect(Math.hypot(p.x, p.y)).toBeCloseTo(2, 5)
     }

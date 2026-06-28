@@ -16,6 +16,7 @@ describe('Icon set', () => {
       expect(typeof AETHER_ICONS[name]).toBe('string')
       expect(AETHER_ICONS[name].length).toBeGreaterThan(0)
     }
+
     expect(Object.keys(AETHER_ICONS)).toHaveLength(16)
   })
   it('renders an svg whose stroke inherits currentColor (token-driven)', () => {

@@ -7,4 +7,5 @@ import type { GraphSpec } from '@/aether/domain/engine/graph-model'
 export const $graphSpec = atom<GraphSpec | null>(null)
 
 export function setGraphSpec(s: GraphSpec | null): void { $graphSpec.set(s) }
+
 export function clearGraphSpec(): void { $graphSpec.set(null) }

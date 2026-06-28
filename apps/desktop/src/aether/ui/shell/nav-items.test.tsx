@@ -9,7 +9,8 @@ describe('AETHER nav model', () => {
   it('covers all 16 §5.1 destinations, each mapped to a known group', () => {
     expect(AETHER_NAV_ITEMS).toHaveLength(16)
     const groupIds = new Set(AETHER_NAV_GROUPS.map(g => g.id))
-    for (const item of AETHER_NAV_ITEMS) expect(groupIds.has(item.group)).toBe(true)
+
+    for (const item of AETHER_NAV_ITEMS) {expect(groupIds.has(item.group)).toBe(true)}
     expect(AETHER_NAV_ITEMS.filter(i => i.group === 'core').map(i => i.id)).toEqual(['home', 'chat', 'brief'])
     expect(AETHER_NAV_ITEMS.filter(i => i.group === 'system').map(i => i.id)).toEqual(['profiles', 'settings'])
   })

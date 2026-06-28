@@ -3,8 +3,8 @@ import { useStore } from '@nanostores/react'
 
 import { Avatar } from '@/aether/ui/components/avatar'
 import { VitalSign } from '@/aether/ui/components/vital-sign'
-import { $connection } from '@/store/session'
 import { openCommandPalette } from '@/store/command-palette'
+import { $connection } from '@/store/session'
 
 const WEEKDAYS_VI = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'] // 0=Sunday
 
@@ -22,6 +22,7 @@ export function TopBar({ title, now = new Date() }: { title: string; now?: Date 
   const connection = useStore($connection)
   // Windows/Linux render native min/max/close on the RIGHT via titleBarOverlay; reserve their width.
   const overlayWidth = connection?.windowButtonPosition == null ? (connection?.nativeOverlayWidth ?? 0) : 0
+
   return (
     <div
       className="flex items-center justify-between gap-4"

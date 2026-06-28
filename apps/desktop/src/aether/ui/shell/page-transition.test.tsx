@@ -10,6 +10,7 @@ describe('PageTransition', () => {
     const { rerender, container } = render(
       <PageTransition routeKey="/a"><div data-testid="c">A</div></PageTransition>,
     )
+
     const first = container.querySelector('[data-ae-transition]') as HTMLElement
     expect(first).toBeTruthy()
     expect(first.className).toContain('ae-depth-enter')

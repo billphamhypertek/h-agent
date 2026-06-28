@@ -16,6 +16,7 @@ const NEXT: Record<LifecyclePhase, Partial<Record<LifecycleEvent, LifecyclePhase
 }
 
 export function lifecycleReducer(phase: LifecyclePhase, event: LifecycleEvent): LifecyclePhase {
-  if (event === 'reset') return 'breathe'
+  if (event === 'reset') {return 'breathe'}
+
   return NEXT[phase][event] ?? phase
 }

@@ -197,3 +197,41 @@ demand. The Canvas is **multi-layer gated**: `AetherCanvas` returns `null` when
 CSS orb / `.ae-shell-bg` is the always-present accessible fallback. The CSS orb stays
 the `role="status"` a11y node in every mode and tracks `$orbState`
 (`thinking|idle|paused`); Boot keeps its own boot-store state.
+
+## AETHER living-organism north-star (SP-4 #0)
+
+The whole app is **one living organism** — the Living Orb visualizes the agentic
+machine at three zoom levels of the *same* entity:
+
+- **Glyph** (nav-rail, every screen) — always breathing, carries vital-state, is
+  the Home button. Rendered by the gated CSS `LivingOrb` (no second Canvas).
+- **Constellation** (Home / `/hud`) — core orb radiating tendrils to targets.
+- **Summon overlay** (live task) — an ephemeral graph that grows from the glyph
+  over a blurred copy of the current screen, then collapses back.
+
+**Presence model = "C · Triệu hồi":** idle glyph → graph blooms into the overlay
+host → collapses to glyph. Morphology: organic orb + particle nucleus + halo;
+sub-orbs via mitosis (teal `--ae-suborb`); nodes as glowing buds; links as
+flowing tendrils. **6-verb motion grammar:** breathe → reach → mitosis → flow →
+inhale → crystallize (durations in `--ae-mo-*` / `AETHER_MOTION`).
+
+**Shared state colors:** online = azure (`--ae-state-online`), busy = amber
+energy (`--ae-state-busy`/`--ae-energy`, distinct from `--ae-warn`), dormant =
+slate dashed (`--ae-state-dormant`).
+
+**New token groups** (CSS in `aether.css`, TS mirror in `tokens.ts`,
+pinned by `tokens.test.ts`): energy/node-state/sinh-thể colors, `AETHER_TYPE`
+(typography), `AETHER_MOTION` (6-verb durations + easing). Expanded nav width is
+`GEOMETRY.nav.widthExpanded` (172), pinned in `geometry.test.ts`.
+
+**Living-engine bridge points:**
+- Logic core (`src/aether/domain/engine/`: `graph-model`, `lifecycle`, `layout`,
+  `demo-script`) is pure + jsdom-tested.
+- View layer (`src/aether/ui/motion/graph/`) is thin R3F mounted inside the **single
+  shared** `<AetherCanvas>` — no new Canvas — gated by `useMotionEnabled()`.
+- `$graphSpec` (`domain/motion/graph-store.ts`) is the data contract; non-chat
+  screens feed it scripted/derived data only (prompt-cache safe). Chat (#3) wires
+  real agent/tool events into the same `GraphSpec`.
+- **Fallback (hard-rule):** reduced-motion OR GPU-off OR webgl-probe-fail ⇒ no
+  Canvas ⇒ `GraphFallback` (DOM/SVG) + CSS orb. `troika-three-text` provides SDF
+  labels in GL (deduped against `three@0.180`).

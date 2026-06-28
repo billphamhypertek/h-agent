@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { lifecycleReducer, LIFECYCLE_PHASES } from './lifecycle'
+import { LIFECYCLE_PHASES, lifecycleReducer } from './lifecycle'
 
 describe('6-verb lifecycle', () => {
   it('exposes the 6 verbs in order', () => {

@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/react'
-import { useEffect } from 'react'
 import { atom } from 'nanostores'
+import { useEffect } from 'react'
 
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
@@ -18,6 +18,7 @@ export interface OverlayState {
 export const $overlay = atom<OverlayState | null>(null)
 
 export function openOverlay(o: OverlayState): void { $overlay.set(o) }
+
 export function closeOverlay(): void { $overlay.set(null) }
 
 const DISMISSABLE: Record<OverlayKind, boolean> = { summon: true, result: true, connection: false }
@@ -27,13 +28,15 @@ export function OverlayHost() {
   const dismissable = overlay ? DISMISSABLE[overlay.kind] : false
 
   useEffect(() => {
-    if (!overlay || !dismissable) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeOverlay() }
+    if (!overlay || !dismissable) {return}
+
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') {closeOverlay()} }
     window.addEventListener('keydown', onKey)
+
     return () => window.removeEventListener('keydown', onKey)
   }, [overlay, dismissable])
 
-  if (!overlay) return null
+  if (!overlay) {return null}
 
   return (
     <div

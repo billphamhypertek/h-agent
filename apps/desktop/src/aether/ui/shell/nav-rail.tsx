@@ -64,7 +64,9 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
           // also rendered as a duplicate labeled list button (which would collide on the
           // "Trang chủ" accessible name). All other items render normally.
           const groupItems = items.filter(i => i.group === group.id && i.route !== HUD_ROUTE)
-          if (groupItems.length === 0) return null
+
+          if (groupItems.length === 0) {return null}
+
           return (
             <div className="flex flex-col gap-[var(--ae-nav-gap)]" key={group.id}>
               {expanded && (
@@ -74,6 +76,7 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
               )}
               {groupItems.map(item => {
                 const active = item.route === activeRoute
+
                 return (
                   <button
                     aria-current={active ? 'page' : undefined}

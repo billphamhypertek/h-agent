@@ -27,9 +27,9 @@ export function GraphView({ spec }: { spec: GraphSpec }) {
         </group>
       )}
       {linkGeoms.map((geom, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <lineSegments key={i} geometry={geom}>
-          <lineBasicMaterial color={stateColor('online')} transparent opacity={0.5} />
+         
+        <lineSegments geometry={geom} key={i}>
+          <lineBasicMaterial color={stateColor('online')} opacity={0.5} transparent />
         </lineSegments>
       ))}
       {spec.nodes.map(n => (
