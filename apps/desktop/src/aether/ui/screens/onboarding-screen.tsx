@@ -42,8 +42,8 @@ export function AetherOnboarding({
     }
   }, [ctx, enabled, state.requested])
 
-  // Ported from the legacy overlay (desktop-onboarding-overlay.tsx lines 242–266)
-  // to preserve the Settings deep-link: when the Providers/Model settings page
+  // Ported from the legacy onboarding overlay (now removed) to preserve the
+  // Settings "connect a specific provider" deep-link: when the Providers/Model settings page
   // asked to connect a SPECIFIC provider, the store stashed its id. Once the
   // provider list has loaded and we're back at an idle picker, auto-launch that
   // exact OAuth flow so the user lands directly in sign-in instead of the full
