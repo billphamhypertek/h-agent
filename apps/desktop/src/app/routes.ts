@@ -1,6 +1,9 @@
 export const SESSION_ROUTE_PREFIX = '/'
 export const NEW_CHAT_ROUTE = '/'
 export const SETTINGS_ROUTE = '/settings'
+// NOTE (SP-4 #0): the AETHER shell no longer renders a /command-center screen.
+// This const + the 'command-center' AppView stay because the web command-palette
+// and overlay-routing (src/app/...) still consume them; decommission separately.
 export const COMMAND_CENTER_ROUTE = '/command-center'
 export const SKILLS_ROUTE = '/skills'
 export const MESSAGING_ROUTE = '/messaging'
