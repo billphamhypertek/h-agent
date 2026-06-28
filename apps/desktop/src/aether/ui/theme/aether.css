@@ -303,6 +303,12 @@
   [data-aether-theme='aether'] .ae-rail { transition: none !important; }
 }
 
+/* overlay host — reuses the depth-enter feel; reduced-motion handled globally below */
+.ae-overlay-host { animation: ae-depth 0.32s var(--ae-ease) both; }
+@media (prefers-reduced-motion: reduce) {
+  [data-aether-theme='aether'] .ae-overlay-host { animation: ae-fade 0.18s ease both; }
+}
+
 /* micro-viz */
 .ae-gauge,
 .ae-bar {
