@@ -1,5 +1,7 @@
 # AETHER SP-3 Slice 1 — Orb Foundation (`listening` / `speaking`) Implementation Plan
 
+> **Trạng thái: ✅ HOÀN TẤT** (2026-06-28) — merged vào `main`. 4 task xong: commits `1c9b704` ($voiceListening atom), `62d281e` (motion-store priority + wiring), `09bf35c` (GL orb STATE_VALUE + shader), `f9ad9d7` (CSS-fallback orb). Suite `src/aether` xanh, `tsc` sạch. Khép kín nhánh "open design fork" về `usePromptActions` ở footer — đã giải quyết trong [SP-3.2](./2026-06-27-aether-sp3-2-voice-screen.md) (adapter `useVoiceSession`).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Extend the Living Orb state machine with two new states — `listening` (mic open) and `speaking` (TTS playing) — wired to the existing voice signals, so the orb reacts correctly during a voice turn. No screen yet; this is the foundation Slice 2 (Voice screen) builds on.

@@ -1,6 +1,6 @@
 # AETHER Desktop — SP-3: Voice / Ambient + Onboarding (Design Spec)
 
-> Spec thiết kế · 2026-06-27 · trạng thái: đã chốt design, chờ review để chuyển sang implementation plan(s).
+> Spec thiết kế · 2026-06-27 · trạng thái: ✅ **đã triển khai xong** — cả 3 slice (orb foundation + Voice + Onboarding) đã merge vào `main`; **đóng trọn 16 màn**. Plans: [SP-3.1 orb](../plans/2026-06-27-aether-sp3-1-orb-foundation.md) · [SP-3.2 voice](../plans/2026-06-27-aether-sp3-2-voice-screen.md) · [SP-3.3 onboarding](../plans/2026-06-27-aether-sp3-3-onboarding-screen.md). Kiểm chứng (2026-06-28): suite `src/aether` xanh (411 test), `tsc` sạch.
 > Ngôn ngữ: tiếng Việt + thuật ngữ kỹ thuật tiếng Anh.
 
 ## 1. Bối cảnh
@@ -13,7 +13,7 @@ SP-0 (4 màn lõi + nền WebGL), **SP-1 daily-driver** (8 màn cấu hình/vậ
 
 Vì vậy SP-3 chỉ **dựng vỏ AETHER** (restyle qua token) và **nối dây mỏng** vào runtime cũ — đúng triết lý hybrid của program-spec §3.3 ("reuse runtime đã tôi luyện, build mới shell/màn/orb"). **0 thay đổi Python core.**
 
-Lộ trình tổng: **SP-0** (xong) → **SP-1 daily-driver** (xong) → **SP-2 4 trụ cột** (xong) → **SP-3 Voice + Onboarding** (spec này, **đóng 16 màn**).
+Lộ trình tổng: **SP-0** (xong) → **SP-1 daily-driver** (xong) → **SP-2 4 trụ cột** (xong) → **SP-3 Voice + Onboarding** (**xong** — đóng trọn 16 màn). **Toàn bộ bản đồ 16 màn đã dựng.**
 
 ## 2. Mục tiêu & Phi-mục-tiêu
 

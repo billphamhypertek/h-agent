@@ -95,6 +95,8 @@ Tầm nhìn: một **"AI chief-of-staff" cho công ty một người** — nhìn
 
 ## 5. Bản đồ 16 màn hình
 
+> **Trạng thái triển khai (2026-06-28): ✅ 16/16 màn đã dựng.** SP-0 (khung lõi + Boot/HUD/Brief/Chat + nền WebGL) → SP-1 daily-driver (8 màn cấu hình/vận hành + ⌘K) → SP-2 (4 trụ cột Dev/Inbox/Ops/Content) → SP-3 (màn 15 Voice/Ambient + màn 16 Onboarding) — tất cả đã merge vào `main`. Các ghi chú "sub-project sau / ngoài phạm vi lát đầu" bên dưới phản ánh phạm vi *lát foundation đầu tiên* (2026-06-25) — nay đều đã hoàn tất ở các sprint kế tiếp.
+
 Mockup tham chiếu: `.superpowers/brainstorm/21982-1782359469/content/09-all-screens.html`.
 
 **Khung lõi**

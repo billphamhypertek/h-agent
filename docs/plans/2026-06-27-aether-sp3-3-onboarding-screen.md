@@ -1,5 +1,7 @@
 # AETHER SP-3 Slice 3 — Onboarding Screen Implementation Plan
 
+> **Trạng thái: ✅ HOÀN TẤT** (2026-06-28) — merged vào `main`, **đóng trọn 16 màn**. 3 task lõi + review/refactor: commits `9e55079` (scaffold + gate + picker), `bd5ee75` (OAuth/API-key/confirm states), `93216920` (split `onboarding/` sub-views), `dc697bc` (swap first-run gate + ⌘K reopen), `0c9e7b6` (final-review C1+I1 fix), `f0e9c6c` (extract shared provider-setup primitives), `fc9dd81` (API-key form augmented catalog), `c84732d` (smoke-cover FlowView), `122ada5` (gỡ overlay legacy). Suite `src/aether` xanh, `tsc` sạch.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add screen 16 — a full-screen AETHER-skinned first-run onboarding wizard that **reuses the existing `store/onboarding.ts` state machine unchanged**, replaces the legacy `DesktopOnboardingOverlay` at the first-run gate, and is reopenable from ⌘K. Closes the 16-screen map. **0 Python changes.**

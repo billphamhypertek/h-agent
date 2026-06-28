@@ -1,5 +1,7 @@
 # AETHER SP-3 Slice 2 — Voice / Ambient Screen Implementation Plan
 
+> **Trạng thái: ✅ HOÀN TẤT** (2026-06-28) — merged vào `main`. 5 task xong: commits `0af5e3d` ($voiceActive/$voiceSession), `9b52f1e` (adapter `useVoiceSession`), `7e1e604` (mount ở desktop-controller), `401b05b` (voice-screen presentation), `e75d110` (route + nav + shell + ⌘K), `9f8d973` (fix Settings link in-app + review nits). Triển khai đúng *Architecture deviation* đã ghi: vòng voice chạy app-global qua adapter `useVoiceSession` (controller), màn `/voice` thuần presentation. Suite `src/aether` xanh, `tsc` sạch.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add screen 15 — a hands-free Voice/Ambient cockpit at `/voice`: a large state-reactive Living Orb (using the Slice-1 `listening`/`speaking` states), the active session's transcript, and a Nghe/Dừng control — all reusing the battle-tested voice runtime, with **0 Python changes**.
