@@ -1,6 +1,6 @@
 # AETHER Desktop — SP-4: UI Overhaul toàn app (Program Tracking)
 
-> Tracking chương trình · 2026-06-28 · trạng thái: 🟡 đang chạy — chốt phạm vi, chờ bắt đầu đầu việc #0.
+> Tracking chương trình · 2026-06-28 · trạng thái: 🟡 đang làm đầu việc #0 — BS ✅ · MU ✅ · SP 🟡 (chờ user review spec → writing-plans).
 > Ngôn ngữ: tiếng Việt + thuật ngữ kỹ thuật tiếng Anh.
 > Program-spec (bản đồ 16 màn, đã đóng ở SP-3): [docs/specs/2026-06-25-aether-desktop-design.md](./2026-06-25-aether-desktop-design.md) §5.
 
@@ -42,7 +42,7 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 
 | # | Surface | Component / Route | BS | MU | SP | PL | IM | RV | FX | RL | Tổng | Docs |
 |---|---|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
-| **0** | **Design Language + App shell** *(north-star; nav-rail, top bar, online dot, overlays, page-transition; dọn `/command-center` stub)* | cross-cutting | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| **0** | **Design Language + App shell** *(north-star sinh-thể-sống; nav-rail nở, top bar + ⌘K, vital-sign, overlay host, page-transition, living engine all-WebGL; dọn `/command-center` stub)* | cross-cutting | ✅ | ✅ | 🟡 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | [spec](./2026-06-28-aether-sp4-00-design-language.md) |
 | 1 | Boot Sequence | `boot-sequence.tsx` · pre-shell | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 2 | HUD / Trang chủ | `command-center.tsx` · `/hud` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
