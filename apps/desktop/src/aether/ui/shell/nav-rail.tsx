@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 
+import { Icon } from '@/aether/ui/components/icon/icon'
 import { GEOMETRY } from '@/aether/ui/theme/geometry'
 
 import { AETHER_NAV_ITEMS, type NavItem } from './nav-items'
@@ -69,7 +70,7 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate, onl
               title={item.label}
               type="button"
             >
-              {item.icon}
+              {<Icon name={item.iconName} />}
             </button>
           )
         })}
