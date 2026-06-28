@@ -5,7 +5,11 @@ import type { ModelOptionProvider } from '@/types/aether'
 
 export interface ApiKeyOption {
   description?: string
-  docsUrl: string
+  // Optional: not every option has an external "get a key" page (e.g. the
+  // local/custom-endpoint entry, or backend-derived providers). Consumers must
+  // render the docs link conditionally so an absent URL never yields a dead
+  // anchor.
+  docsUrl?: string
   envKey: string
   id: string
   name: string
@@ -42,7 +46,9 @@ export const API_KEY_OPTIONS: ApiKeyOption[] = [
     id: 'local',
     name: 'Local / custom endpoint',
     envKey: 'OPENAI_BASE_URL',
-    docsUrl: 'https://github.com/NousResearch/hermes-agent#bring-your-own-endpoint',
+    // No docs link: the local/custom-endpoint option only configures a base URL,
+    // it has no external "get a key" page. (Dropped the stale pre-rebrand
+    // NousResearch/hermes-agent self-repo link, which is dead after the rebrand.)
     placeholder: 'http://127.0.0.1:8000/v1'
   }
 ]

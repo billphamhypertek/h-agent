@@ -1,39 +1,48 @@
 import { useStore } from '@nanostores/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { getEnvVars } from '@/aether-api'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
+import { type ApiKeyOption, useApiKeyCatalog } from '@/components/provider-setup'
+import { Check } from '@/lib/icons'
 // The store actions are reached through a namespace import so `vi.spyOn` can
 // intercept them at the call site. Constants/types may be named imports.
 import * as onboarding from '@/store/onboarding'
-import type { OAuthProvider } from '@/types/aether'
+import type { EnvVarInfo, OAuthProvider } from '@/types/aether'
 
 import { FEATURED_ID, providerTitle, ROW_CLASS, sortProviders } from './shared'
 
-// Curated API-key providers (static — no network catalog in the onboarding
-// scaffold). Each carries the env var the store writes plus a docs link.
-interface ApiKeyOption {
-  docsUrl?: string
-  envKey: string
-  id: string
-  name: string
-  placeholder?: string
-}
+// Best-effort env-state read for the onboarding key form. Mirrors
+// useApiKeyCatalog's pattern (plain useEffect+useState, NO react-query) so the
+// onboarding unit tests can render the screen bare — without a
+// QueryClientProvider — without crashing. On failure the form simply renders
+// without the "đã đặt" affordance.
+function useEnvVars(): Record<string, EnvVarInfo> {
+  const [env, setEnv] = useState<Record<string, EnvVarInfo>>({})
 
-const API_KEY_OPTIONS: ApiKeyOption[] = [
-  { id: 'openrouter', name: 'OpenRouter', envKey: 'OPENROUTER_API_KEY', docsUrl: 'https://openrouter.ai/keys' },
-  { id: 'openai', name: 'OpenAI', envKey: 'OPENAI_API_KEY', docsUrl: 'https://platform.openai.com/api-keys' },
-  { id: 'gemini', name: 'Google Gemini', envKey: 'GEMINI_API_KEY', docsUrl: 'https://aistudio.google.com/app/apikey' },
-  { id: 'xai', name: 'xAI Grok', envKey: 'XAI_API_KEY', docsUrl: 'https://console.x.ai/' },
-  {
-    id: 'local',
-    name: 'Local / custom endpoint',
-    envKey: 'OPENAI_BASE_URL',
-    // No docs link: the local/custom-endpoint option only configures a base URL,
-    // it has no external "get a key" page. (Dropped the stale pre-rebrand
-    // NousResearch/hermes-agent self-repo link, which is dead after the rebrand.)
-    placeholder: 'http://127.0.0.1:8000/v1',
-  },
-]
+  useEffect(() => {
+    let cancelled = false
+
+    // Promise.resolve().then funnels a synchronous throw (e.g. no desktop
+    // bridge in tests) into the same .catch instead of escaping.
+    void Promise.resolve()
+      .then(() => getEnvVars())
+      .then(r => {
+        if (!cancelled) {
+          setEnv(r)
+        }
+      })
+      .catch(() => {
+        // Ignore — render the form without the set/redacted affordance.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return env
+}
 
 // Restyled legacy Picker (overlay lines 431+). Provider rows launch OAuth; the
 // "Dùng API key" affordance flips to the key form; ApiKeyForm saves via the
@@ -181,8 +190,16 @@ function ApiKeyForm({
     apiKey?: string,
   ) => Promise<{ message?: string; ok: boolean }>
 }) {
+  // The augmented catalog returns the curated list synchronously on first
+  // render, then appends every other backend api_key provider once the async
+  // fetch resolves — so `catalog[0]` is always defined.
+  const catalog = useApiKeyCatalog()
+  const env = useEnvVars()
+  const isSet = (envKey: string) => env[envKey]?.is_set ?? false
+  const redactedValue = (envKey: string) => env[envKey]?.redacted_value ?? null
+
   const [option, setOption] = useState<ApiKeyOption>(
-    () => API_KEY_OPTIONS.find(o => o.envKey === initialEnvKey) ?? API_KEY_OPTIONS[0],
+    () => catalog.find(o => o.envKey === initialEnvKey) ?? catalog[0],
   )
 
   const [value, setValue] = useState('')
@@ -191,6 +208,11 @@ function ApiKeyForm({
   const [error, setError] = useState<null | string>(null)
 
   const isLocal = option.envKey === 'OPENAI_BASE_URL'
+  const alreadySet = isSet(option.envKey)
+  // When set, surface the backend's redacted value (e.g. "sk-12…wxyz") as the
+  // placeholder so the user can eyeball the current key, falling back to a
+  // "replace current" hint.
+  const currentRedacted = alreadySet ? (redactedValue(option.envKey) ?? null) : null
   const canSave = value.trim().length >= 1
 
   const pick = (o: ApiKeyOption) => {
@@ -232,7 +254,7 @@ function ApiKeyForm({
       ) : null}
 
       <div className="grid max-h-[42dvh] gap-2 overflow-y-auto p-1 sm:grid-cols-2">
-        {API_KEY_OPTIONS.map(o => (
+        {catalog.map(o => (
           <button
             className={
               option.envKey === o.envKey
@@ -243,7 +265,16 @@ function ApiKeyForm({
             onClick={() => pick(o)}
             type="button"
           >
-            <span className="text-[12.5px] font-medium text-white">{o.name}</span>
+            <span className="flex items-center justify-between gap-2">
+              <span className="text-[12.5px] font-medium text-white">{o.name}</span>
+              {isSet(o.envKey) ? (
+                <Check
+                  aria-label="Đã đặt"
+                  className="size-3.5 text-[color:var(--ae-azure-soft)]"
+                  data-testid={`ae-key-set-${o.envKey}`}
+                />
+              ) : null}
+            </span>
           </button>
         ))}
       </div>
@@ -254,7 +285,14 @@ function ApiKeyForm({
           className="rounded-[10px] border border-[rgba(120,200,255,.22)] bg-[rgba(8,18,32,.5)] p-[9px_12px] font-mono text-[13px] text-white outline-none focus:border-[rgba(120,200,255,.5)]"
           onChange={e => setValue(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && void submit()}
-          placeholder={isLocal ? option.placeholder || 'http://127.0.0.1:8000/v1' : 'Dán API key'}
+          placeholder={
+            currentRedacted ??
+            (alreadySet
+              ? 'Thay khoá hiện tại'
+              : isLocal
+                ? option.placeholder || 'http://127.0.0.1:8000/v1'
+                : 'Dán API key')
+          }
           type={isLocal ? 'text' : 'password'}
           value={value}
         />
