@@ -42,6 +42,38 @@ export function AetherOnboarding({
     }
   }, [ctx, enabled, state.requested])
 
+  // Ported from the legacy overlay (desktop-onboarding-overlay.tsx lines 242–266)
+  // to preserve the Settings deep-link: when the Providers/Model settings page
+  // asked to connect a SPECIFIC provider, the store stashed its id. Once the
+  // provider list has loaded and we're back at an idle picker, auto-launch that
+  // exact OAuth flow so the user lands directly in sign-in instead of the full
+  // picker they just clicked through.
+  useEffect(() => {
+    if (!state.manual || state.providers === null || state.flow.status !== 'idle') {
+      return
+    }
+
+    const pendingId = onboarding.peekPendingProviderOAuth()
+
+    if (!pendingId) {
+      return
+    }
+
+    const provider = state.providers.find(p => p.id === pendingId)
+
+    if (provider) {
+      // Only clear once we've committed to launching it, so a failed/empty
+      // provider fetch doesn't silently drop the hand-off.
+      onboarding.clearPendingProviderOAuth()
+      void onboarding.startProviderOAuth(provider, ctx)
+    } else if (state.providers.length > 0) {
+      // The list loaded but the id isn't a real provider — drop the stale
+      // hand-off. An empty list means the fetch isn't ready yet, so keep it
+      // and let a later refresh retry.
+      onboarding.clearPendingProviderOAuth()
+    }
+  }, [ctx, state.flow.status, state.manual, state.providers])
+
   // Gate logic — mirrors legacy overlay lines 273–301 verbatim.
   if (state.configured === true && !state.manual) {
     return null

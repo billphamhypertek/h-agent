@@ -12,7 +12,7 @@ import { FEATURED_ID, providerTitle, ROW_CLASS, sortProviders } from './shared'
 // Curated API-key providers (static — no network catalog in the onboarding
 // scaffold). Each carries the env var the store writes plus a docs link.
 interface ApiKeyOption {
-  docsUrl: string
+  docsUrl?: string
   envKey: string
   id: string
   name: string
@@ -28,7 +28,9 @@ const API_KEY_OPTIONS: ApiKeyOption[] = [
     id: 'local',
     name: 'Local / custom endpoint',
     envKey: 'OPENAI_BASE_URL',
-    docsUrl: 'https://github.com/NousResearch/hermes-agent#bring-your-own-endpoint',
+    // No docs link: the local/custom-endpoint option only configures a base URL,
+    // it has no external "get a key" page. (Dropped the stale pre-rebrand
+    // NousResearch/hermes-agent self-repo link, which is dead after the rebrand.)
     placeholder: 'http://127.0.0.1:8000/v1',
   },
 ]

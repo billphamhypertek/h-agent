@@ -2,8 +2,20 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as onboarding from '@/store/onboarding'
+import type { OAuthProvider } from '@/types/aether'
 
 import { AetherOnboarding } from './onboarding-screen'
+
+function provider(id: string, name = id): OAuthProvider {
+  return {
+    cli_command: `aether login ${id}`,
+    docs_url: `https://example.com/${id}`,
+    flow: 'pkce',
+    id,
+    name,
+    status: { logged_in: false },
+  }
+}
 
 const base = {
   configured: false as boolean | null,
@@ -20,6 +32,9 @@ const base = {
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  // The pending-provider hand-off is module-level state in the store; clear it
+  // so the C1 deep-link test can't leak a stashed id into other tests.
+  onboarding.clearPendingProviderOAuth()
 })
 
 describe('AetherOnboarding gate', () => {
@@ -41,6 +56,30 @@ describe('AetherOnboarding gate', () => {
     render(<AetherOnboarding enabled requestGateway={vi.fn()} />)
     fireEvent.click(screen.getByTestId('ae-onboarding-skip'))
     expect(spy).toHaveBeenCalled()
+  })
+})
+
+describe('AetherOnboarding provider deep-link (C1)', () => {
+  it('auto-launches the stashed provider OAuth flow once the list loads', () => {
+    const spy = vi.spyOn(onboarding, 'startProviderOAuth').mockImplementation(async () => {})
+    const nous = provider('nous', 'Nous Portal')
+
+    // Stash a pending id exactly the way the Settings deep-link callers do.
+    // This flips the store into manual mode + kicks an async provider refresh,
+    // so we immediately seed the precise state the effect needs.
+    onboarding.startManualProviderOAuth('nous')
+    onboarding.$desktopOnboarding.set({
+      ...base,
+      configured: true,
+      manual: true,
+      providers: [nous] as never,
+      flow: { status: 'idle' },
+    })
+
+    render(<AetherOnboarding enabled requestGateway={vi.fn()} />)
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledWith(nous, expect.anything())
   })
 })
 
