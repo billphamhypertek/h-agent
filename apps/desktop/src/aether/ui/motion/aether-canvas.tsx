@@ -2,8 +2,12 @@
 import { useStore } from '@nanostores/react'
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
+import type { GraphSpec } from '@/aether/domain/engine/graph-model'
+import { $graphSpec } from '@/aether/domain/motion/graph-store'
 import { $motionActive, $orbState } from '@/aether/domain/motion/motion-store'
 import { AmbientField } from './ambient-field'
+import { GraphView } from './graph/graph-view'
+import { GraphLabels } from './graph/labels'
 import { LivingOrbGL } from './living-orb-gl'
 
 // Pure perf predicates (unit-tested).
@@ -13,11 +17,15 @@ export function pickDpr(devicePixelRatio: number): number {
 export function shouldRenderFrame(hidden: boolean, idle: boolean): boolean {
   return !hidden && !idle
 }
+export function shouldRenderGraph(spec: GraphSpec | null): boolean {
+  return spec != null && (spec.orbs.length > 0 || spec.nodes.length > 0)
+}
 
 // Shared, single Canvas at the shell root (z0, full-bleed). Returns null when the
 // multi-layer gate is closed — the CSS orb / .ae-shell-bg path is the fallback.
 export function AetherCanvas({ enabled }: { enabled: boolean }) {
   const orbState = useStore($orbState)
+  const graph = useStore($graphSpec)
   // Hooks must run before the early return; visibility drives the frameloop.
   const [visible, setVisible] = useState(!document.hidden)
 
@@ -50,6 +58,12 @@ export function AetherCanvas({ enabled }: { enabled: boolean }) {
         <group position={[0, 0, 1.5]}>
           <LivingOrbGL state={orbState} size={0.6} />
         </group>
+        {shouldRenderGraph(graph) && graph && (
+          <group position={[0, 0, 1.5]}>
+            <GraphView spec={graph} />
+            <GraphLabels nodes={graph.nodes} />
+          </group>
+        )}
       </Canvas>
     </div>
   )

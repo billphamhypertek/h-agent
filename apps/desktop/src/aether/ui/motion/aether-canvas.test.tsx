@@ -22,4 +22,10 @@ describe('AetherCanvas gating + perf predicates', () => {
     expect(shouldRenderFrame(false, true)).toBe(false)
     expect(shouldRenderFrame(true, true)).toBe(false)
   })
+  it('renders the graph only when a spec is present', async () => {
+    const { shouldRenderGraph } = await import('./aether-canvas')
+    const { hsgStandbyGraph } = await import('@/aether/domain/engine/demo-script')
+    expect(shouldRenderGraph(null)).toBe(false)
+    expect(shouldRenderGraph(hsgStandbyGraph())).toBe(true)
+  })
 })
