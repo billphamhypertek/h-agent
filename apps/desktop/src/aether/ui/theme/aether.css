@@ -405,12 +405,19 @@
   animation: ae-pulse 2.2s ease-out infinite;
 }
 
+/* vital-sign ECG — gentle opacity beat; speed differs per state (online vs retrying) */
+.ae-vital { opacity: 0.9; }
+[data-aether-theme='aether'] .ae-vital[data-status='online'] { animation: ae-breath 2.6s ease-in-out infinite; }
+[data-aether-theme='aether'] .ae-vital[data-status='retrying'] { animation: ae-breath 0.9s ease-in-out infinite; }
+[data-aether-theme='aether'] .ae-vital[data-status='down'] { opacity: 0.7; animation: none; }
+
 @media (prefers-reduced-motion: reduce) {
   [data-aether-theme='aether'] .ae-bloom,
   [data-aether-theme='aether'] .ae-orb-stage,
   [data-aether-theme='aether'] .ae-orb,
   [data-aether-theme='aether'] [data-testid='ae-online-dot']::after,
   [data-aether-theme='aether'] .ae-orb-ring { animation: none !important; }
+  [data-aether-theme='aether'] .ae-vital { animation: none !important; }
   [data-aether-theme='aether'] .ae-nav-indicator,
   [data-aether-theme='aether'] .ae-nav-edge { transition: none !important; }
   [data-aether-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
