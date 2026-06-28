@@ -1,6 +1,6 @@
 # AETHER Desktop — SP-4: UI Overhaul toàn app (Program Tracking)
 
-> Tracking chương trình · 2026-06-28 · trạng thái: 🟡 đang làm đầu việc #0 — BS ✅ · MU ✅ · SP 🟡 (chờ user review spec → writing-plans).
+> Tracking chương trình · cập nhật 2026-06-29 · trạng thái: 🟢 **đầu việc #0 (Design Language + App shell) XONG** — full pipeline BS→RL ✅, đã landed `origin/main` @ `e1016a027` (src/aether 465/465 xanh, tsc/eslint sạch). Tiếp theo: **#2 HUD**.
 > Ngôn ngữ: tiếng Việt + thuật ngữ kỹ thuật tiếng Anh.
 > Program-spec (bản đồ 16 màn, đã đóng ở SP-3): [docs/specs/2026-06-25-aether-desktop-design.md](./2026-06-25-aether-desktop-design.md) §5.
 
@@ -42,7 +42,7 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 
 | # | Surface | Component / Route | BS | MU | SP | PL | IM | RV | FX | RL | Tổng | Docs |
 |---|---|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
-| **0** | **Design Language + App shell** *(north-star sinh-thể-sống; nav-rail nở, top bar + ⌘K, vital-sign, overlay host, page-transition, living engine all-WebGL; dọn `/command-center` stub)* | cross-cutting | ✅ | ✅ | 🟡 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | [spec](./2026-06-28-aether-sp4-00-design-language.md) |
+| **0** | **Design Language + App shell** *(north-star sinh-thể-sống; nav-rail nở, top bar + ⌘K, vital-sign, overlay host, page-transition, living engine all-WebGL; dọn `/command-center` stub)* | cross-cutting | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-28-aether-sp4-00-design-language.md) · [plan](../plans/2026-06-28-aether-sp4-00-design-language.md) |
 | 1 | Boot Sequence | `boot-sequence.tsx` · pre-shell | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 2 | HUD / Trang chủ | `command-center.tsx` · `/hud` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
@@ -63,7 +63,13 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 | 18 | Artifacts | `artifacts-screen.tsx` · `/artifacts` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 19 | Profiles | `profiles-screen.tsx` · `/profiles` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 
-**Tiến độ tổng:** 0/20 xong.
+**Tiến độ tổng:** 1/20 xong (#0 ✅).
+
+> **Carry-over từ #0 (xử lý ở các đầu việc màn sau, không chặn #0):**
+> - **Dual ⌘K** — top-bar ⌘K (global) + CommandBar trong màn HUD (`command-center.tsx`) cùng hiện trên `/hud`; **#2 HUD** sở hữu việc bỏ thanh ⌘K trong-màn.
+> - **Living-engine GL polish** (làm trước khi wiring GL thật ở **#3 Chat**): `graph-view.tsx` dispose `BufferGeometry` trong `useMemo` (rò three.js, chỉ active ở route dev `/playground`); link-tendril color đang hardcode `stateColor('online')` → đổi sang theo endpoint; core orb đang fix `state="thinking"` (bỏ qua `spec.state`/`phase`).
+> - **Polish nhỏ:** VitalSign `aria-label` đang chèn status tiếng Anh (online/retrying/down) vào chuỗi VN (i18n); ⌘K glyph hiển thị mọi nền tảng (Ctrl trên Win/Linux). `--ae-scrim` token đã thêm (overlay scrim).
+> - **Manual GUI checklist** (Task 22 §4) **chưa chạy** (headless không có GL) — cần user chạy `npm run dev` để xác nhận thị giác: nav-rail nở 62↔172 + group headers, glyph thở/về Home, 1 avatar, ⌘K mở palette, vital azure/amber/red, `/playground` cảnh 6-verb + label sắc nét, reduced-motion → fallback SVG (không trắng canvas), macOS traffic-lights không đè glyph, ngắt gateway → overlay kết nối + vital đỏ-phẳng.
 
 ## 5. Thứ tự đề xuất
 
