@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import oldBriefing from '@/aether/domain/briefing/fixtures/briefing.sample.json'
 import { isBriefing, parseBriefingFromMessages } from '@/aether/domain/briefing/parse-briefing'
 
-import companyOs from './fixtures/company-os.sample.json'
 import type { CompanyOs } from './company-os-schema'
+import companyOs from './fixtures/company-os.sample.json'
 
 describe('company-os artifact (briefing superset)', () => {
   it('the new superset fixture passes the briefing guard', () => {

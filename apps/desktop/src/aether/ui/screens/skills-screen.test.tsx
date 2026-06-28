@@ -62,6 +62,7 @@ describe('SkillsScreen — toggle interaction', () => {
       .fn()
       .mockResolvedValueOnce({ ok: true, name: 'code-review', enabled: true })
       .mockResolvedValueOnce(SAMPLE.map(s => (s.name === 'code-review' ? { ...s, enabled: true } : s)))
+
     ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
 
     $skills.set(SAMPLE)

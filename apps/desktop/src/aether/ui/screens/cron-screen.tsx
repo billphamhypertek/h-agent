@@ -11,15 +11,19 @@ import type { CronJob, CronJobCreatePayload } from '@/types/aether'
 function asText(v?: null | string): string {
   return typeof v === 'string' ? v.trim() : ''
 }
+
 function truncate(v: string, n: number): string {
   return v.length > n ? `${v.slice(0, n)}…` : v
 }
+
 function jobTitle(job: CronJob): string {
   return asText(job.name) || truncate(asText(job.prompt), 60) || truncate(asText(job.script), 60) || job.id
 }
+
 function jobState(job: CronJob): string {
   return asText(job.state) || (job.enabled === false ? 'disabled' : 'scheduled')
 }
+
 function stateLabel(state: string): string {
   const map: Record<string, string> = {
     scheduled: 'Đã lên lịch',
@@ -29,18 +33,25 @@ function stateLabel(state: string): string {
     error: 'Lỗi',
     completed: 'Hoàn tất',
   }
+
   return map[state] ?? state
 }
+
 function stateColor(state: string): string {
   if (state === 'error' || state === 'completed') { return 'var(--ae-warn)' }
+
   if (state === 'paused' || state === 'disabled') { return 'var(--ae-dim)' }
+
   return 'var(--ae-ok)'
 }
+
 function formatTime(iso?: null | string): string {
   if (!iso) { return '—' }
   const d = new Date(iso)
+
   return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('vi-VN')
 }
+
 function scheduleText(job: CronJob): string {
   return asText(job.schedule_display) || asText(job.schedule?.display) || asText(job.schedule?.expr) || '—'
 }
@@ -118,6 +129,7 @@ export function CronScreen() {
         {status === 'ready' &&
           (jobs ?? []).map(job => {
             const state = jobState(job)
+
             return (
               <GlassSlab className="flex items-start justify-between gap-4" data-testid="ae-cron-row" key={job.id} size="sm">
                 <div className="min-w-0 flex-1">

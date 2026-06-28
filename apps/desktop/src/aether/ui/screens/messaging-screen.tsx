@@ -1,7 +1,6 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useState } from 'react'
 
-import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus, loadPlatforms } from '@/aether/domain/messaging/messaging-store'
 import * as messagingStore from '@/aether/domain/messaging/messaging-store'
 // Namespace import so screen tests can vi.spyOn(tgStore, 'startTelegramOnboarding')
@@ -10,6 +9,7 @@ import * as messagingStore from '@/aether/domain/messaging/messaging-store'
 import * as tgStore from '@/aether/domain/messaging/telegram-onboarding-store'
 import { $telegramOnboarding } from '@/aether/domain/messaging/telegram-onboarding-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
+import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 
 type BadgeTone = 'good' | 'warn' | 'bad' | 'muted'
 
@@ -64,6 +64,7 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
   const trimmed = Object.fromEntries(
     Object.entries(edits).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v)
   )
+
   const hasEdits = Object.keys(trimmed).length > 0
 
   async function onSave() {

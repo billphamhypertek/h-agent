@@ -2,16 +2,16 @@ import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
 import {
+  $artifactQuery,
   $artifacts,
   $artifactsStatus,
-  $artifactQuery,
+  $fileOutputs,
+  $previewStatus,
   $selectedArtifact,
   $selectedPreview,
-  $previewStatus,
-  $fileOutputs,
   loadArtifacts,
-  searchArtifacts,
   openArtifact,
+  searchArtifacts,
 } from '@/aether/domain/artifacts/artifacts-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
 

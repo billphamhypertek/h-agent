@@ -1,7 +1,8 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { $editorContent, $editorSkill, $editorStatus } from '@/aether/domain/skills/skills-content-store'
@@ -29,6 +30,7 @@ describe('SkillEditor', () => {
 
   it('Save PUTs the edited content', async () => {
     const api = vi.fn().mockResolvedValue({ success: true })
+
     ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
 
     render(<SkillEditor />)
@@ -56,6 +58,7 @@ describe('SkillEditor', () => {
   // the LLM or invalidate the prompt cache.
   it('does not subscribe to conversation deltas or append assistant text', () => {
     const here = dirname(fileURLToPath(import.meta.url))
+
     const sources = [
       readFileSync(resolve(here, 'skill-editor.tsx'), 'utf8'),
       readFileSync(resolve(here, '../../domain/skills/skills-content-store.ts'), 'utf8'),

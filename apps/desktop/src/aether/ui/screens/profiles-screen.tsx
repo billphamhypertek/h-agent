@@ -5,10 +5,10 @@ import {
   $activeProfile,
   $modelOptions,
   $profiles,
-  $profilesStatus,
   $profileSetup,
   $profileSoul,
   $profileSoulStatus,
+  $profilesStatus,
   loadProfiles
 } from '@/aether/domain/profiles/profiles-store'
 // NOTE: mutation actions are called via this namespace import (not named
@@ -302,6 +302,7 @@ export function ProfilesScreen() {
                     disabled={!modelChoice}
                     onClick={() => {
                       const [provider, model] = modelChoice.split('::')
+
                       if (provider && model) { void profilesStore.setProfileModelAction(selectedName, provider, model) }
                     }}
                     type="button"

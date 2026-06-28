@@ -38,6 +38,7 @@ export async function readLatestCompanyOs(
   const api =
     deps.api ??
     (<T>(request: Parameters<ApiFn>[0]) => window.aetherDesktop.api<T>(request))
+
   const getMessages = deps.getMessages ?? getSessionMessages
   const jobName = deps.jobName ?? COMPANY_OS_JOB_NAME
   const profile = deps.profile ?? 'default'
@@ -45,12 +46,16 @@ export async function readLatestCompanyOs(
   const jobs = await api<CronJob[]>({ path: `/api/cron/jobs?profile=${encodeURIComponent(profile)}` })
   const job = jobs.find(j => j.name === jobName)
 
-  if (!job) { cache = { value: null, at: now() }; return null }
+  if (!job) { cache = { value: null, at: now() };
+
+ return null }
 
   const runs = await api<CronRunsResponse>({ path: `/api/cron/jobs/${encodeURIComponent(job.id)}/runs?limit=1` })
   const latest = runs.runs?.[0]
 
-  if (!latest) { cache = { value: null, at: now() }; return null }
+  if (!latest) { cache = { value: null, at: now() };
+
+ return null }
 
   const { messages } = await getMessages(latest.id, profile)
   const parsed = parseBriefingFromMessages(messages) as CompanyOs | null

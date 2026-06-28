@@ -1,8 +1,8 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import type { InboxSection } from '@/aether/domain/company-os/company-os-schema'
+import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import { $inbox, $inboxStatus } from '@/aether/domain/inbox/inbox-store'
 import * as inboxStore from '@/aether/domain/inbox/inbox-store'
 

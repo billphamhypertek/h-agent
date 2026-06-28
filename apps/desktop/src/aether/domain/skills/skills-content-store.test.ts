@@ -41,6 +41,7 @@ describe('openEditor', () => {
     const api = vi.fn(async () => {
       throw new Error('404')
     })
+
     await openEditor('nope', { api })
     expect($editorStatus.get()).toBe('error')
   })

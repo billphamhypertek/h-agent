@@ -62,6 +62,7 @@ describe('control actions', () => {
     const api = vi.fn().mockImplementation((req: { path: string }) =>
       req.path === '/api/cron/jobs' ? Promise.resolve([job]) : Promise.resolve(job),
     )
+
     await pauseCronJobAction('job-1', { api })
     expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1/pause', method: 'POST' })
     expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs' })
@@ -84,6 +85,7 @@ describe('control actions', () => {
     const api = vi.fn().mockImplementation((req: { path: string }) =>
       req.path === '/api/cron/jobs' ? Promise.resolve([]) : Promise.resolve({ ok: true }),
     )
+
     await deleteCronJobAction('job-1', { api })
     expect(api).toHaveBeenCalledWith({ path: '/api/cron/jobs/job-1', method: 'DELETE' })
     expect($cronJobsStatus.get()).toBe('empty')

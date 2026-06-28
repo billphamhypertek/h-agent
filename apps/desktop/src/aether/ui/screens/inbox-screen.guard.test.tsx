@@ -8,6 +8,7 @@ describe('InboxScreen prompt-cache guard', () => {
     const screenSrc = readFileSync(join(__dirname, 'inbox-screen.tsx'), 'utf8')
     const storeSrc = readFileSync(join(__dirname, '..', '..', 'domain', 'inbox', 'inbox-store.ts'), 'utf8')
     const combined = `${screenSrc}\n${storeSrc}`
+
     for (const forbidden of [
       'appendAssistantDelta',
       'message.delta',

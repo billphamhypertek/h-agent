@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { $platforms, $platformsStatus, loadPlatforms } from './messaging-store'
 import { updatePlatform } from './messaging-store'
@@ -48,6 +48,7 @@ describe('loadPlatforms', () => {
 describe('updatePlatform', () => {
   it('PUTs the update then re-fetches the list', async () => {
     const calls: { path: string; method?: string; body?: unknown }[] = []
+
     const api = vi.fn(async (req: { path: string; method?: string; body?: unknown }) => {
       calls.push(req)
 

@@ -88,6 +88,7 @@ export async function loadCronRuns(jobId: string, limit = 20, deps: CronStoreDep
     const { runs } = await deps.api<{ runs: SessionInfo[] }>({
       path: `/api/cron/jobs/${encodeURIComponent(jobId)}/runs?limit=${limit}`,
     })
+
     const list = runs ?? []
     $cronRuns.set(list)
     $cronRunsStatus.set(list.length === 0 ? 'empty' : 'ready')

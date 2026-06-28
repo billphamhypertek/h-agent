@@ -31,6 +31,7 @@ describe('settings prompt-cache safety', () => {
   for (const rel of FILES) {
     it(`${rel} references no conversation-delta symbols`, () => {
       const src = readFileSync(join(ROOT, rel), 'utf8')
+
       for (const needle of FORBIDDEN) {
         expect(src.includes(needle)).toBe(false)
       }

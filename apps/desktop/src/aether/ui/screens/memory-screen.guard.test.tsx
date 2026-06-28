@@ -1,6 +1,7 @@
-import { cleanup, render } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+
+import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -40,11 +41,14 @@ describe('MemoryScreen prompt-cache guard', () => {
     // __dirname-relative path instead. From src/aether/ui/screens/ the store
     // lives at ../../domain/memory/memory-store.ts.
     const screenSrc = readFileSync(join(__dirname, 'memory-screen.tsx'), 'utf8')
+
     const storeSrc = readFileSync(
       join(__dirname, '..', '..', 'domain', 'memory', 'memory-store.ts'),
       'utf8'
     )
+
     const combined = `${screenSrc}\n${storeSrc}`
+
     for (const forbidden of [
       'appendAssistantDelta',
       'message.delta',

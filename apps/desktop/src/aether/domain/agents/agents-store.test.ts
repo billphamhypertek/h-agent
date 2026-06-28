@@ -64,7 +64,9 @@ describe('loadAgents', () => {
   it('passes loading status during the fetch', async () => {
     let observed = ''
     await loadAgents({
-      listSessions: async () => { observed = $agentsStatus.get(); return page([]) },
+      listSessions: async () => { observed = $agentsStatus.get();
+
+ return page([]) },
       listCron: async () => [],
       listSkills: async () => [],
     })

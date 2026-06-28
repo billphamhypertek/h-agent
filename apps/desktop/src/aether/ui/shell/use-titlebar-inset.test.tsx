@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { titlebarInsetPx } from './use-titlebar-inset'
 
 describe('titlebarInsetPx (traffic-light regression)', () => {

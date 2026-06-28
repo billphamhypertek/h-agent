@@ -1,19 +1,19 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { PaginatedSessions, SessionInfo, SessionSearchResponse } from '@/types/aether'
 
 import {
+  $artifactQuery,
   $artifacts,
   $artifactsStatus,
-  $artifactQuery,
-  $selectedArtifact,
-  $previewStatus,
   $fileOutputs,
-  loadArtifacts,
-  searchArtifacts,
-  openArtifact,
-  loadFileOutputs,
+  $previewStatus,
+  $selectedArtifact,
   type ArtifactsDeps,
+  loadArtifacts,
+  loadFileOutputs,
+  openArtifact,
+  searchArtifacts,
 } from './artifacts-store'
 
 function session(id: string, title: string): SessionInfo {
@@ -52,6 +52,7 @@ describe('artifacts-store', () => {
       total: 2,
       sessions: [session('a1', 'Alpha'), session('a2', 'Beta')],
     }
+
     const listSessions = vi.fn(async () => paginated)
     const deps: ArtifactsDeps = { listSessions: listSessions as never }
 
@@ -99,6 +100,7 @@ describe('artifacts-store', () => {
         },
       ],
     }
+
     const searchSessions = vi.fn(async () => response)
 
     await searchArtifacts('hello', { searchSessions: searchSessions as never })
@@ -117,6 +119,7 @@ describe('artifacts-store', () => {
       total: 1,
       sessions: [session('a1', 'Alpha')],
     }))
+
     const searchSessions = vi.fn()
 
     await searchArtifacts('   ', { listSessions: listSessions as never, searchSessions: searchSessions as never })
@@ -128,6 +131,7 @@ describe('artifacts-store', () => {
 
   it('openArtifact loads static metadata via getSession + getSessionMessages (no stream)', async () => {
     const getSession = vi.fn(async () => session('a1', 'Alpha'))
+
     const getSessionMessages = vi.fn(async () => ({
       session_id: 'a1',
       messages: [{ role: 'user' as const, content: 'hi' }],
@@ -145,6 +149,7 @@ describe('artifacts-store', () => {
 describe('loadFileOutputs', () => {
   it('keeps only files (drops directories) from readDir', async () => {
     $fileOutputs.set(null)
+
     const readDir = vi.fn(async () => ({
       entries: [
         { name: 'report.md', path: '/out/report.md', isDirectory: false },

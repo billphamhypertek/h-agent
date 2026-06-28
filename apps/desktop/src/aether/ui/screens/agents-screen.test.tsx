@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { AgentsView } from '@/aether/domain/agents/agents-view'
 import { $agents, $agentsStatus } from '@/aether/domain/agents/agents-store'
 import * as agentsStore from '@/aether/domain/agents/agents-store'
+import type { AgentsView } from '@/aether/domain/agents/agents-view'
 import { $busy, $gatewayState } from '@/store/session'
 
 import { AgentsScreen } from './agents-screen'
@@ -92,6 +92,7 @@ describe('AgentsScreen ready sections', () => {
   it('still shows the read-only badge and no CRUD buttons in ready state', () => {
     render(<AgentsScreen />)
     expect(screen.getByText(/Chỉ xem/)).toBeTruthy()
+
     // The only button on the ready screen must NOT be a create/edit/delete control.
     for (const btn of screen.queryAllByRole('button')) {
       expect(btn.textContent ?? '').not.toMatch(/Tạo|Sửa|Xóa|Xoá|Create|Edit|Delete/)

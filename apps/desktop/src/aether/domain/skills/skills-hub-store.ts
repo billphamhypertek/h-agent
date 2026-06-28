@@ -38,6 +38,7 @@ export async function searchHub(q: string, deps: { api?: ApiFn } = {}): Promise<
     const res = await api<SkillHubSearchResponse>({
       path: `/api/skills/hub/search?q=${encodeURIComponent(query)}&source=all&limit=20`,
     })
+
     $hubResults.set(res.results)
     $hubInstalled.set(res.installed ?? {})
     $hubStatus.set(res.results.length > 0 ? 'ready' : 'empty')
@@ -62,6 +63,7 @@ export async function installFromHub(
       method: 'POST',
       body: { identifier },
     })
+
     await loadSkills()
 
     return res
@@ -83,6 +85,7 @@ export async function updateHub(
       method: 'POST',
       body: {},
     })
+
     await loadSkills()
 
     return res

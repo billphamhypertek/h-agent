@@ -1,8 +1,8 @@
 import { useStore } from '@nanostores/react'
 import { useEffect, useState } from 'react'
 
-import { $connection } from '@/store/session'
 import { GEOMETRY } from '@/aether/ui/theme/geometry'
+import { $connection } from '@/store/session'
 
 // Pure: mac-ness = windowButtonPosition != null (NOT IS_MAC). macOS fullscreen hides the traffic
 // lights but keeps windowButtonPosition non-null, so fullscreen also collapses the inset to 0.
@@ -23,10 +23,12 @@ export function useTitlebarInset(): number {
     const off = window.aetherDesktop?.onWindowStateChanged?.((payload) => {
       setFullscreenOverride(Boolean((payload as { isFullscreen?: boolean })?.isFullscreen))
     })
+
     return () => off?.()
   }, [])
 
   const windowButtonPosition = connection?.windowButtonPosition ?? null
   const isFullscreen = fullscreenOverride ?? Boolean(connection?.isFullscreen)
+
   return titlebarInsetPx({ windowButtonPosition, isFullscreen })
 }

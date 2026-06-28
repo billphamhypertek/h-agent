@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as store from '@/aether/domain/profiles/profiles-store'
-import { $activeProfile, $profiles, $profilesStatus, $profileSoul, $profileSoulStatus } from '@/aether/domain/profiles/profiles-store'
+import { $activeProfile, $profiles, $profileSoul, $profileSoulStatus, $profilesStatus } from '@/aether/domain/profiles/profiles-store'
 import type { ProfileInfo } from '@/types/aether'
 
 import { ProfilesScreen } from './profiles-screen'
@@ -173,10 +173,12 @@ describe('ProfilesScreen prompt-cache safety', () => {
   it('has no conversation-delta / appendAssistantDelta usage in source', async () => {
     const fs = await import('node:fs')
     const path = await import('node:path')
+
     const src = fs.readFileSync(
       path.resolve(__dirname, 'profiles-screen.tsx'),
       'utf8'
     )
+
     for (const forbidden of ['appendAssistantDelta', 'message.delta', 'reasoning.delta', 'thinking.']) {
       expect(src.includes(forbidden)).toBe(false)
     }

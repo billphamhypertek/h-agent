@@ -4,15 +4,15 @@ import { join } from 'node:path'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { SessionInfo } from '@/types/aether'
 import {
+  $artifactQuery,
   $artifacts,
   $artifactsStatus,
-  $artifactQuery,
-  $selectedArtifact,
-  $previewStatus,
   $fileOutputs,
+  $previewStatus,
+  $selectedArtifact,
 } from '@/aether/domain/artifacts/artifacts-store'
+import type { SessionInfo } from '@/types/aether'
 
 import { ArtifactsScreen } from './artifacts-screen'
 
@@ -98,6 +98,7 @@ describe('ArtifactsScreen search interaction', () => {
 
       return { limit: 60, offset: 0, total: 0, sessions: [] }
     })
+
     // @ts-expect-error test shim — only the api method is exercised here
     globalThis.window.aetherDesktop = { api, readDir: vi.fn() }
 
@@ -124,6 +125,7 @@ describe('ArtifactsScreen preview (static, prompt-cache safe)', () => {
 
   it('clicking a card opens a static preview from getSession + getSessionMessages only', async () => {
     const calledPaths: string[] = []
+
     const api = vi.fn(async (req: { path: string }) => {
       calledPaths.push(req.path)
 
@@ -150,6 +152,7 @@ describe('ArtifactsScreen preview (static, prompt-cache safe)', () => {
         cwd: null,
       }
     })
+
     // @ts-expect-error test shim
     globalThis.window.aetherDesktop = { api, readDir: vi.fn() }
 
@@ -183,10 +186,12 @@ describe('ArtifactsScreen preview (static, prompt-cache safe)', () => {
     // readFileSync (node:fs / node:path) approach instead, matching the other
     // source-scan guard tests.
     const screenSrc = readFileSync(join(__dirname, 'artifacts-screen.tsx'), 'utf8')
+
     const storeSrc = readFileSync(
       join(__dirname, '..', '..', 'domain', 'artifacts', 'artifacts-store.ts'),
       'utf8',
     )
+
     for (const src of [screenSrc, storeSrc]) {
       expect(src).not.toMatch(/appendAssistantDelta/)
       expect(src).not.toMatch(/message\.delta|reasoning\.delta|thinking\./)

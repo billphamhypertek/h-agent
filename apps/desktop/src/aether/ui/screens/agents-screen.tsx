@@ -65,9 +65,9 @@ export function AgentsScreen() {
       <div className="z-[2] mt-4 min-h-0 flex-1">
         {status === 'loading' && (
           <GlassSlab className="h-full" size="md">
-            <div data-testid="ae-agents-skeleton" className="flex h-full flex-col gap-3">
+            <div className="flex h-full flex-col gap-3" data-testid="ae-agents-skeleton">
               {[0, 1, 2].map(i => (
-                <div key={i} className="h-10 animate-pulse rounded-[11px] bg-[rgba(120,200,255,.08)]" />
+                <div className="h-10 animate-pulse rounded-[11px] bg-[rgba(120,200,255,.08)]" key={i} />
               ))}
             </div>
           </GlassSlab>
@@ -107,9 +107,9 @@ export function AgentsScreen() {
             <GlassSlab className="col-span-2 flex items-center justify-between" size="sm">
               <div className="flex items-center gap-[11px]">
                 <span
-                  data-testid="ae-agents-presence"
-                  data-orb={orbState}
                   className="h-[9px] w-[9px] flex-none rounded-full"
+                  data-orb={orbState}
+                  data-testid="ae-agents-presence"
                   style={{ background: ORB_COLOR[orbState], boxShadow: `0 0 9px ${ORB_COLOR[orbState]}` }}
                 />
                 <span className="text-[12.5px] font-semibold text-white">{ORB_LABEL[orbState]}</span>
@@ -124,11 +124,11 @@ export function AgentsScreen() {
             {/* sessions */}
             <GlassSlab className="row-span-2 flex min-h-0 flex-col" size="md">
               <SectionTitle>AGENT / PHIÊN</SectionTitle>
-              <div data-testid="ae-agents-sessions" className="flex min-h-0 flex-col gap-[9px] overflow-auto">
+              <div className="flex min-h-0 flex-col gap-[9px] overflow-auto" data-testid="ae-agents-sessions">
                 {agents.sessions.map(session => (
                   <div
-                    key={session.id}
                     className="flex items-center gap-[11px] rounded-[11px] p-[9px_11px] ring-1 ring-[rgba(120,200,255,.1)]"
+                    key={session.id}
                   >
                     <span
                       className="h-[7px] w-[7px] flex-none rounded-full"
@@ -153,9 +153,9 @@ export function AgentsScreen() {
             {/* cron */}
             <GlassSlab className="flex min-h-0 flex-col" size="md">
               <SectionTitle>LỊCH (CRON)</SectionTitle>
-              <div data-testid="ae-agents-cron" className="flex min-h-0 flex-col gap-2 overflow-auto">
+              <div className="flex min-h-0 flex-col gap-2 overflow-auto" data-testid="ae-agents-cron">
                 {agents.cron.map(job => (
-                  <div key={job.id} className="flex items-center gap-[9px] text-[11.5px]">
+                  <div className="flex items-center gap-[9px] text-[11.5px]" key={job.id}>
                     <span
                       className="h-[6px] w-[6px] flex-none rounded-full"
                       style={{ background: job.enabled ? 'var(--ae-ok)' : 'var(--ae-dim)' }}
@@ -170,11 +170,11 @@ export function AgentsScreen() {
             {/* skills */}
             <GlassSlab className="flex min-h-0 flex-col" size="md">
               <SectionTitle>NĂNG LỰC (SKILLS)</SectionTitle>
-              <div data-testid="ae-agents-skills" className="flex min-h-0 flex-wrap content-start gap-[7px] overflow-auto">
+              <div className="flex min-h-0 flex-wrap content-start gap-[7px] overflow-auto" data-testid="ae-agents-skills">
                 {agents.skills.map(skill => (
                   <span
-                    key={skill.name}
                     className="rounded-[9px] px-[9px] py-[5px] text-[11px] font-semibold ring-1"
+                    key={skill.name}
                     style={{
                       color: skill.enabled ? '#D7ECFA' : 'var(--ae-dim)',
                       ['--tw-ring-color' as string]: skill.enabled ? 'rgba(120,200,255,.28)' : 'rgba(120,200,255,.1)',

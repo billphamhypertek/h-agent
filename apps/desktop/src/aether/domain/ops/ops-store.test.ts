@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import type { CompanyOs } from '@/aether/domain/company-os/company-os-schema'
+import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 
 import { $ops, $opsStatus, loadOps } from './ops-store'
 
@@ -23,6 +23,7 @@ describe('loadOps', () => {
       ...(companyOs as unknown as CompanyOs),
       ops: { calendar: [], tasks: [], finance: {}, notes: [] }
     }
+
     await loadOps({ read: vi.fn().mockResolvedValue(empty) })
     expect($opsStatus.get()).toBe('empty')
   })

@@ -59,6 +59,7 @@ describe('composeAgentsView', () => {
       { name: 'a', category: 'core', description: '', enabled: true },
       { name: 'b', category: 'core', description: '', enabled: false },
     ]
+
     const view = composeAgentsView([], [], skills)
     expect(view.skills).toHaveLength(2)
     expect(view.enabledSkillCount).toBe(1)

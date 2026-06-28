@@ -10,6 +10,7 @@ describe('DevScreen prompt-cache guard', () => {
     const screenSrc = readFileSync(join(__dirname, 'dev-screen.tsx'), 'utf8')
     const storeSrc = readFileSync(join(__dirname, '..', '..', 'domain', 'dev', 'dev-store.ts'), 'utf8')
     const combined = `${screenSrc}\n${storeSrc}`
+
     for (const forbidden of [
       'appendAssistantDelta',
       'message.delta',

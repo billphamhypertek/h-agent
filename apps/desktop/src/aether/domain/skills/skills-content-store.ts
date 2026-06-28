@@ -25,6 +25,7 @@ export async function openEditor(name: string, deps: { api?: ApiFn } = {}): Prom
     const res = await api<SkillContent>({
       path: `/api/skills/content?name=${encodeURIComponent(name)}`,
     })
+
     $editorContent.set(res.content)
     $editorStatus.set('ready')
   } catch {
@@ -58,6 +59,7 @@ export async function saveEditor(deps: { api?: ApiFn } = {}): Promise<SkillWrite
       method: 'PUT',
       body: { name, content: $editorContent.get() },
     })
+
     $editorStatus.set('ready')
 
     return res

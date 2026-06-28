@@ -76,6 +76,7 @@ export async function validateKey(
   apiKey?: string
 ): Promise<{ ok: boolean; reachable: boolean; message: string; models?: string[] }> {
   const validate = deps.validate ?? validateProviderCredential
+
   return validate(key, value, apiKey)
 }
 

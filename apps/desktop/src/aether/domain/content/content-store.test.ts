@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import type { CompanyOs } from '@/aether/domain/company-os/company-os-schema'
+import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 
 import { $content, $contentStatus, loadContent } from './content-store'
 
@@ -19,6 +19,7 @@ describe('loadContent', () => {
         ideas: [{ id: 'i1', title: 'Reels giới thiệu sản phẩm', stage: 'idea' as const }]
       }
     }
+
     await loadContent({ read: vi.fn().mockResolvedValue(seeded) })
     expect($contentStatus.get()).toBe('ready')
     expect($content.get()?.calendar).toHaveLength(1)

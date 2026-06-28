@@ -15,9 +15,11 @@ import {
 describe('oauth-store', () => {
   it('loadOAuthProviders fills the atom and sets ready', async () => {
     $oauthStatus.set('idle')
+
     const list = vi.fn(async () => ({
       providers: [{ id: 'anthropic', name: 'Anthropic', flow: 'device_code', cli_command: '', docs_url: '', status: { logged_in: false } }]
     }))
+
     await loadOAuthProviders({ list: list as never })
     expect($oauthStatus.get()).toBe('ready')
     expect($oauthProviders.get()?.providers[0].id).toBe('anthropic')

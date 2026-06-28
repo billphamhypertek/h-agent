@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
+import type { ConfigFieldSchema } from '@/aether-api'
 import {
   $configRecord,
   $configSchema,
@@ -11,7 +12,6 @@ import {
   setConfigField
 } from '@/aether/domain/settings/config-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
-import type { ConfigFieldSchema } from '@/aether-api'
 import { useTheme } from '@/themes/context'
 
 const MODES: { id: 'dark' | 'light' | 'system'; label: string }[] = [
@@ -23,10 +23,12 @@ const MODES: { id: 'dark' | 'light' | 'system'; label: string }[] = [
 function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigFieldSchema }) {
   useStore($configRecord)
   const value = getConfigField(dottedKey)
+
   const commit = (v: unknown) => {
     setConfigField(dottedKey, v)
     void saveConfig()
   }
+
   const testId = `ae-config-${dottedKey}`
 
   if (schema.type === 'boolean') {
@@ -80,8 +82,8 @@ function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigF
       <input
         className="min-w-[200px] flex-1 rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-white"
         data-testid={testId}
-        onBlur={e => commit(e.target.value)}
         defaultValue={String(value ?? '')}
+        onBlur={e => commit(e.target.value)}
         type="text"
       />
     </label>
@@ -102,6 +104,7 @@ export function AppearanceTab() {
   const categoryOrder = schema?.category_order ?? []
   const fieldEntries = Object.entries(schema?.fields ?? {})
   const byCategory = (cat: string) => fieldEntries.filter(([, f]) => (f.category ?? 'general') === cat)
+
   const categories = categoryOrder.length
     ? categoryOrder
     : Array.from(new Set(fieldEntries.map(([, f]) => f.category ?? 'general')))

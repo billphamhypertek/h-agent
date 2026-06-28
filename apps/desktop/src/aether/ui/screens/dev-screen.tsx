@@ -67,7 +67,7 @@ export function DevScreen() {
   if (status === 'empty' || !dev) {
     return (
       <div className="ae-screen-bare grid h-full place-items-center">
-        <GlassSlab className="text-center" size="lg" data-testid="ae-dev-empty">
+        <GlassSlab className="text-center" data-testid="ae-dev-empty" size="lg">
           <div className="text-sm text-[color:var(--ae-dim)]">Chưa có bản tổng hợp — cron chưa chạy.</div>
           <div className="mt-1 text-[12px] text-[color:var(--ae-dim)]">
             Bật cron <b>company-os-aggregator</b> để cockpit có dữ liệu.

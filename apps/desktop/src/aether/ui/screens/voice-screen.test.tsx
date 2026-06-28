@@ -3,18 +3,19 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import type * as ReactRouterDom from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { $voiceActive, $voiceListening, $voiceSession } from '@/aether/domain/voice/voice-presence'
 import type { ChatMessage } from '@/lib/chat-messages'
 import { $messages } from '@/store/session'
-import { $voiceActive, $voiceListening, $voiceSession } from '@/aether/domain/voice/voice-presence'
 
 import { VoiceScreen } from './voice-screen'
 
 // VoiceScreen calls useNavigate(); a bare render with no Router context would
 // throw. Mock only useNavigate, preserve the rest of react-router-dom.
 const navigateMock = vi.fn()
-vi.mock('react-router-dom', async orig => ({ ...(await orig<typeof import('react-router-dom')>()), useNavigate: () => navigateMock }))
+vi.mock('react-router-dom', async orig => ({ ...(await orig<typeof ReactRouterDom>()), useNavigate: () => navigateMock }))
 
 const msg = (id: string, role: ChatMessage['role'], text: string): ChatMessage => ({ id, role, parts: [{ type: 'text', text }] })
 
@@ -71,6 +72,7 @@ describe('VoiceScreen', () => {
 
   it('is presentation-only: source never imports the voice loop or send-path', () => {
     const src = readFileSync(join(__dirname, 'voice-screen.tsx'), 'utf8')
+
     for (const forbidden of ['use-voice-conversation', 'usePromptActions', 'submitText', 'appendAssistantDelta']) {
       expect(src.includes(forbidden), `voice-screen must not import ${forbidden}`).toBe(false)
     }

@@ -8,6 +8,7 @@ describe('ContentScreen prompt-cache guard', () => {
     const screenSrc = readFileSync(join(__dirname, 'content-screen.tsx'), 'utf8')
     const storeSrc = readFileSync(join(__dirname, '..', '..', 'domain', 'content', 'content-store.ts'), 'utf8')
     const combined = `${screenSrc}\n${storeSrc}`
+
     for (const forbidden of [
       'appendAssistantDelta',
       'message.delta',

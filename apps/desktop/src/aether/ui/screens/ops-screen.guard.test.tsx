@@ -8,6 +8,7 @@ describe('OpsScreen prompt-cache guard', () => {
     const screenSrc = readFileSync(join(__dirname, 'ops-screen.tsx'), 'utf8')
     const storeSrc = readFileSync(join(__dirname, '..', '..', 'domain', 'ops', 'ops-store.ts'), 'utf8')
     const combined = `${screenSrc}\n${storeSrc}`
+
     for (const forbidden of [
       'appendAssistantDelta',
       'message.delta',

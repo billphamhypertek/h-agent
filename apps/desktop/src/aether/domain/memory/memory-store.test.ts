@@ -103,6 +103,7 @@ describe('mutations', () => {
     const api = vi.fn()
       .mockResolvedValueOnce({ ok: true, active: 'zep' }) // PUT provider
       .mockResolvedValueOnce(STATUS) // GET /api/memory
+
     const getConfig = vi.fn().mockResolvedValue(CONFIG)
     const { switchMemoryProvider } = await import('./memory-store')
     await switchMemoryProvider('zep', { api, getConfig })
@@ -119,6 +120,7 @@ describe('mutations', () => {
     const api = vi.fn()
       .mockResolvedValueOnce({ ok: true, deleted: ['memory'] }) // POST reset
       .mockResolvedValueOnce(STATUS) // GET /api/memory
+
     const { resetMemory } = await import('./memory-store')
     await resetMemory('memory', { api })
     expect(api).toHaveBeenNthCalledWith(1, {

@@ -15,10 +15,14 @@ export function deriveOrbState(
   speaking: boolean,
   listening: boolean,
 ): OrbState {
-  if (speaking) return 'speaking'
-  if (listening) return 'listening'
-  if (busy) return 'thinking'
-  if (gatewayState === 'open') return 'idle'
+  if (speaking) {return 'speaking'}
+
+  if (listening) {return 'listening'}
+
+  if (busy) {return 'thinking'}
+
+  if (gatewayState === 'open') {return 'idle'}
+
   return 'paused'
 }
 

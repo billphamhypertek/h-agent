@@ -11,7 +11,9 @@ function buildSchedule(kind: CronScheduleKind, hour: number, minute: number, wee
   if (kind === 'custom') { return expr.trim() }
   const m = Math.max(0, Math.min(59, minute))
   const h = Math.max(0, Math.min(23, hour))
+
   if (kind === 'weekly') { return `${m} ${h} * * ${Math.max(0, Math.min(6, weekday))}` }
+
   return `${m} ${h} * * *`
 }
 
@@ -34,6 +36,7 @@ export function CronForm({
 
   const submit = () => {
     const schedule = buildSchedule(kind, hour, minute, weekday, expr)
+
     if (!prompt.trim() || !schedule) { return }
     onSubmit({ prompt: prompt.trim(), schedule, name: name.trim() || undefined, deliver })
   }

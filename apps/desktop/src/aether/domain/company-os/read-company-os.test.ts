@@ -8,6 +8,7 @@ const FIXED_NOW = () => 1_000_000
 function makeApi() {
   return vi.fn(async (req: { path: string }) => {
     if (req.path.startsWith('/api/cron/jobs?')) { return [{ id: 'job_abc', name: 'morning-briefing-aggregator' }] }
+
     if (req.path.includes('/runs')) { return { runs: [{ id: 'cron_job_abc_2026-06-26' }], limit: 1 } }
     throw new Error('unexpected ' + req.path)
   })

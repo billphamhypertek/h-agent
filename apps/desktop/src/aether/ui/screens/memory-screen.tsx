@@ -1,7 +1,6 @@
 import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
-import type { MemoryProviderField } from '@/types/aether'
 import {
   $memoryConfig,
   $memoryConfigStatus,
@@ -14,6 +13,7 @@ import {
 } from '@/aether/domain/memory/memory-store'
 import * as memoryStore from '@/aether/domain/memory/memory-store'
 import { GlassSlab } from '@/aether/ui/components/glass-slab'
+import type { MemoryProviderField } from '@/types/aether'
 
 // Sentinel select value for the built-in/default provider (avoid '' label maps).
 const BUILTIN = '__aether_memory_builtin__'
@@ -116,12 +116,12 @@ export function MemoryScreen() {
         <select
           className="w-full max-w-sm rounded-[10px] border border-[rgba(120,200,255,.18)] bg-[rgba(8,28,58,.45)] p-[8px_11px] text-[12.5px] text-white outline-none"
           data-testid="ae-memory-provider-select"
-          value={provider ?? BUILTIN}
           onChange={e => {
             const v = e.target.value === BUILTIN ? '' : e.target.value
             $memoryConfigStatus.set('idle')
             void memoryStore.switchMemoryProvider(v)
           }}
+          value={provider ?? BUILTIN}
         >
           <option value={BUILTIN}>(mặc định)</option>
           {(entries?.providers ?? []).map(p => (
@@ -155,12 +155,15 @@ export function MemoryScreen() {
             onClick={() => {
               if (!provider) { return }
               const values: Record<string, string> = {}
+
               for (const field of config?.fields ?? []) {
                 const el = document.querySelector<HTMLInputElement | HTMLSelectElement>(
                   `[data-testid="ae-memory-field-${field.key}"]`
                 )
+
                 if (el) { values[field.key] = el.value }
               }
+
               void memoryStore.saveMemoryConfig(provider, values)
             }}
             type="button"

@@ -31,7 +31,7 @@ export function VoiceScreen() {
   return (
     <div className="ae-screen-bare flex h-full min-w-0 flex-col items-center gap-4">
       <div className="mt-2 grid place-items-center">
-        <LivingOrb size={220} state={orbState} label="Voice" />
+        <LivingOrb label="Voice" size={220} state={orbState} />
         <div className="mt-3 text-[12px] uppercase tracking-[.18em] text-[color:var(--ae-azure-soft)]">
           {STATUS_LABEL[session.status] ?? STATUS_LABEL.idle}
         </div>

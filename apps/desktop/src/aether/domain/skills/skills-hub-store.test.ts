@@ -22,6 +22,7 @@ const RESULT: SkillHubResult = {
   repo: null,
   tags: ['pdf'],
 }
+
 const SEARCH: SkillHubSearchResponse = {
   results: [RESULT],
   source_counts: { 'aether-index': 1 },
@@ -60,6 +61,7 @@ describe('searchHub', () => {
     const api = vi.fn(async () => {
       throw new Error('net')
     })
+
     await searchHub('x', { api })
     expect($hubStatus.get()).toBe('error')
   })

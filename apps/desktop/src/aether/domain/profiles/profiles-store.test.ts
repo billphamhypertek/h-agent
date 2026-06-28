@@ -5,9 +5,9 @@ import type { ProfileInfo, ProfileSoul } from '@/types/aether'
 import {
   $activeProfile,
   $profiles,
-  $profilesStatus,
   $profileSoul,
   $profileSoulStatus,
+  $profilesStatus,
   createProfileAction,
   deleteProfileAction,
   loadProfiles,
@@ -23,7 +23,9 @@ const ROWS: ProfileInfo[] = [
 
 function mockApi(impl: (req: { path: string; method?: string; body?: unknown }) => unknown) {
   const api = vi.fn(async (req: { path: string; method?: string; body?: unknown }) => impl(req) as never)
+
   ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
+
   return api
 }
 
@@ -41,6 +43,7 @@ describe('loadProfiles', () => {
   it('populates $profiles + $activeProfile and sets status ready', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       if (req.path === '/api/profiles/active') { return { active: 'coder', current: 'coder' } }
       throw new Error(`unexpected path ${req.path}`)
     })
@@ -71,7 +74,9 @@ describe('profile mutations call REST then re-fetch', () => {
   it('createProfileAction POSTs /api/profiles then reloads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles' && req.method === 'POST') { return { ok: true, name: 'qa', path: '/h/qa' } }
+
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       if (req.path === '/api/profiles/active') { return { active: 'default', current: 'default' } }
       throw new Error(`unexpected ${req.method ?? 'GET'} ${req.path}`)
     })
@@ -89,7 +94,9 @@ describe('profile mutations call REST then re-fetch', () => {
   it('renameProfileAction PATCHes with new_name then reloads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles/coder' && req.method === 'PATCH') { return { ok: true, name: 'coder2', path: '/h/coder2' } }
+
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       return { active: 'default', current: 'default' }
     })
 
@@ -105,7 +112,9 @@ describe('profile mutations call REST then re-fetch', () => {
   it('deleteProfileAction DELETEs then reloads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles/coder' && req.method === 'DELETE') { return { ok: true, path: '/h/coder' } }
+
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       return { active: 'default', current: 'default' }
     })
 
@@ -126,6 +135,7 @@ describe('soul editor sub-store', () => {
 
   it('loadProfileSoul GETs /soul and stores content', async () => {
     const soul: ProfileSoul = { content: 'Bạn là trợ lý.', exists: true }
+
     const api = mockApi(req => {
       if (req.path === '/api/profiles/coder/soul') { return soul }
       throw new Error(`unexpected ${req.path}`)
@@ -141,6 +151,7 @@ describe('soul editor sub-store', () => {
   it('saveProfileSoul PUTs content then re-loads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles/coder/soul' && req.method === 'PUT') { return { ok: true } }
+
       if (req.path === '/api/profiles/coder/soul') { return { content: 'updated', exists: true } }
       throw new Error(`unexpected ${req.method ?? 'GET'} ${req.path}`)
     })
@@ -177,7 +188,9 @@ describe('per-profile model + active + setup', () => {
   it('setProfileModelAction PUTs /model then reloads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles/coder/model' && req.method === 'PUT') { return { ok: true, provider: 'anthropic', model: 'opus' } }
+
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       return { active: 'default', current: 'default' }
     })
 
@@ -194,7 +207,9 @@ describe('per-profile model + active + setup', () => {
   it('setActiveProfileAction POSTs /active then reloads', async () => {
     const api = mockApi(req => {
       if (req.path === '/api/profiles/active' && req.method === 'POST') { return { ok: true, active: 'coder' } }
+
       if (req.path === '/api/profiles') { return { profiles: ROWS } }
+
       return { active: 'coder', current: 'coder' }
     })
 

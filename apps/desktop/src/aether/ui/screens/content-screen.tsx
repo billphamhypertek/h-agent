@@ -51,7 +51,7 @@ export function ContentScreen() {
   if (status === 'empty' || !content) {
     return (
       <div className="ae-screen-bare grid h-full place-items-center">
-        <GlassSlab className="text-center" size="lg" data-testid="ae-content-empty">
+        <GlassSlab className="text-center" data-testid="ae-content-empty" size="lg">
           <div className="text-sm text-[color:var(--ae-dim)]">Chưa có nguồn nội dung.</div>
           <div className="mt-1 text-[12px] text-[color:var(--ae-dim)]">
             Lịch đa kênh và bảng ý tưởng sẽ hiện ở đây khi có nguồn nội dung.

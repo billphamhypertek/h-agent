@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import type { CompanyOs, DevSection } from '@/aether/domain/company-os/company-os-schema'
-import { readLatestCompanyOs, type ReadCompanyOsDeps } from '@/aether/domain/company-os/read-company-os'
+import { type ReadCompanyOsDeps, readLatestCompanyOs } from '@/aether/domain/company-os/read-company-os'
 
 export type PillarStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'error'
 

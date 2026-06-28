@@ -37,6 +37,7 @@ describe('loadSkills', () => {
     const getSkills = vi.fn(async () => {
       throw new Error('boom')
     })
+
     await loadSkills({ getSkills })
     expect($skillsStatus.get()).toBe('error')
   })

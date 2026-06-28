@@ -1,8 +1,8 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import type { OpsSection } from '@/aether/domain/company-os/company-os-schema'
+import companyOs from '@/aether/domain/company-os/fixtures/company-os.sample.json'
 import { $ops, $opsStatus } from '@/aether/domain/ops/ops-store'
 import * as opsStore from '@/aether/domain/ops/ops-store'
 

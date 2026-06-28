@@ -30,6 +30,7 @@ describe('SkillsHubPanel', () => {
 
   it('submitting the search box GETs the hub search endpoint', async () => {
     const api = vi.fn().mockResolvedValue({ results: [RESULT], source_counts: {}, timed_out: [], installed: {} })
+
     ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
 
     render(<SkillsHubPanel />)
@@ -54,6 +55,7 @@ describe('SkillsHubPanel', () => {
       .fn()
       .mockResolvedValueOnce({ name: 'install', ok: true, pid: 1 }) // install
       .mockResolvedValueOnce([]) // loadSkills re-fetch GET /api/skills
+
     ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
 
     $hubResults.set([RESULT])
@@ -70,6 +72,7 @@ describe('SkillsHubPanel', () => {
       .fn()
       .mockResolvedValueOnce({ name: 'update', ok: true, pid: 2 })
       .mockResolvedValueOnce([])
+
     ;(window as { aetherDesktop?: unknown }).aetherDesktop = { api }
 
     render(<SkillsHubPanel />)

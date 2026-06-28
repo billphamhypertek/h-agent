@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 import { $platforms, $platformsStatus } from '@/aether/domain/messaging/messaging-store'
 import * as store from '@/aether/domain/messaging/messaging-store'
 import * as tg from '@/aether/domain/messaging/telegram-onboarding-store'
+import type { MessagingPlatformInfo, MessagingPlatformTestResponse } from '@/types/aether'
 
 import { MessagingScreen } from './messaging-screen'
 
@@ -12,6 +12,7 @@ const telegram: MessagingPlatformInfo = {
   id: 'telegram', name: 'Telegram', description: 'Bot chat', docs_url: 'https://x',
   enabled: true, configured: true, state: 'connected', gateway_running: true, env_vars: []
 }
+
 const slack: MessagingPlatformInfo = {
   id: 'slack', name: 'Slack', description: 'Workspace', docs_url: 'https://x',
   enabled: false, configured: false, state: 'disabled', gateway_running: true, env_vars: []
@@ -136,11 +137,13 @@ describe('MessagingScreen prompt-cache safety', () => {
   // or the messaging domain stores.
   it('never references conversation deltas or appendAssistantDelta', async () => {
     const fs = await import('node:fs')
+
     const files = [
       'src/aether/ui/screens/messaging-screen.tsx',
       'src/aether/domain/messaging/messaging-store.ts',
       'src/aether/domain/messaging/telegram-onboarding-store.ts',
     ]
+
     const forbidden = ['appendAssistantDelta', 'message.delta', 'reasoning.delta', 'thinking.']
 
     for (const file of files) {
