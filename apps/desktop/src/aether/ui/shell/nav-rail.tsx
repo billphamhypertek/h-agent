@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import { Avatar } from '@/aether/ui/components/avatar'
 import { Icon } from '@/aether/ui/components/icon/icon'
@@ -8,11 +8,9 @@ import { HUD_ROUTE } from '@/app/routes'
 import { cn } from '@/lib/utils'
 
 import { AETHER_NAV_GROUPS, AETHER_NAV_ITEMS, type NavItem } from './nav-items'
-import { navIndicatorTransform } from './use-nav-indicator'
 import { useTitlebarInset } from './use-titlebar-inset'
 
 const ITEM_H = GEOMETRY.nav.item
-const GAP = GEOMETRY.nav.gap
 
 export interface NavRailProps {
   items?: NavItem[]
@@ -23,8 +21,18 @@ export interface NavRailProps {
 export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: NavRailProps) {
   const [expanded, setExpanded] = useState(false)
   const titlebarInset = useTitlebarInset()
-  const activeIndex = items.findIndex(i => i.route === activeRoute)
-  const transform = navIndicatorTransform(activeIndex, ITEM_H, GAP)
+
+  // The sliding "focus pill" tracks the REAL position of the highlighted button by
+  // measuring its offsetTop within the column. This stays correct regardless of the
+  // home-filter, group gaps, and (when expanded) group headers — flat index math
+  // can't account for those. JS only sets the offset; the spring easing lives in CSS.
+  const columnRef = useRef<HTMLDivElement>(null)
+  const [indicatorTop, setIndicatorTop] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    const active = columnRef.current?.querySelector<HTMLElement>('[aria-current="page"]')
+    setIndicatorTop(active ? active.offsetTop : null)
+  }, [activeRoute, expanded, items])
 
   return (
     <nav
@@ -56,9 +64,15 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
       {/* grouped item column with sliding indicator */}
       <div
         className="relative flex w-full flex-col gap-[var(--ae-nav-gap)] px-2"
+        ref={columnRef}
         style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       >
-        {transform && <div className="ae-nav-indicator" style={{ transform, ['--ae-nav-item-h' as string]: `${ITEM_H}px` }} />}
+        {indicatorTop != null && (
+          <div
+            className="ae-nav-indicator"
+            style={{ transform: `translateY(${indicatorTop}px)`, ['--ae-nav-item-h' as string]: `${ITEM_H}px` }}
+          />
+        )}
         {AETHER_NAV_GROUPS.map(group => {
           // The living glyph above IS the Home affordance, so the HUD/home route is not
           // also rendered as a duplicate labeled list button (which would collide on the

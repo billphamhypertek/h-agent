@@ -46,7 +46,7 @@ export function OverlayHost() {
       data-testid="ae-overlay"
       onClick={dismissable ? closeOverlay : undefined}
       role="dialog"
-      style={{ background: 'rgba(2,12,29,.45)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'var(--ae-scrim)', backdropFilter: 'blur(8px)' }}
     >
       <GlassSlab className="min-w-[280px] max-w-[70%]" size="lg">
         <div onClick={e => e.stopPropagation()}>

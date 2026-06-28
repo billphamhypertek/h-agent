@@ -52,6 +52,8 @@
   --ae-particle: #bfe3ff;
   --ae-halo: rgba(74, 163, 255, 0.35);
   --ae-suborb: #2fd6b6;
+  /* overlay scrim (mode-independent backdrop tint under modals/overlays) */
+  --ae-scrim: rgba(2, 12, 29, 0.45);
   /* typography scale (mirrors AETHER_TYPE in tokens.ts) */
   --ae-text-xs: 11px;
   --ae-text-sm: 12px;

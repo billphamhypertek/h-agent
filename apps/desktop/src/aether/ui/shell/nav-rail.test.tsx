@@ -47,6 +47,20 @@ describe('NavRail', () => {
     expect(onNavigate).toHaveBeenCalledWith('/skills')
   })
 
+  it('renders the focus-pill indicator for an active rendered route, hides it when no item matches', () => {
+    // jsdom has no layout (offsetTop reads 0), so we assert presence/absence + the
+    // active button's aria-current marker — NOT an exact pixel transform.
+    const { container, rerender } = render(<NavRail activeRoute="/agents" onNavigate={vi.fn()} />)
+    expect(screen.getByRole('button', { name: 'Agents' }).getAttribute('aria-current')).toBe('page')
+    expect(container.querySelector('.ae-nav-indicator')).toBeTruthy()
+
+    // A route that maps to no RENDERED button (HUD/home is filtered out of the list,
+    // its affordance is the living glyph) → no highlighted button → indicator hidden.
+    rerender(<NavRail activeRoute="/no-such-route" onNavigate={vi.fn()} />)
+    expect(container.querySelector('[aria-current="page"]')).toBeNull()
+    expect(container.querySelector('.ae-nav-indicator')).toBeNull()
+  })
+
   it('renders a numeric badge when an item provides one', () => {
     const items = AETHER_NAV_ITEMS.map(i => (i.id === 'inbox' ? { ...i, badge: 3 } : i))
     render(<NavRail activeRoute="/" items={items} onNavigate={vi.fn()} />)
