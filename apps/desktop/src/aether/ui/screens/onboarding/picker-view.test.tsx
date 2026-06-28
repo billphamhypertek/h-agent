@@ -98,4 +98,14 @@ describe('PickerView ApiKeyForm — redacted-key affordance', () => {
       expect(input?.placeholder).toBe('sk-12…wxyz')
     })
   })
+
+  // Negative path (folded in from F2 review): with the default getEnvVars mock
+  // returning no set keys ({}), the set-indicator must NOT render — proving the
+  // affordance is gated on is_set, not always present.
+  it('omits the set-indicator when the key is not set', () => {
+    // beforeEach already seeds getEnvVars.mockResolvedValue({}).
+    render(<PickerView ctx={ctx} />)
+
+    expect(screen.queryByTestId('ae-key-set-OPENAI_API_KEY')).toBeNull()
+  })
 })
