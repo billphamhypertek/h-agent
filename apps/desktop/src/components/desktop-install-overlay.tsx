@@ -36,7 +36,7 @@ import { cn } from '@/lib/utils'
  * they're expected to come back as skipped=true (install.ps1 short-circuits
  * them under -NonInteractive). The post-install configuration flow that
  * those stages cover (API key, model, persona, gateway autostart) is handled
- * by the existing DesktopOnboardingOverlay, NOT by the install overlay.
+ * by the AETHER onboarding screen (AetherOnboarding), NOT by the install overlay.
  */
 
 interface DesktopInstallOverlayProps {
