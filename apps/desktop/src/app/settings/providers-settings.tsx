@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { disconnectOAuthProvider, listOAuthProviders } from '@/aether-api'
 import { runInTerminal } from '@/app/right-sidebar/store'
 import {
   FEATURED_ID,
@@ -10,10 +11,9 @@ import {
   ProviderRow,
   providerTitle,
   sortProviders
-} from '@/components/desktop-onboarding-overlay'
+} from '@/components/provider-setup'
 import { Button } from '@/components/ui/button'
 import { SearchField } from '@/components/ui/search-field'
-import { disconnectOAuthProvider, listOAuthProviders } from '@/aether-api'
 import { useI18n } from '@/i18n'
 import { Check, ChevronDown, ChevronRight, KeyRound, Loader2, Terminal, Trash2 } from '@/lib/icons'
 import { cn } from '@/lib/utils'
@@ -114,7 +114,8 @@ function buildProviderKeyGroups(vars: Record<string, EnvVarInfo>): ProviderKeyGr
 // (`Picker` in desktop-onboarding-overlay): same recommended card, same
 // provider rows, same "Other providers" disclosure, same OpenRouter quick-key
 // row, and the same bottom-right "I have an API key" affordance. The leaf cards
-// are the exact shared components, so the two surfaces stay visually identical.
+// are the exact shared components (from @/components/provider-setup), so the
+// two surfaces stay visually identical.
 // Selecting a provider hands off to the shared onboarding overlay, which runs
 // that provider's real sign-in flow; the key affordances open the API-key
 // catalog below.
@@ -391,6 +392,7 @@ export function ProvidersSettings({ onClose, onViewChange, view }: ProvidersSett
 
   if (showApiKeys) {
     const q = keyQuery.trim().toLowerCase()
+
     const visibleGroups = q
       ? keyGroups.filter(group => {
           const haystack = [

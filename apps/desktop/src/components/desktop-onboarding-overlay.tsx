@@ -2,24 +2,26 @@ import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { getGlobalModelOptions } from '@/aether-api'
 import { ModelPickerDialog } from '@/components/model-picker'
+import {
+  API_KEY_OPTIONS,
+  type ApiKeyOption,
+  FEATURED_ID,
+  FeaturedProviderRow,
+  KeyProviderRow,
+  ProviderRow,
+  providerTitle,
+  sortProviders,
+  useApiKeyCatalog
+} from '@/components/provider-setup'
 import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
 import { ErrorIcon } from '@/components/ui/error-state'
 import { Input } from '@/components/ui/input'
 import { Loader } from '@/components/ui/loader'
-import { getGlobalModelOptions } from '@/aether-api'
 import { useI18n } from '@/i18n'
-import {
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ExternalLink,
-  KeyRound,
-  Loader2,
-  Terminal
-} from '@/lib/icons'
+import { Check, ChevronDown, ChevronLeft, ExternalLink, KeyRound, Loader2 } from '@/lib/icons'
 import { isProviderSetupErrorMessage } from '@/lib/provider-setup-errors'
 import { cn } from '@/lib/utils'
 import { $desktopBoot, type DesktopBootState } from '@/store/boot'
@@ -46,145 +48,13 @@ import {
   startProviderOAuth,
   submitOnboardingCode
 } from '@/store/onboarding'
-import type { ModelOptionProvider, OAuthProvider } from '@/types/aether'
+import type { OAuthProvider } from '@/types/aether'
 
 interface DesktopOnboardingOverlayProps {
   enabled: boolean
   onCompleted?: () => void
   requestGateway: OnboardingContext['requestGateway']
 }
-
-export interface ApiKeyOption {
-  description?: string
-  docsUrl: string
-  envKey: string
-  id: string
-  name: string
-  placeholder?: string
-  short?: string
-}
-
-const API_KEY_OPTIONS: ApiKeyOption[] = [
-  {
-    id: 'openrouter',
-    name: 'OpenRouter',
-    envKey: 'OPENROUTER_API_KEY',
-    docsUrl: 'https://openrouter.ai/keys'
-  },
-  {
-    id: 'openai',
-    name: 'OpenAI',
-    envKey: 'OPENAI_API_KEY',
-    docsUrl: 'https://platform.openai.com/api-keys'
-  },
-  {
-    id: 'gemini',
-    name: 'Google Gemini',
-    envKey: 'GEMINI_API_KEY',
-    docsUrl: 'https://aistudio.google.com/app/apikey'
-  },
-  {
-    id: 'xai',
-    name: 'xAI Grok',
-    envKey: 'XAI_API_KEY',
-    docsUrl: 'https://console.x.ai/'
-  },
-  {
-    id: 'local',
-    name: 'Local / custom endpoint',
-    envKey: 'OPENAI_BASE_URL',
-    docsUrl: 'https://github.com/NousResearch/hermes-agent#bring-your-own-endpoint',
-    placeholder: 'http://127.0.0.1:8000/v1'
-  }
-]
-
-// Build the FULL API-key provider catalog from the backend model options so the
-// onboarding / Providers key form lists every `api_key` provider `aether model`
-// knows about — not just the hand-curated five. Curated entries keep their
-// richer copy + placeholders and float to the top (recommended defaults); every
-// other api_key provider is appended with a generic "paste {KEY}" affordance.
-// OAuth / external providers are intentionally excluded here — they go through
-// the OAuth picker / sign-in flow, not a pasted key.
-function useApiKeyCatalog(): ApiKeyOption[] {
-  const [rows, setRows] = useState<ModelOptionProvider[]>([])
-
-  useEffect(() => {
-    let cancelled = false
-
-    // Best-effort — on failure the curated defaults still render. Wrapped in
-    // Promise.resolve().then so a synchronous throw (e.g. no desktop bridge in
-    // tests) is funneled into the same .catch instead of escaping.
-    void Promise.resolve()
-      .then(() => getGlobalModelOptions())
-      .then(res => {
-        if (!cancelled) {
-          setRows(res.providers ?? [])
-        }
-      })
-      .catch(() => {
-        // Ignore — fall back to the curated API_KEY_OPTIONS only.
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  return useMemo(() => {
-    const curatedByEnv = new Map(API_KEY_OPTIONS.map(o => [o.envKey, o]))
-    const derived: ApiKeyOption[] = []
-    const seenEnv = new Set<string>(API_KEY_OPTIONS.map(o => o.envKey))
-
-    for (const row of rows) {
-      // Only api_key providers can be activated with a pasted key. Skip OAuth /
-      // external / managed flows and anything missing an env var to write to.
-      if (row.auth_type && row.auth_type !== 'api_key') {
-        continue
-      }
-
-      const envKey = row.key_env
-
-      if (!envKey || seenEnv.has(envKey)) {
-        continue
-      }
-
-      seenEnv.add(envKey)
-      derived.push({
-        id: row.slug,
-        name: row.name,
-        envKey,
-        description: `Direct API access to ${row.name}.`,
-        docsUrl: ''
-      })
-    }
-
-    // Curated first (recommended order), then the rest alphabetically so the
-    // long tail is scannable.
-    derived.sort((a, b) => a.name.localeCompare(b.name))
-
-    return [...API_KEY_OPTIONS.filter(o => curatedByEnv.has(o.envKey)), ...derived]
-  }, [rows])
-}
-
-const PROVIDER_DISPLAY: Record<string, { order: number; title: string }> = {
-  nous: { order: 0, title: 'Nous Portal' },
-  'openai-codex': { order: 1, title: 'OpenAI OAuth (ChatGPT)' },
-  'minimax-oauth': { order: 2, title: 'MiniMax' },
-  'qwen-oauth': { order: 3, title: 'Qwen Code' },
-  'xai-oauth': { order: 4, title: 'xAI Grok' },
-  // Both Anthropic entries sit at the bottom: the API-key path first, then
-  // the subscription OAuth path (only works with extra usage credits).
-  anthropic: { order: 5, title: 'Anthropic API Key' },
-  'claude-code': { order: 6, title: 'Anthropic OAuth: Required Extra Usage Credits to Use Subscription' }
-}
-
-const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
-
-export const providerTitle = (p: OAuthProvider) => PROVIDER_DISPLAY[p.id]?.title ?? p.name
-const orderOf = (p: OAuthProvider) => PROVIDER_DISPLAY[p.id]?.order ?? 99
-
-export const sortProviders = (providers: OAuthProvider[]) =>
-  [...providers].sort((a, b) => orderOf(a) - orderOf(b) || a.name.localeCompare(b.name))
 
 // Exit choreography, mirroring the gateway "connecting" overlay's timing:
 // text-out (360ms: CONNECTED fades down, rest scrambles+fades) → hold (300ms)
@@ -407,7 +277,6 @@ function Header() {
   )
 }
 
-export const FEATURED_ID = 'nous'
 const SHOW_ALL_KEY = 'aether-onboarding-show-all-v1'
 
 const readShowAll = () => {
@@ -531,100 +400,6 @@ function ChooseLaterLink() {
     >
       {t.onboarding.chooseLater}
     </Button>
-  )
-}
-
-export function FeaturedProviderRow({
-  onSelect,
-  provider
-}: {
-  onSelect: (provider: OAuthProvider) => void
-  provider: OAuthProvider
-}) {
-  const { t } = useI18n()
-  const loggedIn = provider.status?.logged_in
-
-  return (
-    <button
-      className="group relative flex w-full items-center justify-between gap-4 rounded-[8px] bg-primary/[0.06] px-3 py-2.5 text-left transition-colors hover:bg-primary/10"
-      onClick={() => onSelect(provider)}
-      type="button"
-    >
-      <span aria-hidden className="arc-border arc-reverse arc-nous" />
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <img alt="" className="size-5 shrink-0 rounded" src={assetPath('apple-touch-icon.png')} />
-          <span className="text-[length:var(--conversation-text-font-size)] font-semibold">
-            {providerTitle(provider)}
-          </span>
-          {loggedIn ? (
-            <ConnectedTag />
-          ) : (
-            <span className="inline-flex items-center gap-1.5 bg-primary px-2 py-0.5 text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground">
-              <span aria-hidden="true" className="dither inline-block size-2 shrink-0" />
-              {t.onboarding.recommended}
-            </span>
-          )}
-        </div>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.onboarding.featuredPitch}</p>
-      </div>
-      <ChevronRight className="size-4 shrink-0 text-primary transition group-hover:translate-x-0.5" />
-    </button>
-  )
-}
-
-function ConnectedTag() {
-  const { t } = useI18n()
-
-  return (
-    <span className="inline-flex items-center gap-1 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-      <Check className="size-3" />
-      {t.onboarding.connected}
-    </span>
-  )
-}
-
-const PROVIDER_ROW_CLASS =
-  'group flex w-full items-center justify-between gap-3 rounded-[6px] px-3 py-2.5 text-left transition-colors hover:bg-(--ui-control-hover-background)'
-
-export function KeyProviderRow({ onClick }: { onClick: () => void }) {
-  const { t } = useI18n()
-
-  return (
-    <button className={PROVIDER_ROW_CLASS} onClick={onClick} type="button">
-      <div className="min-w-0">
-        <span className="text-[length:var(--conversation-text-font-size)] font-semibold">OpenRouter</span>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.onboarding.openRouterPitch}</p>
-      </div>
-      <ChevronRight className="size-4 text-muted-foreground transition group-hover:text-foreground" />
-    </button>
-  )
-}
-
-export function ProviderRow({
-  onSelect,
-  provider
-}: {
-  onSelect: (provider: OAuthProvider) => void
-  provider: OAuthProvider
-}) {
-  const { t } = useI18n()
-  const loggedIn = provider.status?.logged_in
-  const Trail = provider.flow === 'external' ? Terminal : ChevronRight
-
-  return (
-    <button className={PROVIDER_ROW_CLASS} onClick={() => onSelect(provider)} type="button">
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[length:var(--conversation-text-font-size)] font-semibold">
-            {providerTitle(provider)}
-          </span>
-          {loggedIn ? <ConnectedTag /> : null}
-        </div>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.onboarding.flowSubtitles[provider.flow]}</p>
-      </div>
-      <Trail className="size-4 text-muted-foreground transition group-hover:text-foreground" />
-    </button>
   )
 }
 
