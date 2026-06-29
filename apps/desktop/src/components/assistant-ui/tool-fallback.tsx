@@ -4,6 +4,7 @@ import { type ToolCallMessagePartProps, useAuiState } from '@assistant-ui/react'
 import { useStore } from '@nanostores/react'
 import { createContext, type FC, type PropsWithChildren, type ReactNode, useContext, useEffect, useMemo } from 'react'
 
+import { openReader, readerTextFromResult } from '@/aether/domain/chat/reader-store'
 import { AnsiText } from '@/components/assistant-ui/ansi-text'
 import { useElapsedSeconds } from '@/components/chat/activity-timer'
 import { ActivityTimerText } from '@/components/chat/activity-timer-text'
@@ -119,19 +120,19 @@ function statusGlyph(status: ToolStatus, copy: ToolStatusCopy): ReactNode {
   }
 
   if (status === 'error') {
-    return <AlertCircle aria-label={copy.statusError} className="size-3.5 shrink-0 text-destructive" />
+    return <AlertCircle aria-label={copy.statusError} className="size-3.5 shrink-0 text-[color:var(--ae-error)]" />
   }
 
   if (status === 'warning') {
     return (
-      <AlertCircle aria-label={copy.statusRecovered} className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+      <AlertCircle aria-label={copy.statusRecovered} className="size-3.5 shrink-0 text-[color:var(--ae-warn)]" />
     )
   }
 
   return (
     <CheckCircle2
       aria-label={copy.statusDone}
-      className="size-3.5 shrink-0 text-emerald-600/85 dark:text-emerald-400/85"
+      className="size-3.5 shrink-0 text-[color:var(--ae-state-online)]"
     />
   )
 }
@@ -286,6 +287,21 @@ function ToolEntry({ part }: ToolEntryProps) {
     return { body: rest.join('\n\n').trim(), summary }
   }, [view.detail, view.status, view.subtitle])
 
+  // Reader hand-off: a completed read_file row gets a quiet "Mở" control that
+  // pushes its body into the dock's reader panel (Task 4). VN copy by design.
+  const isReadFile = part.toolName === 'read_file' && part.result !== undefined
+  const readFilePath = ((part.args as Record<string, unknown> | undefined)?.path as string) ?? 'tệp'
+  const onOpenReader = () => openReader({ fileName: readFilePath, content: readerTextFromResult(part.result) })
+
+  // Bud dot shares the dock's visual language: a tiny state-colored marker at
+  // the head of the row. Inline-styled so it stays out of the named-color guard.
+  const budColor =
+    leadingStatus(isPending, view.status) === 'running'
+      ? 'var(--ae-energy)'
+      : view.status === 'error'
+        ? 'var(--ae-error)'
+        : 'var(--ae-state-online)'
+
   const detailMatchesSubtitle = looksRedundant(view.subtitle, view.detail)
 
   const showDetail =
@@ -379,6 +395,7 @@ function ToolEntry({ part }: ToolEntryProps) {
       data-file-edit={isFileEdit && open ? '' : undefined}
       data-slot="tool-block"
       data-tool-row=""
+      id={part.toolCallId ? `ae-tool-${part.toolCallId}` : undefined}
       ref={enterRef}
     >
       <div className={cn(open && 'border-b border-(--ui-stroke-tertiary) px-2 py-1.5')}>
@@ -392,6 +409,12 @@ function ToolEntry({ part }: ToolEntryProps) {
             className="flex min-w-0 items-center gap-1.5"
             title={isFileEdit && view.subtitle ? view.subtitle : undefined}
           >
+            <span
+              aria-hidden
+              className="mr-1 inline-block size-1.5 shrink-0 rounded-full"
+              data-ae-bud
+              style={{ background: budColor }}
+            />
             <ToolGlyph
               copy={copy}
               filePath={isFileEdit ? view.subtitle : undefined}
@@ -401,9 +424,9 @@ function ToolEntry({ part }: ToolEntryProps) {
             <FadeText
               className={cn(
                 TOOL_HEADER_TITLE_CLASS,
-                isPending && 'shimmer text-(--ui-text-tertiary)',
-                view.status === 'error' && 'text-destructive',
-                view.status === 'warning' && 'text-amber-700 dark:text-amber-300'
+                isPending && 'shimmer text-[color:var(--ae-energy)]',
+                view.status === 'error' && 'text-[color:var(--ae-error)]',
+                view.status === 'warning' && 'text-[color:var(--ae-warn)]'
               )}
             >
               {view.title}
@@ -412,15 +435,28 @@ function ToolEntry({ part }: ToolEntryProps) {
             {showDiffStats && diffStats && (
               <span className="flex shrink-0 items-center gap-1 font-mono text-[0.625rem] tabular-nums">
                 {diffStats.added > 0 && (
-                  <span className="text-emerald-600 dark:text-emerald-400">+{diffStats.added}</span>
+                  <span className="text-[color:var(--ae-ok)]">+{diffStats.added}</span>
                 )}
                 {diffStats.removed > 0 && (
-                  <span className="text-rose-600 dark:text-rose-400">−{diffStats.removed}</span>
+                  <span className="text-[color:var(--ae-error)]">−{diffStats.removed}</span>
                 )}
               </span>
             )}
             {!isFileEdit && !isPending && view.durationLabel && (
               <span className={TOOL_HEADER_DURATION_CLASS}>{view.durationLabel}</span>
+            )}
+            {isReadFile && (
+              <button
+                aria-label={`Mở ${readFilePath}`}
+                className="ml-1 rounded-md px-1.5 py-0.5 text-[length:var(--ae-text-xs)] text-[color:var(--ae-azure-soft)] hover:text-[color:var(--ae-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]"
+                onClick={event => {
+                  event.stopPropagation()
+                  onOpenReader()
+                }}
+                type="button"
+              >
+                Mở
+              </button>
             )}
           </span>
         </DisclosureRow>
@@ -455,14 +491,14 @@ function ToolEntry({ part }: ToolEntryProps) {
             toolViewMode !== 'technical' &&
             (view.status === 'error' ? (
               detailSections.summary || detailSections.body ? (
-                <div className="max-w-full text-xs leading-relaxed text-destructive">
+                <div className="max-w-full text-xs leading-relaxed text-[color:var(--ae-error)]">
                   {detailSections.summary && (
                     <LinkifiedText className="block font-medium" text={detailSections.summary} />
                   )}
                   {detailSections.body && (
                     <pre
                       className={cn(
-                        'max-h-56 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-[0.7rem] leading-[1.55] text-destructive/90',
+                        'max-h-56 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-[0.7rem] leading-[1.55] text-[color:var(--ae-error)]',
                         detailSections.summary && 'mt-1.5'
                       )}
                     >
