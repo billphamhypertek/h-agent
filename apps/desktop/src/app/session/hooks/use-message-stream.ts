@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 
+import { recordTurnEvent } from '@/aether/domain/session/turn-activity'
 import { readActiveTerminal } from '@/app/right-sidebar/terminal/buffer'
 import { translateNow } from '@/i18n'
 import {
@@ -56,6 +57,18 @@ import { recordToolDiff } from '@/store/tool-diffs'
 import type { RpcEvent } from '@/types/aether'
 
 import type { ClientSessionState } from '../../types'
+
+// Coarse-only helpers for the living-dock; mirror the spacing of subagents.ts toolLabel.
+function humanizeToolName(name: string): string {
+  return name.split('_').filter(Boolean).map(p => p[0]!.toUpperCase() + p.slice(1)).join(' ') || name
+}
+
+function readFilePathFromPayload(payload: { args?: unknown } | undefined): string | undefined {
+  const args = payload?.args as Record<string, unknown> | undefined
+  const p = args && (args.path ?? args.file ?? args.filename)
+
+  return typeof p === 'string' ? p : undefined
+}
 
 interface MessageStreamOptions {
   activeSessionIdRef: MutableRefObject<string | null>
@@ -857,6 +870,7 @@ export function useMessageStream({
 
         if (isActiveEvent) {
           setTurnStartedAt(Date.now())
+          recordTurnEvent({ type: 'message.start' })
         }
       } else if (event.type === 'message.delta') {
         if (sessionId) {
@@ -904,6 +918,7 @@ export function useMessageStream({
 
         if (isActiveEvent) {
           setTurnStartedAt(null)
+          recordTurnEvent({ type: 'message.complete' })
 
           // Pet beat: a finished turn always celebrates — go straight to the
           // jump, never linger on the run/reason pose. One atom update (clears
@@ -933,6 +948,18 @@ export function useMessageStream({
 
         if (isActiveEvent) {
           setPetActivity({ reasoning: false, toolRunning: true })
+          const toolId = String(payload?.tool_id || payload?.name || '')
+          const toolName = String(payload?.name || 'tool')
+
+          if (toolId) {
+            recordTurnEvent({
+              type: 'tool.start',
+              id: toolId,
+              name: toolName,
+              label: humanizeToolName(toolName),
+              filePath: toolName === 'read_file' ? readFilePathFromPayload(payload) : undefined,
+            })
+          }
         }
       } else if (event.type === 'tool.complete') {
         if (sessionId) {
@@ -941,6 +968,11 @@ export function useMessageStream({
 
           if (isActiveEvent) {
             setPetActivity({ toolRunning: false })
+            const toolId = String(payload?.tool_id || payload?.name || '')
+
+            if (toolId) {
+              recordTurnEvent({ type: 'tool.complete', id: toolId, ok: !payload?.error })
+            }
           }
 
           // A pending clarify blocks the turn, so the first tool.complete after
@@ -972,6 +1004,10 @@ export function useMessageStream({
             event.type === 'subagent.spawn_requested' || event.type === 'subagent.start',
             event.type
           )
+
+          if (isActiveEvent && (event.type === 'subagent.spawn_requested' || event.type === 'subagent.start')) {
+            recordTurnEvent({ type: 'subagent.start' })
+          }
         }
       } else if (event.type === 'clarify.request') {
         // Surface the clarify tool's overlay. The Python side is blocked on
