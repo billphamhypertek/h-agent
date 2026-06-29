@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { NodeSpec } from '@/aether/domain/engine/graph-model'
 import { AETHER } from '@/aether/ui/theme/tokens'
 
-import { linkPoints, nodeScale, stateColor } from './graph-geometry'
+import { coreOrbState, linkColor, linkPoints, nodeOpacity, nodeScale, stateColor } from './graph-geometry'
 
 describe('graph render helpers', () => {
   it('maps node state to the shared state color', () => {
@@ -22,5 +22,26 @@ describe('graph render helpers', () => {
   })
   it('returns null when an endpoint is missing', () => {
     expect(linkPoints({ id: 'l', from: 'core', to: 'ghost', flow: 0 }, [])).toBeNull()
+  })
+})
+
+describe('carry-over render helpers', () => {
+  const nodes = [
+    { id: 'a', label: 'A', state: 'busy' as const, x: 0, y: 0 },
+    { id: 'b', label: 'B', state: 'dormant' as const, x: 0, y: 0 },
+  ]
+  it('linkColor follows the non-core endpoint state', () => {
+    expect(linkColor({ id: 'l', from: 'core', to: 'a', flow: 1 }, nodes)).toBe(AETHER.stateBusy)
+    expect(linkColor({ id: 'l', from: 'core', to: 'b', flow: 0 }, nodes)).toBe(AETHER.stateDormant)
+  })
+  it('nodeOpacity dims exit + dormant', () => {
+    expect(nodeOpacity({ state: 'online' })).toBe(1)
+    expect(nodeOpacity({ state: 'dormant' })).toBe(0.45)
+    expect(nodeOpacity({ state: 'busy', exit: true })).toBe(0.18)
+  })
+  it('coreOrbState maps node state to orb state', () => {
+    expect(coreOrbState('busy')).toBe('thinking')
+    expect(coreOrbState('online')).toBe('idle')
+    expect(coreOrbState('dormant')).toBe('paused')
   })
 })
