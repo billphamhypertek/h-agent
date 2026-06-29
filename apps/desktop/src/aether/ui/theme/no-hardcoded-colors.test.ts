@@ -64,3 +64,32 @@ describe('AETHER UI color tokenization (no hardcoded colors)', () => {
     })
   }
 })
+
+// Chat #3 tokenization guard — the specific surfaces SP-4 #3 restyled to --ae-*.
+// Scoped to the touched files (not the whole legacy @assistant-ui tree, whose
+// broader --ui-* migration is a later work-item). Bans the named state colors +
+// dark fork this overhaul removed.
+const CHAT3_FILES = [
+  'src/components/assistant-ui/tool-fallback.tsx',
+  'src/components/assistant-ui/thread.tsx',
+  'src/components/assistant-ui/markdown-text.tsx',
+  'src/components/chat/composer-dock.ts',
+  'src/components/chat/intro.tsx',
+]
+
+const KILLED = /\b(?:text|bg|border|ring|fill|stroke)-(?:emerald|amber|rose)-|text-destructive\b|\bdark:/
+
+describe('Chat #3 surfaces are tokenized (no killed state colors / dark fork)', () => {
+  for (const rel of CHAT3_FILES) {
+    it(`${rel} uses --ae-* state tokens`, () => {
+      const lines = readFileSync(resolve(process.cwd(), rel), 'utf8').split('\n')
+
+      const offenders = lines
+        .map((line, i) => ({ line, n: i + 1 }))
+        .filter(({ line }) => KILLED.test(line))
+        .map(({ line, n }) => `  L${n}: ${line.trim()}`)
+
+      expect(offenders, `${rel} must use --ae-* tokens:\n${offenders.join('\n')}`).toEqual([])
+    })
+  }
+})
