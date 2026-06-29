@@ -16,6 +16,10 @@ export interface NodeSpec {
   state: NodeState
   x: number
   y: number
+  /** Just appeared this poll (drives mitosis-in). */
+  enter?: boolean
+  /** Pruning out this poll (drives fade-to-core). */
+  exit?: boolean
 }
 
 export interface LinkSpec {
