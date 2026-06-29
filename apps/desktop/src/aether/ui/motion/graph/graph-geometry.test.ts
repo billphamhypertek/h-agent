@@ -30,6 +30,7 @@ describe('carry-over render helpers', () => {
     { id: 'a', label: 'A', state: 'busy' as const, x: 0, y: 0 },
     { id: 'b', label: 'B', state: 'dormant' as const, x: 0, y: 0 },
   ]
+
   it('linkColor follows the non-core endpoint state', () => {
     expect(linkColor({ id: 'l', from: 'core', to: 'a', flow: 1 }, nodes)).toBe(AETHER.stateBusy)
     expect(linkColor({ id: 'l', from: 'core', to: 'b', flow: 0 }, nodes)).toBe(AETHER.stateDormant)

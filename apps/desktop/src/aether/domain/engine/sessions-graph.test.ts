@@ -17,6 +17,7 @@ describe('orderSessions', () => {
       row({ id: 'a', isActive: true, lastActive: 1 }),
       row({ id: 'c', isActive: false, lastActive: 9 }),
     ])
+
     expect(out.map(r => r.id)).toEqual(['a', 'c', 'b'])
   })
 })

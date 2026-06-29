@@ -16,11 +16,23 @@ export function diffSessions(prev: AgentSessionRow[], next: AgentSessionRow[]): 
   for (const s of next) {
     const before = prevById.get(s.id)
 
-    if (!before) { events.push({ sessionId: s.id, verb: 'mitosis' }); continue }
+    if (!before) {
+      events.push({ sessionId: s.id, verb: 'mitosis' })
 
-    if (before.isActive && !s.isActive) { events.push({ sessionId: s.id, verb: 'crystallize' }); continue }
+      continue
+    }
 
-    if (s.messageCount > before.messageCount) { events.push({ sessionId: s.id, verb: 'inhale' }); continue }
+    if (before.isActive && !s.isActive) {
+      events.push({ sessionId: s.id, verb: 'crystallize' })
+
+      continue
+    }
+
+    if (s.messageCount > before.messageCount) {
+      events.push({ sessionId: s.id, verb: 'inhale' })
+
+      continue
+    }
 
     if (s.isActive) { events.push({ sessionId: s.id, verb: 'flow' }) }
   }
