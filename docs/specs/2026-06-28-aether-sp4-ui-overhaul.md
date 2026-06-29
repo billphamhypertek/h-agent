@@ -1,6 +1,6 @@
 # AETHER Desktop — SP-4: UI Overhaul toàn app (Program Tracking)
 
-> Tracking chương trình · cập nhật 2026-06-29 · trạng thái: 🟢 **#0 (Design Language + App shell) XONG** (BS→RL ✅, landed `origin/main` @ `e1016a027`) · 🟢 **#2 HUD XONG** (BS→RL ✅, subagent-driven theo plan, landed `origin/main` @ `f12531d4d`; src/aether 518/518 green, tsc 0, eslint 0; zero Critical/Important qua mọi review + final whole-branch review 6-dimension) · 🟢 **Light "Arctic Glass" mode XONG** (cross-cutting — xem §4.1; landed `origin/main` @ `300e63d2b`). Tiếp theo: **#3 Chat** — chạy ở session khác.
+> Tracking chương trình · cập nhật 2026-06-29 · trạng thái: 🟢 **#0 (Design Language + App shell) XONG** (BS→RL ✅, landed `origin/main` @ `e1016a027`) · 🟢 **#2 HUD XONG** (BS→RL ✅, subagent-driven theo plan, landed `origin/main` @ `f12531d4d`; src/aether 518/518 green, tsc 0, eslint 0; zero Critical/Important qua mọi review + final whole-branch review 6-dimension) · 🟢 **Light "Arctic Glass" mode XONG** (cross-cutting — xem §4.1; landed `origin/main` @ `300e63d2b`) · 🟢 **#3 Chat (Living Cockpit) XONG** (BS→RL ✅, subagent-driven theo plan; src/aether 619/619 green, tsc 0). Tiếp theo: **#4 Brief sáng**.
 > Ngôn ngữ: tiếng Việt + thuật ngữ kỹ thuật tiếng Anh.
 > Program-spec (bản đồ 16 màn, đã đóng ở SP-3): [docs/specs/2026-06-25-aether-desktop-design.md](./2026-06-25-aether-desktop-design.md) §5.
 
@@ -45,7 +45,7 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 | **0** | **Design Language + App shell** *(north-star sinh-thể-sống; nav-rail nở, top bar + ⌘K, vital-sign, overlay host, page-transition, living engine all-WebGL; dọn `/command-center` stub)* | cross-cutting | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-28-aether-sp4-00-design-language.md) · [plan](../plans/2026-06-28-aether-sp4-00-design-language.md) |
 | 1 | Boot Sequence | `boot-sequence.tsx` · pre-shell | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 2 | HUD / Trang chủ | `command-center.tsx` · `/hud` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-29-aether-sp4-02-hud.md) · [plan](../plans/2026-06-29-aether-sp4-02-hud.md) |
-| 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ✅ | ✅ | 🟡 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | [spec](./2026-06-29-aether-sp4-03-chat.md) |
+| 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-29-aether-sp4-03-chat.md) · [plan](../plans/2026-06-29-aether-sp4-03-chat.md) |
 | 4 | Brief sáng | `morning-brief.tsx` · `/brief` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 5 | Dev cockpit | `dev-screen.tsx` · `/dev` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 6 | Inbox + CRM | `inbox-screen.tsx` · `/inbox` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
@@ -63,7 +63,12 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 | 18 | Artifacts | `artifacts-screen.tsx` · `/artifacts` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 19 | Profiles | `profiles-screen.tsx` · `/profiles` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 
-**Tiến độ tổng:** 2/20 xong (#0 ✅, #2 ✅) · Tiếp theo: #3 Chat.
+**Tiến độ tổng:** 3/20 xong (#0 ✅, #2 ✅, #3 ✅) · Tiếp theo: #4 Brief sáng.
+
+> **Deferred follow-ups từ #3 Chat (ghi nhận, không chặn #3):**
+> - **Manual dock expand toggle** — nút `⟩` mở rộng dock hiện là **no-op stub** (`onToggle`); việc slim/nở thực tế đang **lái bởi trạng thái reader-open** (mở reader → dock slim). Toggle thủ công để sau.
+> - **Migration `--ui-*` / `--dt-*` rộng hơn** — nằm **ngoài scope #3**; #3 chỉ tokenize các surface nó chạm (thread/composer/tool/reasoning/sub-agent).
+> - **Reader formats ngoài `.md`** — MVP #3 chỉ render `.md`; các định dạng khác để sau (gắn với **#18 Artifacts**).
 
 ### 4.1 Cross-cutting: Light "Arctic Glass" mode (XONG @ `300e63d2b`)
 
