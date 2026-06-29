@@ -73,10 +73,11 @@ export function LivingDock({ spec, slim, onToggle }: { spec: GraphSpec; slim: bo
       {spec.nodes.filter(n => !n.exit).map(n => {
         const tool = toolById.get(n.id)
         const status = tool?.status ?? 'ok'
+        const kind = tool ? statusLabel[status] : n.id === 'more' ? 'thêm' : 'sub-agent'
 
         return (
           <button
-            aria-label={`${n.label} — ${tool ? statusLabel[status] : 'sub-agent'}`}
+            aria-label={`${n.label} — ${kind}`}
             className="pointer-events-auto absolute h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]"
             data-ae-hit
             data-verb={n.enter ? 'mitosis' : undefined}

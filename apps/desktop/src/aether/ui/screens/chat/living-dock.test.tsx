@@ -45,6 +45,12 @@ describe('LivingDock', () => {
     render(<LivingDock onToggle={() => {}} slim={false} spec={ghost} />)
     expect(screen.queryByRole('button', { name: /Gone/ })).toBeNull()
   })
+  it('labels the +k overflow node as overflow, not sub-agent', () => {
+    const more = createGraph({ nodes: [{ id: 'more', label: '+3', state: 'dormant', x: 0.8, y: 0.3 }] })
+    render(<LivingDock onToggle={() => {}} slim={false} spec={more} />)
+    expect(screen.queryByRole('button', { name: /sub-agent/ })).toBeNull()
+    expect(screen.getByRole('button', { name: /thêm/ })).toBeTruthy()
+  })
   it('slim mode renders the expand control', () => {
     render(<LivingDock onToggle={() => {}} slim spec={spec} />)
     expect(screen.getByRole('button', { name: /Mở rộng/ })).toBeTruthy()

@@ -24,6 +24,11 @@ export function useChatGraph(): void {
 
   const subagents = activeId ? (bySession[activeId] ?? []) : []
 
+  // Reset the reconcile baseline on session switch so a new chat doesn't inherit ghosts.
+  // Declared BEFORE the compute effect so React runs it first: on a session switch the
+  // baseline is nulled before compute reconciles the new graph (no stale exit-ghost frame).
+  useEffect(() => { prevReal.current = null }, [activeId])
+
   useEffect(() => {
     const compute = () => {
       const next = chatGraph($turnActivity.get(), activeId ? ($subagentsBySession.get()[activeId] ?? []) : [])
@@ -46,9 +51,6 @@ export function useChatGraph(): void {
     return () => { if (timer.current) { clearTimeout(timer.current) } }
     // Recompute whenever the coarse turn, the active subagents, or the active session change.
   }, [turn, subagents, activeId])
-
-  // Reset the reconcile baseline on session switch so a new chat doesn't inherit ghosts.
-  useEffect(() => { prevReal.current = null }, [activeId])
 
   // Leaving Chat must not leave a stale dock on the HUD's shared canvas.
   useEffect(() => () => { clearGraphSpec(); prevReal.current = null }, [])
