@@ -20,6 +20,14 @@ describe('diffSessions', () => {
     const out = diffSessions([row({ id: 's1', isActive: true, messageCount: 2 })], [row({ id: 's1', isActive: true, messageCount: 5 })])
     expect(out).toEqual([{ sessionId: 's1', verb: 'inhale' }])
   })
+  it('active→inactive outranks a messageCount rise → crystallize, not inhale', () => {
+    const out = diffSessions([row({ id: 's1', isActive: true, messageCount: 2 })], [row({ id: 's1', isActive: false, messageCount: 5 })])
+    expect(out).toEqual([{ sessionId: 's1', verb: 'crystallize' }])
+  })
+  it('a brand-new active session with messages → only mitosis', () => {
+    const out = diffSessions([], [row({ id: 's1', isActive: true, messageCount: 3 })])
+    expect(out).toEqual([{ sessionId: 's1', verb: 'mitosis' }])
+  })
   it('still active, no message change → flow', () => {
     const out = diffSessions([row({ id: 's1', isActive: true, messageCount: 2 })], [row({ id: 's1', isActive: true, messageCount: 2 })])
     expect(out).toEqual([{ sessionId: 's1', verb: 'flow' }])
