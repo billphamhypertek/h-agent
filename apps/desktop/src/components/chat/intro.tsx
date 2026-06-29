@@ -166,7 +166,7 @@ export function Intro({ personality, seed }: IntroProps) {
       <div className="w-full min-w-0">
         <p
           aria-label={WORDMARK}
-          className="fit-text mx-auto mb-1 w-[calc(100%-1rem)] font-['Collapse'] font-bold uppercase leading-[0.9] tracking-[0.08em] text-midground mix-blend-plus-lighter dark:text-foreground/90"
+          className="fit-text mx-auto mb-1 w-[calc(100%-1rem)] font-['Collapse'] font-bold uppercase leading-[0.9] tracking-[0.08em] text-[color:var(--ae-azure-bright)]"
           style={{ '--fit-min': '2.75rem' } as CSSProperties}
         >
           <span>
@@ -175,7 +175,8 @@ export function Intro({ personality, seed }: IntroProps) {
           <span aria-hidden="true">{WORDMARK}</span>
         </p>
 
-        <p className="m-0 text-center leading-normal tracking-tight">{copy.body}</p>
+        <p className="m-0 text-center leading-normal tracking-tight text-[color:var(--ae-dim)]">{copy.body}</p>
+        <p className="mt-2 text-center text-[length:var(--ae-text-sm)] uppercase tracking-[var(--ae-tracking-wider)] text-[color:var(--ae-azure-soft)]">Bắt đầu trò chuyện</p>
       </div>
     </div>
   )
