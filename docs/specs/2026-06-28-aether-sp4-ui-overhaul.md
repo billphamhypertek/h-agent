@@ -45,7 +45,7 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 | **0** | **Design Language + App shell** *(north-star sinh-thể-sống; nav-rail nở, top bar + ⌘K, vital-sign, overlay host, page-transition, living engine all-WebGL; dọn `/command-center` stub)* | cross-cutting | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-28-aether-sp4-00-design-language.md) · [plan](../plans/2026-06-28-aether-sp4-00-design-language.md) |
 | 1 | Boot Sequence | `boot-sequence.tsx` · pre-shell | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 2 | HUD / Trang chủ | `command-center.tsx` · `/hud` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | [spec](./2026-06-29-aether-sp4-02-hud.md) · [plan](../plans/2026-06-29-aether-sp4-02-hud.md) |
-| 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| 3 | Chat | `chat-screen.tsx` · `/` `/:sessionId` | ✅ | ✅ | 🟡 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | [spec](./2026-06-29-aether-sp4-03-chat.md) |
 | 4 | Brief sáng | `morning-brief.tsx` · `/brief` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 5 | Dev cockpit | `dev-screen.tsx` · `/dev` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | 6 | Inbox + CRM | `inbox-screen.tsx` · `/inbox` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
