@@ -256,3 +256,48 @@ pinned by `tokens.test.ts`): energy/node-state/sinh-thể colors, `AETHER_TYPE`
   because the shared canvas is `pointer-events:none`.
 - **Fallback:** reduced-motion / GPU-off / probe-fail → no Canvas → `GraphFallback`
   renders the same `GraphSpec` statically; the 4 ambient widgets + DOM overlay stay.
+
+## Chat — Living Cockpit (SP-4 #3)
+
+- Chat is the only screen wired to the live stream, so it has **two consumers**
+  with a hard wall between them:
+  - **Per-token thread path** (untouched, only restyled): `message.delta` /
+    `reasoning.delta` / `thinking.delta` → `$messages` → `<Thread>`. Fast, ~30×/s,
+    React-local.
+  - **Coarse engine path** (new): tool / sub-agent / turn boundaries only → the GL
+    dock. It must never see a token.
+- **`$turnActivity` (`domain/session/turn-activity.ts`) is the cache-safe surface.**
+  Hard-rule: **the engine never subscribes `$messages`** — it subscribes
+  `$turnActivity` instead. The reducer is coarse-only (`message.start` /
+  `message.complete` / `tool.start` / `tool.complete` / `subagent.start`); an
+  `ignored` / unknown event returns state **by reference** so a per-token event
+  can't even allocate. Fed by `recordTurnEvent(...)` planted at the **coarse
+  branches** of `app/session/hooks/use-message-stream.ts` (NOT in the
+  `message.delta` / `reasoning.delta` / `thinking.delta` branches), so the
+  prompt-cache stays intact (no engine recompute per token).
+- **Dock (logic core, jsdom-tested, deterministic):**
+  - `domain/engine/chat-graph.ts` — `chatGraph(turnActivity, subagents)` → `GraphSpec`.
+    Nodes = sub-agents (`sub:<id>`, nearest the core) + tool buds (`tool:<id>`) +
+    one `+k` overflow (`more`); **bud cap 6**; `dockLayout` is a deterministic fan
+    to the right (no RNG / `Date`) so throttled recomputes never jitter coords.
+    `reconcileChatGraph` mirrors the HUD differ: new id → `enter` (lean-in),
+    dropped id → one-cycle `exit` ghost → fade-to-core.
+  - `ui/screens/chat/use-chat-graph.ts` — reads `$turnActivity` + the active
+    session's subagents, throttles (150ms leading + trailing) and pushes the
+    reconciled spec to the shared `$graphSpec` the shell-root `AetherCanvas`
+    renders; resets the reconcile baseline on session switch and **clears
+    `$graphSpec` on unmount** so leaving Chat doesn't strand a dock on the HUD.
+- **Dock interaction** is a DOM hit-layer (`living-dock.tsx`), not GL raycast,
+  because the shared canvas is `pointer-events:none`: a `read_file` bud opens the
+  reader; any other bud scrolls to + flashes its inline thread row (`#ae-tool-<id>`).
+- **Reader:** `$readerPanel` (`domain/chat/reader-store.ts`) — a **manual "Mở"**
+  trigger (card button / dock bud), `.md` MVP rendered via `MarkdownTextContent`.
+  It is a **static snapshot**: opening does one `$messages.get()` (never a
+  subscription) so there is no per-token re-render. Opening narrows the thread and
+  slims the dock; ✕ restores the layout.
+- **Event → lifecycle-phase map:** `message.start`→`reach`, `tool.start`→`flow`,
+  `tool.complete`→`crystallize`, `subagent.start`→`mitosis`,
+  `message.complete`→`breathe`.
+- **Fallback:** reduced-motion / GPU-off / probe-fail → no Canvas → `GraphFallback`
+  renders the same dock `GraphSpec` statically (SVG); thread + reader + composer all
+  stay live.
