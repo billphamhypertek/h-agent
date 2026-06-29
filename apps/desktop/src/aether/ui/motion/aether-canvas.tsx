@@ -5,13 +5,12 @@ import { useEffect, useState } from 'react'
 
 import type { GraphSpec } from '@/aether/domain/engine/graph-model'
 import { $graphSpec } from '@/aether/domain/motion/graph-store'
-import { $motionActive, $orbState } from '@/aether/domain/motion/motion-store'
+import { $motionActive } from '@/aether/domain/motion/motion-store'
 import { useTheme } from '@/themes/context'
 
 import { AmbientField } from './ambient-field'
 import { GraphView } from './graph/graph-view'
 import { GraphLabels } from './graph/labels'
-import { LivingOrbGL } from './living-orb-gl'
 
 // Pure perf predicates (unit-tested).
 export function pickDpr(devicePixelRatio: number): number {
@@ -29,7 +28,6 @@ export function shouldRenderGraph(spec: GraphSpec | null): boolean {
 // Shared, single Canvas at the shell root (z0, full-bleed). Returns null when the
 // multi-layer gate is closed — the CSS orb / .ae-shell-bg path is the fallback.
 export function AetherCanvas({ enabled }: { enabled: boolean }) {
-  const orbState = useStore($orbState)
   const graph = useStore($graphSpec)
   // Read the mode HERE (outside <Canvas>): react-three-fiber runs the canvas in a
   // separate reconciler that does NOT inherit React context, so in-canvas useTheme()
@@ -66,14 +64,9 @@ export function AetherCanvas({ enabled }: { enabled: boolean }) {
         gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
       >
         <AmbientField light={light} />
-        {/* The lone centred orb glares through the frosted cards on the bright
-            backdrop and hurts readability, so light mode drops it. The constellation
-            (real sessions) still renders. Dark keeps the cinematic core orb. */}
-        {!light && (
-          <group position={[0, 0, 1.5]}>
-            <LivingOrbGL size={0.6} state={orbState} />
-          </group>
-        )}
+        {/* No lone centred background orb in either mode — it floated behind every
+            screen and glared through the cards. The constellation (real sessions,
+            with its own core orb) is the living element that renders here instead. */}
         {shouldRenderGraph(graph) && graph && (
           <group position={[0, 0, 1.5]}>
             <GraphView spec={graph} />

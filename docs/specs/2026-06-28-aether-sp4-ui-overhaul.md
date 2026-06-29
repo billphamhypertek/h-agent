@@ -1,6 +1,6 @@
 # AETHER Desktop — SP-4: UI Overhaul toàn app (Program Tracking)
 
-> Tracking chương trình · cập nhật 2026-06-29 · trạng thái: 🟢 **#0 (Design Language + App shell) XONG** (BS→RL ✅, landed `origin/main` @ `e1016a027`) · 🟢 **#2 HUD XONG** (BS→RL ✅, subagent-driven theo plan, landed `origin/main` @ `f12531d4d`; src/aether 518/518 green, tsc 0, eslint 0; zero Critical/Important qua mọi review + final whole-branch review 6-dimension). Tiếp theo: **#3 Chat** — chạy ở session khác.
+> Tracking chương trình · cập nhật 2026-06-29 · trạng thái: 🟢 **#0 (Design Language + App shell) XONG** (BS→RL ✅, landed `origin/main` @ `e1016a027`) · 🟢 **#2 HUD XONG** (BS→RL ✅, subagent-driven theo plan, landed `origin/main` @ `f12531d4d`; src/aether 518/518 green, tsc 0, eslint 0; zero Critical/Important qua mọi review + final whole-branch review 6-dimension) · 🟢 **Light "Arctic Glass" mode XONG** (cross-cutting — xem §4.1; landed `origin/main` @ `300e63d2b`). Tiếp theo: **#3 Chat** — chạy ở session khác.
 > Ngôn ngữ: tiếng Việt + thuật ngữ kỹ thuật tiếng Anh.
 > Program-spec (bản đồ 16 màn, đã đóng ở SP-3): [docs/specs/2026-06-25-aether-desktop-design.md](./2026-06-25-aether-desktop-design.md) §5.
 
@@ -64,6 +64,18 @@ SP-0..SP-3 đã **đóng trọn 16 màn** về mặt *chức năng* (xem [progra
 | 19 | Profiles | `profiles-screen.tsx` · `/profiles` | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 
 **Tiến độ tổng:** 2/20 xong (#0 ✅, #2 ✅) · Tiếp theo: #3 Chat.
+
+### 4.1 Cross-cutting: Light "Arctic Glass" mode (XONG @ `300e63d2b`)
+
+Không phải 1 trong 20 surface — là việc **xuyên suốt cả app**, fulfil hard-rule §2 ("không hardcode màu ngoài hệ token", "color tokens fork dưới `[data-aether-mode='light']`").
+
+- **Root cause** đã sửa: app vốn dark-only nhưng `apply-aether-default` ép light (chưa build) → 126+ màu dark hardcode trên 27 file + tầng GL không có biến thể light → "light/dark lẫn lộn".
+- **Token foundation** (`aether.css`): bộ `--ae-*` mode-aware đầy đủ (surfaces/wells/fills/lines/glows/text-grad/state tints) — dark defaults + light overrides; recipe light cho `.ae-slab`/`.ae-vignette`/`.ae-bar`/`.ae-cmd`/`.ae-orb`.
+- **27 file** component: mọi hex/rgba → token. **Tầng GL** (ambient shader + constellation labels) theo mode qua prop `light` (r3f Canvas **không** nhận React context — `useTheme()` trong Canvas luôn đọc default → đã sửa, đọc mode ở `AetherCanvas` ngoài Canvas).
+- **Polish (skill ui-ux-pro-max):** navy ink; heading mid-azure đọc rõ (`#8fc0ff` ~1.9:1 → `#1f5fb8` ~6.2:1); dim ~8:1; orb navy-dominant; ambient light wash dịu; **bỏ orb nền giữa màn (cả light & dark)** — nó loá/xuyên glass; glass light 0.62→0.8; nav-rail **hover-expand → toggle tường minh** (default collapse, persisted) + focus states.
+- **Guard:** `theme/no-hardcoded-colors.test.ts` cấm hex/rgba + `text-white`/`bg-black` không-flip trên toàn `aether/ui`.
+- **Verify:** tsc 0, eslint 0, `src/aether` 571/571, ban test 52/52.
+- ⚠️ **Manual GUI check chưa chạy** (headless không có GL): cần `npm run dev` xác nhận orb nền đã biến mất + nền sáng phẳng dịu + cả 2 mode đồng nhất.
 
 > **Carry-over từ #0 (xử lý ở các đầu việc màn sau, không chặn #0):**
 > - **Dual ⌘K** — top-bar ⌘K (global) + CommandBar trong màn HUD (`command-center.tsx`) cùng hiện trên `/hud`; **#2 HUD** sở hữu việc bỏ thanh ⌘K trong-màn.
