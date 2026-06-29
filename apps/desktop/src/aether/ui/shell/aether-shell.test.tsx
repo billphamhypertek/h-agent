@@ -26,6 +26,9 @@ beforeEach(() => {
   $bootDone.set(false)
   $bootProgress.set(null)
   $briefingStatus.set('ready')
+  // HUD route now mounts CommandCenter → useAgentsPoll(); non-idle status keeps its
+  // idle-guard from firing a real listSessions fetch against the api-less stub.
+  $agentsStatus.set('ready')
   closeCommandPalette()
 })
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })

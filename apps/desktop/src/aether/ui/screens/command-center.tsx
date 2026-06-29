@@ -1,124 +1,46 @@
-// apps/desktop/src/aether/ui/screens/command-center.tsx
 import { useStore } from '@nanostores/react'
 import { useEffect } from 'react'
 
+import { useAgentsPoll } from '@/aether/domain/agents/use-agents-poll'
 import { $briefing, $briefingStatus, loadBriefing } from '@/aether/domain/briefing/briefing-store'
-import { CommandBar } from '@/aether/ui/components/command-bar'
-import { GlassSlab } from '@/aether/ui/components/glass-slab'
-import { Bar, Gauge } from '@/aether/ui/components/micro-viz'
-import { LivingOrb } from '@/aether/ui/orb/living-orb'
+import { $graphSpec } from '@/aether/domain/motion/graph-store'
+import { GraphFallback } from '@/aether/ui/motion/graph/fallback'
+import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
 
-export function CommandCenter({ onCommandPalette }: { onCommandPalette?: () => void }) {
+import { ConstellationOverlay } from './hud/constellation-overlay'
+import { FleetStatus } from './hud/fleet-status'
+import { GreetingCard } from './hud/greeting-card'
+import { PrioritiesPeek } from './hud/priorities-peek'
+import { SystemVitalsCard } from './hud/system-vitals-card'
+import { useHudGraph } from './hud/use-hud-graph'
+
+// HUD = Light · L2 living constellation home. The shared shell-root AetherCanvas
+// renders the GL constellation from $graphSpec (composed by useHudGraph); when the
+// WebGL gate is closed we render the static GraphFallback inline. The DOM overlay +
+// 4 ambient widgets stay on both paths. Non-chat: snapshot-only (prompt-cache safe).
+export function CommandCenter() {
   const briefing = useStore($briefing)
-  const status = useStore($briefingStatus)
+  const spec = useStore($graphSpec)
+  const motionEnabled = useMotionEnabled()
+
+  useAgentsPoll()
+  useHudGraph()
 
   useEffect(() => {
     if ($briefingStatus.get() === 'idle') { void loadBriefing() }
   }, [])
 
-  const servers = briefing?.servers ?? []
-  const worstServer = servers.find(s => s.status !== 'ok')
-
   return (
-    <div className="ae-screen-bare flex h-full min-w-0 flex-col">
-      <div className="ae-grid-floor" />
-      <div className="ae-bloom" style={{ left: '8%', top: '30%' }} />
-      <div className="ae-vignette" />
+    <div className="ae-screen-bare relative h-full min-w-0" data-testid="ae-hud">
+      {!motionEnabled && spec && <div className="absolute inset-0 z-0"><GraphFallback spec={spec} /></div>}
+      {spec && <div className="absolute inset-0 z-[1]"><ConstellationOverlay spec={spec} /></div>}
 
-      <div className="z-[2] grid min-h-0 flex-1 grid-cols-[26%_44%_30%] gap-[18px]">
-        {/* LEFT — orb + chips */}
-        <div className="flex min-h-0 flex-col gap-[13px]">
-          <GlassSlab className="flex flex-1 flex-col items-center justify-center gap-3.5" size="md">
-            <LivingOrb label="Agent sẵn sàng" size={170} />
-            <div className="text-[12.5px] font-semibold tracking-[.18em] text-[color:var(--ae-azure-soft)]">SẴN SÀNG</div>
-          </GlassSlab>
-          <div className="flex flex-col gap-2">
-            <GlassSlab className="flex items-center justify-between text-xs text-[color:var(--ae-dim)]" size="sm">
-              Tập trung <b className="text-white">{briefing?.priorities.length ?? 0} việc</b>
-            </GlassSlab>
-            <GlassSlab className="flex items-center justify-between text-xs text-[color:var(--ae-dim)]" size="sm">
-              Năng lượng hệ thống <b style={{ color: 'var(--ae-ok)' }}>{100 - (briefing?.vitals.cpu ?? 0)}%</b>
-            </GlassSlab>
-          </div>
-        </div>
-
-        {/* CENTER — brief + bento */}
-        <div className="flex min-h-0 flex-col gap-[13px]">
-          <GlassSlab size="lg">
-            <div className="mb-3 flex items-baseline justify-between">
-              <h3 className="text-base font-bold">Brief sáng</h3>
-              <span className="font-mono text-[11px] text-[color:var(--ae-dim)]">{status === 'ready' ? '·' : status}</span>
-            </div>
-            <div className="flex flex-col gap-[9px]">
-              {(briefing?.priorities ?? []).map(p => (
-                <div
-                  className="flex items-start gap-2.5 text-[12.5px] leading-[1.35]"
-                  key={p.id}
-                  style={{ color: p.severity === 'warn' ? '#FFE6BE' : '#D7ECFA' }}
-                >
-                  <span
-                    className="mt-[5px] h-[7px] w-[7px] flex-none rounded-full"
-                    style={{ background: p.severity === 'warn' ? 'var(--ae-warn)' : 'var(--ae-azure)', boxShadow: `0 0 8px ${p.severity === 'warn' ? 'var(--ae-warn)' : 'var(--ae-azure)'}` }}
-                  />
-                  {p.title}
-                </div>
-              ))}
-            </div>
-          </GlassSlab>
-
-          <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-[13px]">
-            <GlassSlab className="flex flex-col gap-1.5" size="sm">
-              <span className="text-[10px] font-semibold tracking-[.2em] text-[color:var(--ae-azure-soft)]">SERVERS</span>
-              <span className="text-[13px] font-semibold leading-[1.3] text-white">
-                {servers.map(s => `${s.name} ${s.status === 'ok' ? '✓' : `⚠ ${s.cpu}%`}`).join(' · ')}
-              </span>
-              <div className="mt-auto"><Gauge value={worstServer?.cpu ?? 0} warn={Boolean(worstServer)} /></div>
-            </GlassSlab>
-            <GlassSlab className="flex flex-col gap-1.5" size="sm">
-              <span className="text-[10px] font-semibold tracking-[.2em] text-[color:var(--ae-azure-soft)]">DEALS</span>
-              <span className="text-[13px] font-semibold text-white">
-                {briefing?.bento.deals ? `${briefing.bento.deals.active} đang chạy · ` : 'Chưa có dữ liệu'}
-                {briefing?.bento.deals && <span style={{ background: 'linear-gradient(180deg,#fff,var(--ae-azure-soft))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{briefing.bento.deals.valueLabel}</span>}
-              </span>
-              <span className="text-[11px] text-[color:var(--ae-dim)]">{briefing?.bento.deals?.sub}</span>
-            </GlassSlab>
-            <GlassSlab className="flex flex-col gap-1.5" size="sm">
-              <span className="text-[10px] font-semibold tracking-[.2em] text-[color:var(--ae-azure-soft)]">LỊCH</span>
-              <span className="text-[13px] font-semibold text-white">{briefing?.bento.calendar?.count ?? 0} sự kiện</span>
-              <span className="text-[11px] text-[color:var(--ae-dim)]">{briefing?.bento.calendar?.next}</span>
-            </GlassSlab>
-            <GlassSlab className="flex flex-col gap-1.5" size="sm">
-              <span className="text-[10px] font-semibold tracking-[.2em] text-[color:var(--ae-azure-soft)]">AGENTS</span>
-              <span className="text-[13px] font-semibold leading-[1.3] text-white">{briefing?.bento.agents?.headline}</span>
-              <span className="text-[11px] text-[color:var(--ae-dim)]">{briefing?.bento.agents?.sub}</span>
-            </GlassSlab>
-          </div>
-        </div>
-
-        {/* RIGHT — feed + vitals */}
-        <div className="flex min-h-0 flex-col gap-[13px]">
-          <GlassSlab size="md">
-            <h4 className="mb-3 text-xs font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">HOẠT ĐỘNG TRỰC TIẾP</h4>
-            {(briefing?.feed ?? []).map((f, i) => (
-              <div className="flex items-start gap-[11px] border-b border-[rgba(120,200,255,.08)] py-[7px] last:border-0" key={i}>
-                <span className="w-[42px] flex-none font-mono text-[11px] text-[color:var(--ae-azure)]">{f.time}</span>
-                <span className="text-xs leading-[1.3] text-[#D7ECFA]">{f.text}</span>
-              </div>
-            ))}
-          </GlassSlab>
-          <GlassSlab className="flex flex-1 flex-col" size="md">
-            <h4 className="mb-3 text-xs font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">VITALS</h4>
-            {([['CPU', briefing?.vitals.cpu ?? 0, (briefing?.vitals.cpu ?? 0) >= 80], ['API', briefing?.vitals.api ?? 0, false], ['Bộ nhớ', briefing?.vitals.memory ?? 0, false]] as const).map(([label, val, warn]) => (
-              <div className="mb-[13px] flex flex-col gap-1.5 last:mb-0" key={label}>
-                <div className="flex justify-between text-[11px] text-[color:var(--ae-dim)]"><span>{label}</span><b className="text-white">{val}%</b></div>
-                <Bar value={val} warn={warn} />
-              </div>
-            ))}
-          </GlassSlab>
-        </div>
+      <div className="pointer-events-none absolute inset-0 z-[2]">
+        <div className="pointer-events-auto absolute left-0 top-0 max-w-[320px]"><GreetingCard briefing={briefing} /></div>
+        <div className="pointer-events-auto absolute right-0 top-0 max-w-[280px]"><SystemVitalsCard briefing={briefing} /></div>
+        <div className="pointer-events-auto absolute bottom-0 left-0 max-w-[320px]"><PrioritiesPeek briefing={briefing} /></div>
+        <div className="pointer-events-auto absolute bottom-0 left-1/2 -translate-x-1/2"><FleetStatus /></div>
       </div>
-
-      <div className="z-[2] mt-4"><CommandBar onActivate={onCommandPalette} /></div>
     </div>
   )
 }

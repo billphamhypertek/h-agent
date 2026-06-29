@@ -28,7 +28,6 @@ import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { VoiceScreen } from '@/aether/ui/screens/voice-screen'
 import { CommandPalette } from '@/app/command-palette'
 import { ARTIFACTS_ROUTE, BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PLAYGROUND_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
-import { openCommandPalette } from '@/store/command-palette'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
@@ -73,7 +72,7 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
             <Routes location={location}>
               <Route element={<ChatScreen chatView={chatView} />} index />
               <Route element={<ChatScreen chatView={chatView} />} path=":sessionId" />
-              <Route element={<CommandCenter onCommandPalette={openCommandPalette} />} path={HUD_ROUTE.slice(1)} />
+              <Route element={<CommandCenter />} path={HUD_ROUTE.slice(1)} />
               <Route element={<MorningBrief />} path={BRIEF_ROUTE.slice(1)} />
               <Route element={<AgentsScreen />} path="agents" />
               <Route element={<ArtifactsScreen />} path={ARTIFACTS_ROUTE.slice(1)} />
