@@ -235,3 +235,24 @@ pinned by `tokens.test.ts`): energy/node-state/sinh-thể colors, `AETHER_TYPE`
 - **Fallback (hard-rule):** reduced-motion OR GPU-off OR webgl-probe-fail ⇒ no
   Canvas ⇒ `GraphFallback` (DOM/SVG) + CSS orb. `troika-three-text` provides SDF
   labels in GL (deduped against `three@0.180`).
+
+## HUD (`/hud`) — sessions constellation
+
+- HUD is the first real screen to render the #0 living engine with real state. It
+  **composes** a `GraphSpec` from session snapshots and pushes it into the shared
+  `$graphSpec`; the shell-root `AetherCanvas` renders it. The HUD never mounts its
+  own `<Canvas>`.
+- **Logic core (jsdom-tested, prompt-cache safe):**
+  - `domain/engine/sessions-graph.ts` — `AgentSessionRow[]` → `GraphSpec` (cap 12,
+    active-first ordering, deterministic constellation layout, `busy/online/dormant`).
+  - `domain/engine/lifecycle-differ.ts` — diff prev/next snapshot → `mitosis/flow/
+    inhale/crystallize/prune` events (coarse metadata only — no token/tool stream).
+  - `domain/agents/use-agents-poll.ts` — read-only `$agents` poll ~5s, paused when hidden.
+  - `ui/screens/hud/use-hud-graph.ts` — `reconcileGraph` (enter/exit hints) + wiring +
+    `$hudLifecycle`; clears `$graphSpec` on unmount.
+- **Bridge points:** `NodeSpec.enter/exit` (mitosis-in / fade-to-core); link `flow`
+  for busy tendrils; `coreOrbState()` drives the constellation core vital. Node
+  interaction is a DOM hit-layer (`constellation-overlay.tsx`), not GL raycast,
+  because the shared canvas is `pointer-events:none`.
+- **Fallback:** reduced-motion / GPU-off / probe-fail → no Canvas → `GraphFallback`
+  renders the same `GraphSpec` statically; the 4 ambient widgets + DOM overlay stay.
