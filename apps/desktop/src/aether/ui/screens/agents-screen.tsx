@@ -8,7 +8,7 @@ import { GlassSlab } from '@/aether/ui/components/glass-slab'
 
 function ReadOnlyBadge() {
   return (
-    <span className="rounded-[8px] px-2 py-[3px] text-[10px] font-semibold uppercase tracking-[.16em] text-[color:var(--ae-azure-soft)] ring-1 ring-[rgba(120,200,255,.22)]">
+    <span className="rounded-[8px] px-2 py-[3px] text-[10px] font-semibold uppercase tracking-[.16em] text-[color:var(--ae-azure-soft)] ring-1 ring-[color:var(--ae-line-strong)]">
       Chỉ xem
     </span>
   )
@@ -67,7 +67,7 @@ export function AgentsScreen() {
           <GlassSlab className="h-full" size="md">
             <div className="flex h-full flex-col gap-3" data-testid="ae-agents-skeleton">
               {[0, 1, 2].map(i => (
-                <div className="h-10 animate-pulse rounded-[11px] bg-[rgba(120,200,255,.08)]" key={i} />
+                <div className="h-10 animate-pulse rounded-[11px] bg-[var(--ae-fill)]" key={i} />
               ))}
             </div>
           </GlassSlab>
@@ -76,7 +76,7 @@ export function AgentsScreen() {
         {status === 'empty' && (
           <GlassSlab className="grid h-full place-items-center text-center" size="lg">
             <div>
-              <div className="text-[13px] font-semibold text-white">Chưa có agent nào đang chạy</div>
+              <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">Chưa có agent nào đang chạy</div>
               <div className="mt-1 text-[12px] text-[color:var(--ae-dim)]">
                 Khi có phiên, cron hoặc kỹ năng, chúng sẽ hiện ở đây.
               </div>
@@ -91,7 +91,7 @@ export function AgentsScreen() {
                 Không tải được dữ liệu agent
               </div>
               <button
-                className="mt-3 rounded-[11px] px-4 py-2 text-[12px] font-semibold ring-1 ring-[rgba(120,200,255,.3)]"
+                className="mt-3 rounded-[11px] px-4 py-2 text-[12px] font-semibold ring-1 ring-[color:var(--ae-line-strong)]"
                 onClick={() => void agentsStore.loadAgents()}
                 type="button"
               >
@@ -112,12 +112,12 @@ export function AgentsScreen() {
                   data-testid="ae-agents-presence"
                   style={{ background: ORB_COLOR[orbState], boxShadow: `0 0 9px ${ORB_COLOR[orbState]}` }}
                 />
-                <span className="text-[12.5px] font-semibold text-white">{ORB_LABEL[orbState]}</span>
+                <span className="text-[12.5px] font-semibold text-[color:var(--ae-ink)]">{ORB_LABEL[orbState]}</span>
               </div>
               <div className="text-[12px] text-[color:var(--ae-dim)]">
-                <b className="text-white">{agents.runningCount}</b> agent đang chạy ·{' '}
-                <b className="text-white">{agents.cron.length}</b> lịch ·{' '}
-                <b className="text-white">{agents.enabledSkillCount}</b> năng lực bật
+                <b className="text-[color:var(--ae-ink)]">{agents.runningCount}</b> agent đang chạy ·{' '}
+                <b className="text-[color:var(--ae-ink)]">{agents.cron.length}</b> lịch ·{' '}
+                <b className="text-[color:var(--ae-ink)]">{agents.enabledSkillCount}</b> năng lực bật
               </div>
             </GlassSlab>
 
@@ -127,7 +127,7 @@ export function AgentsScreen() {
               <div className="flex min-h-0 flex-col gap-[9px] overflow-auto" data-testid="ae-agents-sessions">
                 {agents.sessions.map(session => (
                   <div
-                    className="flex items-center gap-[11px] rounded-[11px] p-[9px_11px] ring-1 ring-[rgba(120,200,255,.1)]"
+                    className="flex items-center gap-[11px] rounded-[11px] p-[9px_11px] ring-1 ring-[color:var(--ae-line)]"
                     key={session.id}
                   >
                     <span
@@ -138,7 +138,7 @@ export function AgentsScreen() {
                       }}
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-[12.5px] font-semibold text-white">{session.title}</div>
+                      <div className="truncate text-[12.5px] font-semibold text-[color:var(--ae-ink)]">{session.title}</div>
                       <div className="text-[10.5px] text-[color:var(--ae-dim)]">
                         {session.source} · {session.profile}
                         {session.model ? ` · ${session.model}` : ''}
@@ -160,7 +160,7 @@ export function AgentsScreen() {
                       className="h-[6px] w-[6px] flex-none rounded-full"
                       style={{ background: job.enabled ? 'var(--ae-ok)' : 'var(--ae-dim)' }}
                     />
-                    <span className="flex-1 truncate font-semibold text-[#D7ECFA]">{job.name}</span>
+                    <span className="flex-1 truncate font-semibold text-[color:var(--ae-ink)]">{job.name}</span>
                     <span className="text-[10px] text-[color:var(--ae-dim)]">{job.schedule}</span>
                   </div>
                 ))}
@@ -176,8 +176,8 @@ export function AgentsScreen() {
                     className="rounded-[9px] px-[9px] py-[5px] text-[11px] font-semibold ring-1"
                     key={skill.name}
                     style={{
-                      color: skill.enabled ? '#D7ECFA' : 'var(--ae-dim)',
-                      ['--tw-ring-color' as string]: skill.enabled ? 'rgba(120,200,255,.28)' : 'rgba(120,200,255,.1)',
+                      color: skill.enabled ? 'var(--ae-ink)' : 'var(--ae-dim)',
+                      ['--tw-ring-color' as string]: skill.enabled ? 'var(--ae-line-strong)' : 'var(--ae-line)',
                     }}
                   >
                     {skill.name}

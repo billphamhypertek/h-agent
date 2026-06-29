@@ -41,7 +41,7 @@ export function FlowView({ ctx, flow }: { ctx: onboarding.OnboardingContext; flo
         </p>
         <div className="flex justify-end">
           <button
-            className="rounded-[10px] border border-[rgba(120,200,255,.35)] p-[8px_18px] text-[13px] font-semibold text-white"
+            className="rounded-[10px] border border-[color:var(--ae-line-strong)] p-[8px_18px] text-[13px] font-semibold text-[color:var(--ae-ink)]"
             onClick={() => onboarding.cancelOnboardingFlow()}
             type="button"
           >
@@ -63,7 +63,7 @@ export function FlowView({ ctx, flow }: { ctx: onboarding.OnboardingContext; flo
         <input
           autoComplete="off"
           autoFocus
-          className="rounded-[10px] border border-[rgba(120,200,255,.22)] bg-[rgba(8,18,32,.5)] p-[9px_12px] font-mono text-[13px] text-white outline-none focus:border-[rgba(120,200,255,.5)]"
+          className="rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-well)] p-[9px_12px] font-mono text-[13px] text-[color:var(--ae-ink)] outline-none focus:border-[color:var(--ae-line-strong)]"
           onChange={e => onboarding.setOnboardingCode(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && void onboarding.submitOnboardingCode(ctx)}
           placeholder="Dán mã xác thực"
@@ -72,7 +72,7 @@ export function FlowView({ ctx, flow }: { ctx: onboarding.OnboardingContext; flo
         <FlowFooter>
           <CancelButton />
           <button
-            className="rounded-[10px] border border-[rgba(120,200,255,.35)] p-[8px_18px] text-[13px] font-semibold text-white disabled:opacity-50"
+            className="rounded-[10px] border border-[color:var(--ae-line-strong)] p-[8px_18px] text-[13px] font-semibold text-[color:var(--ae-ink)] disabled:opacity-50"
             disabled={!flow.code.trim()}
             onClick={() => void onboarding.submitOnboardingCode(ctx)}
             type="button"
@@ -113,7 +113,7 @@ export function FlowView({ ctx, flow }: { ctx: onboarding.OnboardingContext; flo
         <FlowFooter>
           <CancelButton />
           <button
-            className="rounded-[10px] border border-[rgba(120,200,255,.35)] p-[8px_18px] text-[13px] font-semibold text-white"
+            className="rounded-[10px] border border-[color:var(--ae-line-strong)] p-[8px_18px] text-[13px] font-semibold text-[color:var(--ae-ink)]"
             onClick={() => void onboarding.recheckExternalSignin(ctx)}
             type="button"
           >
@@ -136,7 +136,7 @@ export function FlowView({ ctx, flow }: { ctx: onboarding.OnboardingContext; flo
 function FlowStep({ children, title }: { children: React.ReactNode; title: string }) {
   return (
     <div className="grid gap-3">
-      <h3 className="text-[13px] font-semibold text-white">{title}</h3>
+      <h3 className="text-[13px] font-semibold text-[color:var(--ae-ink)]">{title}</h3>
       {children}
     </div>
   )
@@ -174,8 +174,8 @@ function CopyableCode({ copied, onCopy, text }: { copied: boolean; onCopy: () =>
     <button
       className={
         copied
-          ? 'w-full rounded-[10px] border border-[rgba(120,200,255,.5)] bg-[rgba(120,200,255,.12)] p-[10px_14px] text-left font-mono text-[13px] text-white transition-colors'
-          : 'w-full rounded-[10px] border border-[rgba(120,200,255,.22)] bg-[rgba(8,18,32,.5)] p-[10px_14px] text-left font-mono text-[13px] text-white transition-colors hover:bg-[rgba(120,200,255,.08)]'
+          ? 'w-full rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-fill-strong)] p-[10px_14px] text-left font-mono text-[13px] text-[color:var(--ae-ink)] transition-colors'
+          : 'w-full rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-well)] p-[10px_14px] text-left font-mono text-[13px] text-[color:var(--ae-ink)] transition-colors hover:bg-[var(--ae-fill)]'
       }
       onClick={onCopy}
       title="Bấm để sao chép"
@@ -205,14 +205,14 @@ function ConfirmModelView({
   return (
     <div className="grid place-items-center gap-5 py-4 text-center">
       <p className="text-[13px] text-[color:var(--ae-dim)]">
-        Đã kết nối <span className="font-semibold text-white">{flow.label}</span>.
+        Đã kết nối <span className="font-semibold text-[color:var(--ae-ink)]">{flow.label}</span>.
       </p>
 
       <div className="grid justify-items-center gap-1.5">
         <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[color:var(--ae-dim)]">
           Mô hình mặc định
         </span>
-        <p className="font-mono text-[15px] text-white">{flow.currentModel}</p>
+        <p className="font-mono text-[15px] text-[color:var(--ae-ink)]">{flow.currentModel}</p>
         <button
           className="mt-0.5 text-[12px] font-medium text-[color:var(--ae-azure-soft)] disabled:opacity-50"
           disabled={flow.saving}
@@ -224,7 +224,7 @@ function ConfirmModelView({
       </div>
 
       <button
-        className="rounded-[10px] border border-[rgba(120,200,255,.45)] bg-[rgba(120,200,255,.1)] p-[10px_28px] text-[14px] font-semibold text-white disabled:opacity-50"
+        className="rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-fill-strong)] p-[10px_28px] text-[14px] font-semibold text-[color:var(--ae-ink)] disabled:opacity-50"
         data-testid="ae-onboarding-begin"
         disabled={flow.saving}
         onClick={() => onboarding.confirmOnboardingModel(ctx)}

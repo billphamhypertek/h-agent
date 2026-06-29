@@ -40,7 +40,7 @@ export function ToolsTab({ onToggle }: { onToggle?: (name: string, enabled: bool
           <div className="flex flex-col gap-2">
             <div className="text-[12px] text-[color:var(--ae-warn)]">Không tải được bộ công cụ.</div>
             <button
-              className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white"
+              className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
               onClick={() => void loadToolsets()}
               style={{ background: 'var(--ae-azure)' }}
               type="button"
@@ -61,7 +61,7 @@ export function ToolsTab({ onToggle }: { onToggle?: (name: string, enabled: bool
                 }
                 type="checkbox"
               />
-              <span className="flex-1 font-semibold text-[#D7ECFA]">{ts.label}</span>
+              <span className="flex-1 font-semibold text-[color:var(--ae-ink)]">{ts.label}</span>
               <span className="text-[11px] text-[color:var(--ae-dim)]">{ts.description}</span>
             </label>
           ))}
@@ -79,7 +79,7 @@ export function ToolsTab({ onToggle }: { onToggle?: (name: string, enabled: bool
         )}
         {cuStatus === 'ready' && cu && (
           <>
-            <div className="text-[12.5px] text-[#D7ECFA]">
+            <div className="text-[12.5px] text-[color:var(--ae-ink)]">
               Trạng thái:{' '}
               <b style={{ color: cu.ready ? 'var(--ae-ok)' : 'var(--ae-warn)' }}>
                 {cu.ready ? 'Sẵn sàng' : 'Chưa sẵn sàng'}
@@ -87,7 +87,7 @@ export function ToolsTab({ onToggle }: { onToggle?: (name: string, enabled: bool
             </div>
             {cu.can_grant && !cu.ready && (
               <button
-                className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white"
+                className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                 onClick={() => void grantComputerUse()}
                 style={{ background: 'var(--ae-azure)' }}
                 type="button"

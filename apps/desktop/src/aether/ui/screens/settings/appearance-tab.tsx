@@ -35,7 +35,7 @@ function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigF
     return (
       <label className="flex items-center gap-2 text-[12.5px]" key={dottedKey}>
         <input checked={Boolean(value)} data-testid={testId} onChange={e => commit(e.target.checked)} type="checkbox" />
-        <span className="text-[#D7ECFA]">{schema.description ?? dottedKey}</span>
+        <span className="text-[color:var(--ae-ink)]">{schema.description ?? dottedKey}</span>
       </label>
     )
   }
@@ -43,9 +43,9 @@ function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigF
   if (schema.type === 'number') {
     return (
       <label className="flex items-center gap-2 text-[12.5px]" key={dottedKey}>
-        <span className="flex-1 text-[#D7ECFA]">{schema.description ?? dottedKey}</span>
+        <span className="flex-1 text-[color:var(--ae-ink)]">{schema.description ?? dottedKey}</span>
         <input
-          className="w-28 rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-white"
+          className="w-28 rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[color:var(--ae-ink)]"
           data-testid={testId}
           onChange={e => commit(Number(e.target.value))}
           type="number"
@@ -58,9 +58,9 @@ function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigF
   if (schema.type === 'select') {
     return (
       <label className="flex items-center gap-2 text-[12.5px]" key={dottedKey}>
-        <span className="flex-1 text-[#D7ECFA]">{schema.description ?? dottedKey}</span>
+        <span className="flex-1 text-[color:var(--ae-ink)]">{schema.description ?? dottedKey}</span>
         <select
-          className="rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-white"
+          className="rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[color:var(--ae-ink)]"
           data-testid={testId}
           onChange={e => commit(e.target.value)}
           value={String(value ?? '')}
@@ -78,9 +78,9 @@ function ConfigField({ dottedKey, schema }: { dottedKey: string; schema: ConfigF
   // string | text | list | undefined → text input
   return (
     <label className="flex items-center gap-2 text-[12.5px]" key={dottedKey}>
-      <span className="flex-1 text-[#D7ECFA]">{schema.description ?? dottedKey}</span>
+      <span className="flex-1 text-[color:var(--ae-ink)]">{schema.description ?? dottedKey}</span>
       <input
-        className="min-w-[200px] flex-1 rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-white"
+        className="min-w-[200px] flex-1 rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[color:var(--ae-ink)]"
         data-testid={testId}
         defaultValue={String(value ?? '')}
         onBlur={e => commit(e.target.value)}
@@ -123,8 +123,8 @@ export function AppearanceTab() {
               onClick={() => setMode(m.id)}
               style={
                 mode === m.id
-                  ? { background: 'var(--ae-azure)', color: '#fff' }
-                  : { background: 'rgba(120,195,245,.07)', color: 'var(--ae-azure-soft)' }
+                  ? { background: 'var(--ae-azure)', color: 'var(--ae-on-azure)' }
+                  : { background: 'var(--ae-fill)', color: 'var(--ae-azure-soft)' }
               }
               type="button"
             >
@@ -136,7 +136,7 @@ export function AppearanceTab() {
           Giao diện (skin)
         </div>
         <select
-          className="self-start rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-[12px] text-white"
+          className="self-start rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-skin-select"
           onChange={e => setTheme(e.target.value)}
           value={themeName}
@@ -160,7 +160,7 @@ export function AppearanceTab() {
           <div className="flex flex-col gap-2">
             <div className="text-[12px] text-[color:var(--ae-warn)]">Không tải được cấu hình.</div>
             <button
-              className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white"
+              className="self-start rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
               onClick={() => void loadConfig()}
               style={{ background: 'var(--ae-azure)' }}
               type="button"

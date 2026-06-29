@@ -35,7 +35,7 @@ export function InboxScreen() {
         <GlassSlab className="text-center" size="lg">
           <div className="text-sm text-[color:var(--ae-warn)]">Không tải được Inbox.</div>
           <button
-            className="mt-3 rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+            className="mt-3 rounded-[11px] border border-[color:var(--ae-line-strong)] p-[8px_16px] text-[12.5px] text-[color:var(--ae-ink)]"
             onClick={() => void inboxStore.loadInbox({ force: true })}
             type="button"
           >
@@ -64,7 +64,7 @@ export function InboxScreen() {
       <div className="flex items-center justify-between">
         <div className="text-[13px] uppercase tracking-[.16em] text-[color:var(--ae-azure-soft)]">Inbox + CRM</div>
         <button
-          className="rounded-[11px] border border-[rgba(120,200,255,.3)] p-[6px_14px] text-[12px] text-white"
+          className="rounded-[11px] border border-[color:var(--ae-line-strong)] p-[6px_14px] text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-inbox-refresh"
           onClick={() => void inboxStore.loadInbox({ force: true })}
           type="button"
@@ -77,15 +77,15 @@ export function InboxScreen() {
         <div className={SECTION_TITLE}>EMAIL CẦN XỬ LÝ · {inbox.threads.length}</div>
         {inbox.threads.map(t => (
           <div className="flex items-start gap-3 rounded-[11px] p-[9px_11px]" data-testid="ae-inbox-thread-row" key={t.id}
-            style={{ background: 'linear-gradient(160deg,rgba(120,195,245,.07),rgba(120,195,245,.02))', border: '1px solid rgba(120,200,255,.1)' }}
+            style={{ background: 'linear-gradient(160deg,var(--ae-fill),var(--ae-fill-2))', border: '1px solid var(--ae-line)' }}
           >
             {t.unread && (
               <span className="mt-[5px] h-[7px] w-[7px] flex-none rounded-full" style={{ background: 'var(--ae-azure)', boxShadow: '0 0 8px var(--ae-azure)' }} />
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-[12.5px]">
-                <span className="font-semibold text-white">{t.sender}</span>
-                <span className="truncate text-[#CFE2F7]">{t.subject}</span>
+                <span className="font-semibold text-[color:var(--ae-ink)]">{t.sender}</span>
+                <span className="truncate text-[color:var(--ae-ink)]">{t.subject}</span>
               </div>
               {t.snippet && <div className="mt-0.5 truncate text-[11px] text-[color:var(--ae-dim)]">{t.snippet}</div>}
             </div>
@@ -98,8 +98,8 @@ export function InboxScreen() {
         <div className="grid grid-cols-4 gap-2.5" data-testid="ae-inbox-deals-empty">
           {PIPELINE_STAGES.map(stage => (
             <div className="flex flex-col gap-1.5" key={stage}>
-              <div className="text-[11px] font-semibold text-[#D7ECFA]">{stage}</div>
-              <div className="rounded-[11px] border border-dashed border-[rgba(120,200,255,.18)] p-3 text-center text-[11px] text-[color:var(--ae-dim)]">
+              <div className="text-[11px] font-semibold text-[color:var(--ae-ink)]">{stage}</div>
+              <div className="rounded-[11px] border border-dashed border-[color:var(--ae-line)] p-3 text-center text-[11px] text-[color:var(--ae-dim)]">
                 Chưa có nguồn CRM
               </div>
             </div>

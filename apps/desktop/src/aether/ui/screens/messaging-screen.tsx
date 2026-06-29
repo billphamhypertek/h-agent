@@ -104,17 +104,17 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
 
         return (
           <label className="flex flex-col gap-1" htmlFor={fieldId} key={field.key}>
-            <span className="text-[11px] font-semibold text-[#D7ECFA]">
+            <span className="text-[11px] font-semibold text-[color:var(--ae-ink)]">
               {field.prompt || field.key}
               {field.required && <span style={{ color: 'var(--ae-warn)' }}> *</span>}
             </span>
             <input
               aria-label={field.prompt || field.key}
-              className="rounded-[9px] bg-[rgba(8,24,44,.55)] px-2.5 py-1.5 text-[12px] text-white outline-none"
+              className="rounded-[9px] bg-[var(--ae-well)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)] outline-none"
               id={fieldId}
               onChange={event => setEdits(current => ({ ...current, [field.key]: event.target.value }))}
               placeholder={field.is_set ? field.redacted_value ?? 'Đã lưu — nhập để thay thế' : field.prompt}
-              style={{ border: '1px solid rgba(120,200,255,.18)' }}
+              style={{ border: '1px solid var(--ae-line)' }}
               type={field.is_password ? 'password' : 'text'}
               value={edits[field.key] ?? ''}
             />
@@ -131,7 +131,7 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
           className="rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
           disabled={testing}
           onClick={() => void onTest()}
-          style={{ border: '1px solid rgba(120,200,255,.28)' }}
+          style={{ border: '1px solid var(--ae-line-strong)' }}
           type="button"
         >
           {testing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}
@@ -140,7 +140,7 @@ function PlatformConfig({ platform }: { platform: MessagingPlatformInfo }) {
           className="rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
           disabled={!hasEdits || saving}
           onClick={() => void onSave()}
-          style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+          style={{ background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))', border: '1px solid var(--ae-line-strong)' }}
           type="button"
         >
           {saving ? 'Đang lưu…' : 'Lưu'}
@@ -183,7 +183,7 @@ function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-2.5 border-t border-[rgba(120,200,255,.12)] pt-2.5">
+    <div className="mt-2 flex flex-col gap-2.5 border-t border-[color:var(--ae-line)] pt-2.5">
       <div className="text-[11px] font-semibold tracking-[.14em] text-[color:var(--ae-azure-soft)]">
         GHÉP NỐI QR
       </div>
@@ -194,7 +194,7 @@ function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
           <button
             className="self-start rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold"
             onClick={() => void tgStore.startTelegramOnboarding()}
-            style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+            style={{ background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))', border: '1px solid var(--ae-line-strong)' }}
             type="button"
           >
             Ghép nối bằng QR
@@ -215,7 +215,7 @@ function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
           <button
             className="self-start rounded-[10px] px-[12px] py-[6px] text-[11.5px] font-semibold"
             onClick={() => void tgStore.cancelTelegramOnboarding()}
-            style={{ border: '1px solid rgba(120,200,255,.28)' }}
+            style={{ border: '1px solid var(--ae-line-strong)' }}
             type="button"
           >
             Hủy
@@ -230,21 +230,21 @@ function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {allowedIds.map(id => (
-              <span className="rounded-full px-2 py-0.5 text-[11px]" key={id} style={{ border: '1px solid rgba(120,200,255,.28)' }}>{id}</span>
+              <span className="rounded-full px-2 py-0.5 text-[11px]" key={id} style={{ border: '1px solid var(--ae-line-strong)' }}>{id}</span>
             ))}
           </div>
           <div className="flex items-center gap-2">
             <input
-              className="rounded-[9px] bg-[rgba(8,24,44,.55)] px-2.5 py-1.5 text-[12px] text-white outline-none"
+              className="rounded-[9px] bg-[var(--ae-well)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)] outline-none"
               onChange={event => setNewId(event.target.value)}
               placeholder="ID người dùng được phép"
-              style={{ border: '1px solid rgba(120,200,255,.18)' }}
+              style={{ border: '1px solid var(--ae-line)' }}
               value={newId}
             />
             <button
               className="rounded-[10px] px-[12px] py-[7px] text-[12px] font-semibold"
               onClick={addId}
-              style={{ border: '1px solid rgba(120,200,255,.28)' }}
+              style={{ border: '1px solid var(--ae-line-strong)' }}
               type="button"
             >
               Thêm
@@ -254,7 +254,7 @@ function TelegramPairingPanel({ onApplied }: { onApplied: () => void }) {
             className="self-start rounded-[10px] px-[14px] py-[7px] text-[12px] font-semibold disabled:opacity-50"
             disabled={allowedIds.length === 0}
             onClick={() => void apply()}
-            style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+            style={{ background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))', border: '1px solid var(--ae-line-strong)' }}
             type="button"
           >
             Hoàn tất ghép nối
@@ -286,7 +286,7 @@ export function MessagingScreen() {
 
       <div className="z-[2] mt-[18px] flex flex-col gap-[6px]">
         <div className="text-[24px] font-semibold leading-[1.05]">Nhắn tin</div>
-        <div className="text-[12.5px] text-[#CFE2F7]">Kết nối AETHER với các nền tảng nhắn tin của bạn</div>
+        <div className="text-[12.5px] text-[color:var(--ae-ink)]">Kết nối AETHER với các nền tảng nhắn tin của bạn</div>
       </div>
 
       <div className="z-[2] mt-4 flex min-h-0 flex-1 flex-col gap-3.5 overflow-auto">
@@ -310,7 +310,7 @@ export function MessagingScreen() {
             <button
               className="rounded-[11px] px-[16px] py-[8px] text-[12.5px] font-semibold"
               onClick={() => void loadPlatforms()}
-              style={{ background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))', border: '1px solid rgba(120,210,255,.34)' }}
+              style={{ background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))', border: '1px solid var(--ae-line-strong)' }}
               type="button"
             >
               Thử lại
@@ -327,13 +327,13 @@ export function MessagingScreen() {
               type="button"
             >
               <div className="flex min-w-0 flex-col">
-                <div className="text-[14px] font-semibold text-white">{platform.name}</div>
+                <div className="text-[14px] font-semibold text-[color:var(--ae-ink)]">{platform.name}</div>
                 <div className="truncate text-[11.5px] text-[color:var(--ae-dim)]">{platform.description}</div>
               </div>
               <StatusBadge platform={platform} />
             </button>
             {selectedId === platform.id && (
-              <div className="border-t border-[rgba(120,200,255,.12)] pt-2 text-[11.5px] text-[color:var(--ae-dim)]" data-testid="ae-messaging-detail">
+              <div className="border-t border-[color:var(--ae-line)] pt-2 text-[11.5px] text-[color:var(--ae-dim)]" data-testid="ae-messaging-detail">
                 <PlatformConfig platform={platform} />
                 {platform.id === 'telegram' && <TelegramPairingPanel onApplied={() => void loadPlatforms()} />}
               </div>

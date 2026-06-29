@@ -22,7 +22,7 @@ function ProfileSkeleton() {
   return (
     <div className="flex flex-col gap-2.5" data-testid="ae-profiles-skeleton">
       {[0, 1, 2].map(i => (
-        <div className="h-[58px] animate-pulse rounded-[13px] bg-[rgba(120,195,245,.06)]" key={i} />
+        <div className="h-[58px] animate-pulse rounded-[13px] bg-[var(--ae-fill)]" key={i} />
       ))}
     </div>
   )
@@ -89,7 +89,7 @@ export function ProfilesScreen() {
 
           <div className="mb-2.5">
             <button
-              className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+              className="rounded-[9px] border border-[color:var(--ae-line-strong)] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
               onClick={() => setCreating(v => !v)}
               type="button"
             >
@@ -98,14 +98,14 @@ export function ProfilesScreen() {
             {creating && (
               <div className="mt-2 flex gap-2">
                 <input
-                  className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                  className="min-w-0 flex-1 rounded-[9px] border border-[color:var(--ae-line)] bg-[var(--ae-well)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                   data-testid="ae-new-profile-name"
                   onChange={e => setNewName(e.target.value)}
                   placeholder="Tên hồ sơ mới"
                   value={newName}
                 />
                 <button
-                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                   disabled={!newName.trim()}
                   onClick={async () => {
                     await profilesStore.createProfileAction(newName.trim())
@@ -126,7 +126,7 @@ export function ProfilesScreen() {
             <div className="flex flex-col items-start gap-2 text-[12.5px] text-[color:var(--ae-warn)]">
               <span>Không tải được danh sách hồ sơ.</span>
               <button
-                className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                className="rounded-[9px] border border-[color:var(--ae-line-strong)] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                 onClick={() => void loadProfiles()}
                 type="button"
               >
@@ -156,9 +156,9 @@ export function ProfilesScreen() {
                     onClick={() => setSelected(p.name)}
                     style={{
                       background: isSelected
-                        ? 'linear-gradient(160deg,rgba(74,163,255,.14),rgba(120,195,245,.04))'
-                        : 'linear-gradient(160deg,rgba(120,195,245,.05),rgba(120,195,245,.01))',
-                      border: `1px solid ${isSelected ? 'rgba(120,210,255,.4)' : 'rgba(120,200,255,.1)'}`
+                        ? 'linear-gradient(160deg,var(--ae-fill-strong),var(--ae-fill-2))'
+                        : 'linear-gradient(160deg,var(--ae-fill),var(--ae-fill-2))',
+                      border: `1px solid ${isSelected ? 'var(--ae-line-strong)' : 'var(--ae-line)'}`
                     }}
                     type="button"
                   >
@@ -170,7 +170,7 @@ export function ProfilesScreen() {
                       }}
                     />
                     <span className="min-w-0 flex-1" data-testid="ae-profile-row">
-                      <span className="block truncate text-[13px] font-semibold text-white">{p.name}</span>
+                      <span className="block truncate text-[13px] font-semibold text-[color:var(--ae-ink)]">{p.name}</span>
                       <span className="block truncate text-[10.5px] text-[color:var(--ae-dim)]">
                         {p.model ? `${p.provider ?? '?'} · ${p.model}` : 'Chưa chọn model'}
                       </span>
@@ -192,21 +192,21 @@ export function ProfilesScreen() {
             CHI TIẾT
           </div>
           <div className="mt-2 flex flex-col gap-3 overflow-auto">
-            <div className="text-[13px] font-semibold text-white">
+            <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">
               {selectedName ? `Hồ sơ: ${selectedName}` : 'Chọn một hồ sơ để xem chi tiết.'}
             </div>
 
             {selectedName && (
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                  className="rounded-[9px] border border-[color:var(--ae-line-strong)] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                   onClick={() => { setRenaming(v => !v); setRenameValue(selectedName) }}
                   type="button"
                 >
                   Đổi tên
                 </button>
                 <button
-                  className="rounded-[9px] border border-[rgba(255,176,32,.4)] px-3 py-1.5 text-[12px] text-[color:var(--ae-warn)]"
+                  className="rounded-[9px] border border-[color:var(--ae-warn-line)] px-3 py-1.5 text-[12px] text-[color:var(--ae-warn)]"
                   onClick={() => setConfirmingDelete(true)}
                   type="button"
                 >
@@ -218,13 +218,13 @@ export function ProfilesScreen() {
             {selectedName && renaming && (
               <div className="flex gap-2">
                 <input
-                  className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                  className="min-w-0 flex-1 rounded-[9px] border border-[color:var(--ae-line)] bg-[var(--ae-well)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                   data-testid="ae-rename-profile-name"
                   onChange={e => setRenameValue(e.target.value)}
                   value={renameValue}
                 />
                 <button
-                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                  className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                   disabled={!renameValue.trim() || renameValue.trim() === selectedName}
                   onClick={async () => {
                     await profilesStore.renameProfileAction(selectedName, renameValue.trim())
@@ -239,13 +239,13 @@ export function ProfilesScreen() {
             )}
 
             {selectedName && confirmingDelete && (
-              <div className="flex flex-col gap-2 rounded-[11px] border border-[rgba(255,176,32,.3)] p-2.5">
+              <div className="flex flex-col gap-2 rounded-[11px] border border-[color:var(--ae-warn-line)] p-2.5">
                 <span className="text-[12px] text-[color:var(--ae-warn)]">
                   Xoá hồ sơ "{selectedName}"? Hành động này không thể hoàn tác.
                 </span>
                 <div className="flex gap-2">
                   <button
-                    className="rounded-[9px] bg-[var(--ae-warn)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                    className="rounded-[9px] bg-[var(--ae-warn)] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                     onClick={async () => {
                       await profilesStore.deleteProfileAction(selectedName)
                       setSelected(null)
@@ -256,7 +256,7 @@ export function ProfilesScreen() {
                     Xác nhận xoá
                   </button>
                   <button
-                    className="rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                    className="rounded-[9px] border border-[color:var(--ae-line-strong)] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                     onClick={() => setConfirmingDelete(false)}
                     type="button"
                   >
@@ -268,7 +268,7 @@ export function ProfilesScreen() {
 
             {selectedName && selectedName !== active && (
               <button
-                className="self-start rounded-[9px] border border-[rgba(120,210,255,.34)] px-3 py-1.5 text-[12px] text-white"
+                className="self-start rounded-[9px] border border-[color:var(--ae-line-strong)] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                 onClick={() => void profilesStore.setActiveProfileAction(selectedName)}
                 type="button"
               >
@@ -283,7 +283,7 @@ export function ProfilesScreen() {
                 </span>
                 <div className="flex gap-2">
                   <select
-                    className="min-w-0 flex-1 rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] px-2.5 py-1.5 text-[12px] text-white"
+                    className="min-w-0 flex-1 rounded-[9px] border border-[color:var(--ae-line)] bg-[var(--ae-well)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
                     data-testid="ae-model-select"
                     onChange={e => setModelChoice(e.target.value)}
                     value={modelChoice}
@@ -298,7 +298,7 @@ export function ProfilesScreen() {
                     )}
                   </select>
                   <button
-                    className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                    className="rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                     disabled={!modelChoice}
                     onClick={() => {
                       const [provider, model] = modelChoice.split('::')
@@ -319,7 +319,7 @@ export function ProfilesScreen() {
                   SOUL (BỐI CẢNH)
                 </span>
                 {soulStatus === 'loading' && (
-                  <div className="h-[120px] animate-pulse rounded-[11px] bg-[rgba(120,195,245,.06)]" />
+                  <div className="h-[120px] animate-pulse rounded-[11px] bg-[var(--ae-fill)]" />
                 )}
                 {soulStatus === 'error' && (
                   <span className="text-[12px] text-[color:var(--ae-warn)]">Không tải được soul.</span>
@@ -327,13 +327,13 @@ export function ProfilesScreen() {
                 {soulStatus === 'ready' && (
                   <>
                     <textarea
-                      className="min-h-[120px] w-full resize-y rounded-[11px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] p-2.5 text-[12px] leading-[1.5] text-white"
+                      className="min-h-[120px] w-full resize-y rounded-[11px] border border-[color:var(--ae-line)] bg-[var(--ae-well)] p-2.5 text-[12px] leading-[1.5] text-[color:var(--ae-ink)]"
                       data-testid="ae-soul-editor"
                       onChange={e => setSoulDraft(e.target.value)}
                       value={soulDraft}
                     />
                     <button
-                      className="self-start rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[#06283c]"
+                      className="self-start rounded-[9px] bg-[var(--ae-azure)] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
                       disabled={soulDraft === (soul?.content ?? '')}
                       onClick={() => void profilesStore.saveProfileSoul(selectedName, soulDraft)}
                       type="button"
@@ -350,7 +350,7 @@ export function ProfilesScreen() {
                 <span className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
                   LỆNH THIẾT LẬP
                 </span>
-                <code className="block overflow-auto rounded-[9px] border border-[rgba(120,200,255,.2)] bg-[rgba(8,30,60,.5)] p-2.5 text-[11.5px] text-[#CFE2F7]">
+                <code className="block overflow-auto rounded-[9px] border border-[color:var(--ae-line)] bg-[var(--ae-well)] p-2.5 text-[11.5px] text-[color:var(--ae-ink)]">
                   {setup.command}
                 </code>
               </div>

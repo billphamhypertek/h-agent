@@ -11,7 +11,7 @@ const SECTION_TITLE = 'mb-[11px] text-[11px] font-semibold tracking-[.16em] text
 function RefreshButton() {
   return (
     <button
-      className="rounded-[11px] border border-[rgba(120,200,255,.3)] p-[6px_14px] text-[12px] text-white"
+      className="rounded-[11px] border border-[color:var(--ae-line-strong)] p-[6px_14px] text-[12px] text-[color:var(--ae-ink)]"
       data-testid="ae-dev-refresh"
       onClick={() => void devStore.loadDev({ force: true })}
       type="button"
@@ -53,7 +53,7 @@ export function DevScreen() {
         <GlassSlab className="text-center" size="lg">
           <div className="text-sm text-[color:var(--ae-warn)]">Không tải được dữ liệu Dev.</div>
           <button
-            className="mt-3 rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+            className="mt-3 rounded-[11px] border border-[color:var(--ae-line-strong)] p-[8px_16px] text-[12.5px] text-[color:var(--ae-ink)]"
             onClick={() => void devStore.loadDev({ force: true })}
             type="button"
           >
@@ -91,7 +91,7 @@ export function DevScreen() {
         <div className="flex flex-col gap-2.5">
           {dev.servers.map(s => (
             <div className="flex items-center gap-3 text-[11.5px]" data-testid="ae-dev-server-row" key={s.name}>
-              <span className="w-28 flex-none font-semibold text-[#D7ECFA]">{s.name}</span>
+              <span className="w-28 flex-none font-semibold text-[color:var(--ae-ink)]">{s.name}</span>
               <span
                 className="text-[10px] font-semibold"
                 style={{ color: s.status === 'ok' ? 'var(--ae-ok)' : 'var(--ae-warn)' }}
@@ -120,7 +120,7 @@ export function DevScreen() {
                 className="h-[7px] w-[7px] flex-none rounded-full"
                 style={{ background: d.status === 'failed' ? 'var(--ae-warn)' : 'var(--ae-ok)' }}
               />
-              <span className="font-semibold text-white">{d.service}</span>
+              <span className="font-semibold text-[color:var(--ae-ink)]">{d.service}</span>
               <span className="text-[color:var(--ae-dim)]">{d.sub}</span>
               <span className="ml-auto text-[10.5px] text-[color:var(--ae-dim)]">{d.at}</span>
             </div>
@@ -139,7 +139,7 @@ export function DevScreen() {
                 className="h-[7px] w-[7px] flex-none rounded-full"
                 style={{ background: i.severity === 'error' ? 'var(--ae-warn)' : 'var(--ae-azure)' }}
               />
-              <span className="min-w-0 flex-1 text-white">{i.title}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{i.title}</span>
               {i.at && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{i.at}</span>}
             </div>
           ))

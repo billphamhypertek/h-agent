@@ -40,7 +40,7 @@ export function VoiceScreen() {
       <GlassSlab className="flex min-h-0 w-full max-w-[680px] flex-1 flex-col gap-2 overflow-auto" size="md">
         {spoken.length === 0 ? (
           <div className="grid h-full place-items-center text-center text-[12.5px] text-[color:var(--ae-dim)]" data-testid="ae-voice-empty">
-            Chưa có hội thoại — nhấn <b className="mx-1 text-white">Nghe</b> để bắt đầu.
+            Chưa có hội thoại — nhấn <b className="mx-1 text-[color:var(--ae-ink)]">Nghe</b> để bắt đầu.
           </div>
         ) : (
           spoken.map(m => (
@@ -48,7 +48,7 @@ export function VoiceScreen() {
               <span className="mr-2 text-[10.5px] font-semibold uppercase tracking-[.12em] text-[color:var(--ae-azure-soft)]">
                 {m.role === 'user' ? 'Bạn' : 'Agent'}
               </span>
-              <span className="text-white">{chatMessageText(m)}</span>
+              <span className="text-[color:var(--ae-ink)]">{chatMessageText(m)}</span>
             </div>
           ))
         )}
@@ -56,14 +56,14 @@ export function VoiceScreen() {
 
       <div className="flex items-center gap-3 pb-2">
         <button
-          className="rounded-[12px] border border-[rgba(120,200,255,.35)] p-[9px_22px] text-[13px] font-semibold text-white"
+          className="rounded-[12px] border border-[color:var(--ae-line-strong)] p-[9px_22px] text-[13px] font-semibold text-[color:var(--ae-ink)]"
           data-testid="ae-voice-toggle"
           onClick={() => toggleVoiceActive()}
           type="button"
         >
           {active ? 'Dừng' : 'Nghe'}
         </button>
-        <div className="h-[6px] w-[120px] overflow-hidden rounded-full bg-[rgba(120,200,255,.16)]" data-testid="ae-voice-level">
+        <div className="h-[6px] w-[120px] overflow-hidden rounded-full bg-[var(--ae-fill-strong)]" data-testid="ae-voice-level">
           <div className="h-full bg-[color:var(--ae-azure)]" style={{ width: `${Math.round(Math.max(0, Math.min(1, session.level)) * 100)}%` }} />
         </div>
         <button

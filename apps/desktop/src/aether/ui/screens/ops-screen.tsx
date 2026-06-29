@@ -35,7 +35,7 @@ export function OpsScreen() {
         <GlassSlab className="text-center" size="lg">
           <div className="text-sm text-[color:var(--ae-warn)]">Không tải được Vận hành.</div>
           <button
-            className="mt-3 rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+            className="mt-3 rounded-[11px] border border-[color:var(--ae-line-strong)] p-[8px_16px] text-[12.5px] text-[color:var(--ae-ink)]"
             onClick={() => void opsStore.loadOps({ force: true })}
             type="button"
           >
@@ -64,7 +64,7 @@ export function OpsScreen() {
       <div className="flex items-center justify-between">
         <div className="text-[13px] uppercase tracking-[.16em] text-[color:var(--ae-azure-soft)]">Vận hành &amp; Tài chính</div>
         <button
-          className="rounded-[11px] border border-[rgba(120,200,255,.3)] p-[6px_14px] text-[12px] text-white"
+          className="rounded-[11px] border border-[color:var(--ae-line-strong)] p-[6px_14px] text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-ops-refresh"
           onClick={() => void opsStore.loadOps({ force: true })}
           type="button"
@@ -87,8 +87,8 @@ export function OpsScreen() {
           <div className={SECTION_TITLE}>LỊCH HÔM NAY · {ops.calendar.length}</div>
           {ops.calendar.map(c => (
             <div className="flex items-center gap-2.5 text-[12px]" data-testid="ae-ops-calendar-row" key={c.id}>
-              <span className="w-12 flex-none font-semibold text-[#D7ECFA]">{c.at}</span>
-              <span className="min-w-0 flex-1 text-white">{c.title}</span>
+              <span className="w-12 flex-none font-semibold text-[color:var(--ae-ink)]">{c.at}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{c.title}</span>
               {c.sub && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{c.sub}</span>}
             </div>
           ))}
@@ -102,7 +102,7 @@ export function OpsScreen() {
                 className="h-[7px] w-[7px] flex-none rounded-full"
                 style={{ background: k.severity === 'warn' || k.severity === 'error' ? 'var(--ae-warn)' : 'var(--ae-azure)' }}
               />
-              <span className="min-w-0 flex-1 text-white">{k.title}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{k.title}</span>
               {k.due && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{k.due}</span>}
             </div>
           ))}
@@ -116,7 +116,7 @@ export function OpsScreen() {
         ) : (
           ops.notes.map(n => (
             <div className="flex items-center gap-2 text-[12px]" key={n.id}>
-              <span className="min-w-0 flex-1 text-white">{n.title}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{n.title}</span>
               {n.sub && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{n.sub}</span>}
             </div>
           ))

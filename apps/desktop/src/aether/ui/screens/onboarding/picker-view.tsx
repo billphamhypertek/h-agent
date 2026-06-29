@@ -93,7 +93,7 @@ export function PickerView({ ctx }: { ctx: onboarding.OnboardingContext }) {
             ))}
             <button className={ROW_CLASS} onClick={() => onboarding.setOnboardingMode('apikey')} type="button">
               <div className="min-w-0">
-                <span className="text-[13px] font-semibold text-white">OpenRouter</span>
+                <span className="text-[13px] font-semibold text-[color:var(--ae-ink)]">OpenRouter</span>
                 <p className="mt-0.5 text-[11.5px] text-[color:var(--ae-dim)]">
                   Dán API key để truy cập hàng trăm mô hình.
                 </p>
@@ -142,7 +142,7 @@ function ProviderRow({
     <button
       className={
         featured
-          ? 'group flex w-full items-center justify-between gap-4 rounded-[12px] border border-[rgba(120,200,255,.35)] bg-[rgba(120,200,255,.08)] p-[12px_16px] text-left transition-colors hover:bg-[rgba(120,200,255,.14)]'
+          ? 'group flex w-full items-center justify-between gap-4 rounded-[12px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-fill)] p-[12px_16px] text-left transition-colors hover:bg-[var(--ae-fill-strong)]'
           : ROW_CLASS
       }
       onClick={() => onSelect(provider)}
@@ -150,13 +150,13 @@ function ProviderRow({
     >
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-white">{providerTitle(provider)}</span>
+          <span className="text-[13px] font-semibold text-[color:var(--ae-ink)]">{providerTitle(provider)}</span>
           {loggedIn ? (
-            <span className="rounded-[6px] bg-[rgba(120,200,255,.16)] px-2 py-0.5 text-[10.5px] font-medium text-[color:var(--ae-azure-soft)]">
+            <span className="rounded-[6px] bg-[var(--ae-fill-strong)] px-2 py-0.5 text-[10.5px] font-medium text-[color:var(--ae-azure-soft)]">
               Đã kết nối
             </span>
           ) : featured ? (
-            <span className="rounded-[6px] bg-[color:var(--ae-azure)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#06121f]">
+            <span className="rounded-[6px] bg-[color:var(--ae-azure)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[color:var(--ae-on-azure)]">
               Đề xuất
             </span>
           ) : null}
@@ -258,15 +258,15 @@ function ApiKeyForm({
           <button
             className={
               option.envKey === o.envKey
-                ? 'rounded-[10px] border border-[rgba(120,200,255,.45)] bg-[rgba(120,200,255,.08)] p-3 text-left'
-                : 'rounded-[10px] border border-[rgba(120,200,255,.14)] bg-[rgba(120,200,255,.03)] p-3 text-left transition-colors hover:bg-[rgba(120,200,255,.07)]'
+                ? 'rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-fill)] p-3 text-left'
+                : 'rounded-[10px] border border-[color:var(--ae-line)] bg-[var(--ae-fill-2)] p-3 text-left transition-colors hover:bg-[var(--ae-fill)]'
             }
             key={o.envKey}
             onClick={() => pick(o)}
             type="button"
           >
             <span className="flex items-center justify-between gap-2">
-              <span className="text-[12.5px] font-medium text-white">{o.name}</span>
+              <span className="text-[12.5px] font-medium text-[color:var(--ae-ink)]">{o.name}</span>
               {isSet(o.envKey) ? (
                 <Check
                   aria-label="Đã đặt"
@@ -282,7 +282,7 @@ function ApiKeyForm({
       <div className="grid gap-2">
         <input
           autoComplete="off"
-          className="rounded-[10px] border border-[rgba(120,200,255,.22)] bg-[rgba(8,18,32,.5)] p-[9px_12px] font-mono text-[13px] text-white outline-none focus:border-[rgba(120,200,255,.5)]"
+          className="rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-well)] p-[9px_12px] font-mono text-[13px] text-[color:var(--ae-ink)] outline-none focus:border-[color:var(--ae-line-strong)]"
           onChange={e => setValue(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && void submit()}
           placeholder={
@@ -299,7 +299,7 @@ function ApiKeyForm({
         {isLocal ? (
           <input
             autoComplete="off"
-            className="rounded-[10px] border border-[rgba(120,200,255,.22)] bg-[rgba(8,18,32,.5)] p-[9px_12px] font-mono text-[13px] text-white outline-none focus:border-[rgba(120,200,255,.5)]"
+            className="rounded-[10px] border border-[color:var(--ae-line-strong)] bg-[var(--ae-well)] p-[9px_12px] font-mono text-[13px] text-[color:var(--ae-ink)] outline-none focus:border-[color:var(--ae-line-strong)]"
             onChange={e => setLocalKey(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && void submit()}
             placeholder="API key (không bắt buộc)"
@@ -324,7 +324,7 @@ function ApiKeyForm({
           <span />
         )}
         <button
-          className="rounded-[10px] border border-[rgba(120,200,255,.35)] p-[8px_18px] text-[13px] font-semibold text-white disabled:opacity-50"
+          className="rounded-[10px] border border-[color:var(--ae-line-strong)] p-[8px_18px] text-[13px] font-semibold text-[color:var(--ae-ink)] disabled:opacity-50"
           disabled={!canSave || saving}
           onClick={() => void submit()}
           type="button"

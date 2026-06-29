@@ -55,7 +55,7 @@ export function ProvidersTab() {
       <GlassSlab size="md">
         <div className="text-[12px] text-[color:var(--ae-warn)]">Không tải được danh sách providers.</div>
         <button
-          className="mt-2 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white"
+          className="mt-2 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
           onClick={() => void loadOAuthProviders()}
           style={{ background: 'var(--ae-azure)' }}
           type="button"
@@ -74,25 +74,25 @@ export function ProvidersTab() {
         <GlassSlab className="flex flex-col gap-2" size="md">
           <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">ĐANG XÁC THỰC</div>
           {flow.start && flow.start.flow === 'device_code' && (
-            <div className="text-[12.5px] text-[#D7ECFA]">
+            <div className="text-[12.5px] text-[color:var(--ae-ink)]">
               Mở <span className="font-mono">{flow.start.verification_url}</span> và nhập mã{' '}
-              <b className="font-mono text-white">{flow.start.user_code}</b>.
+              <b className="font-mono text-[color:var(--ae-ink)]">{flow.start.user_code}</b>.
             </div>
           )}
           {flow.start && (flow.start.flow === 'pkce' || flow.start.flow === 'loopback') && (
-            <div className="text-[12.5px] text-[#D7ECFA]">
+            <div className="text-[12.5px] text-[color:var(--ae-ink)]">
               Mở liên kết để đăng nhập: <span className="font-mono">{flow.start.auth_url}</span>
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">
             <input
-              className="rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-[12px] text-white"
+              className="rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
               onChange={e => setCode(e.target.value)}
               placeholder="Dán mã xác thực (nếu có)"
               value={code}
             />
             <button
-              className="rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white disabled:opacity-50"
+              className="rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)] disabled:opacity-50"
               disabled={!code.trim()}
               onClick={() => void submitCode(code.trim())}
               style={{ background: 'var(--ae-azure)' }}
@@ -121,7 +121,7 @@ export function ProvidersTab() {
         <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">NHÀ CUNG CẤP</div>
         {providers.map(p => (
           <div className="flex items-center gap-2 text-[12.5px]" key={p.id}>
-            <span className="flex-1 font-semibold text-[#D7ECFA]">{p.name}</span>
+            <span className="flex-1 font-semibold text-[color:var(--ae-ink)]">{p.name}</span>
             {p.status.logged_in ? (
               <>
                 <span className="text-[11px] font-semibold" style={{ color: 'var(--ae-ok)' }}>
@@ -137,7 +137,7 @@ export function ProvidersTab() {
               </>
             ) : (
               <button
-                className="rounded-[8px] px-2.5 py-1 text-[11px] font-semibold text-white"
+                className="rounded-[8px] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--ae-on-azure)]"
                 onClick={() => void startFlow(p.id)}
                 style={{ background: 'var(--ae-azure)' }}
                 type="button"

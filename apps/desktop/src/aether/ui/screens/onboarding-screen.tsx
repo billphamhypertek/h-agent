@@ -110,7 +110,7 @@ export function AetherOnboarding({
         <div className="mb-4 flex items-center gap-3">
           <LivingOrb label="AETHER" size={64} state="idle" />
           <div>
-            <h2 className="font-[family-name:var(--ae-font-display)] text-[18px] tracking-[.12em] text-white">
+            <h2 className="font-[family-name:var(--ae-font-display)] text-[18px] tracking-[.12em] text-[color:var(--ae-ink)]">
               HYPERTEK · AGENT PLATFORM
             </h2>
             <p className="text-[12.5px] text-[color:var(--ae-dim)]">
@@ -120,7 +120,7 @@ export function AetherOnboarding({
         </div>
 
         {reason ? (
-          <div className="mb-3 rounded-[12px] border border-[rgba(120,200,255,.25)] p-3 text-[12.5px] text-[color:var(--ae-dim)]">
+          <div className="mb-3 rounded-[12px] border border-[color:var(--ae-line-strong)] p-3 text-[12.5px] text-[color:var(--ae-dim)]">
             {reason}
           </div>
         ) : null}
@@ -135,7 +135,7 @@ export function AetherOnboarding({
           <PreparingView />
         )}
 
-        <div className="mt-4 flex justify-center border-t border-[rgba(120,200,255,.16)] pt-3">
+        <div className="mt-4 flex justify-center border-t border-[color:var(--ae-line)] pt-3">
           {state.manual ? (
             <button
               className="text-[12px] text-[color:var(--ae-dim)] underline"

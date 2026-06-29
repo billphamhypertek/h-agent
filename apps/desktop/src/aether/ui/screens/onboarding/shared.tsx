@@ -21,4 +21,4 @@ export const sortProviders = (providers: OAuthProvider[]) =>
   [...providers].sort((a, b) => orderOf(a) - orderOf(b) || a.name.localeCompare(b.name))
 
 export const ROW_CLASS =
-  'group flex w-full items-center justify-between gap-3 rounded-[10px] border border-[rgba(120,200,255,.18)] bg-[rgba(120,200,255,.05)] p-[10px_14px] text-left transition-colors hover:bg-[rgba(120,200,255,.1)]'
+  'group flex w-full items-center justify-between gap-3 rounded-[10px] border border-[color:var(--ae-line)] bg-[var(--ae-fill)] p-[10px_14px] text-left transition-colors hover:bg-[var(--ae-fill-strong)]'

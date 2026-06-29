@@ -22,7 +22,7 @@ export function SkillEditor() {
 
   return (
     <div
-      className="absolute inset-0 z-[40] grid place-items-center bg-[rgba(2,12,29,.55)] backdrop-blur-sm"
+      className="absolute inset-0 z-[40] grid place-items-center bg-[var(--ae-scrim)] backdrop-blur-sm"
       onClick={() => closeEditor()}
     >
       <GlassSlab
@@ -30,7 +30,7 @@ export function SkillEditor() {
         size="lg"
       >
         <div className="flex items-center justify-between gap-3" onClick={e => e.stopPropagation()}>
-          <div className="text-[13px] font-semibold text-white">
+          <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">
             Sửa skill · <span className="text-[color:var(--ae-azure-soft)]">{skill}</span>
           </div>
           <button
@@ -57,11 +57,11 @@ export function SkillEditor() {
 
         {status !== 'loading' && (
           <textarea
-            className="min-h-[320px] flex-1 resize-none rounded-[10px] p-3 font-mono text-[12px] leading-[1.5] text-white outline-none"
+            className="min-h-[320px] flex-1 resize-none rounded-[10px] p-3 font-mono text-[12px] leading-[1.5] text-[color:var(--ae-ink)] outline-none"
             onChange={e => setEditorContent(e.target.value)}
             onClick={e => e.stopPropagation()}
             spellCheck={false}
-            style={{ background: 'rgba(8,24,46,.6)', border: '1px solid rgba(120,200,255,.16)' }}
+            style={{ background: 'var(--ae-well)', border: '1px solid var(--ae-line)' }}
             value={content}
           />
         )}
@@ -72,8 +72,8 @@ export function SkillEditor() {
             disabled={status === 'saving'}
             onClick={() => void saveEditor()}
             style={{
-              background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))',
-              border: '1px solid rgba(120,210,255,.34)',
+              background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+              border: '1px solid var(--ae-line-strong)',
               color: 'var(--ae-azure-soft)',
             }}
             type="button"

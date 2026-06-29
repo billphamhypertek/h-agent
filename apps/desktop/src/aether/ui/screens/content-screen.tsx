@@ -37,7 +37,7 @@ export function ContentScreen() {
         <GlassSlab className="text-center" size="lg">
           <div className="text-sm text-[color:var(--ae-warn)]">Không tải được Content.</div>
           <button
-            className="mt-3 rounded-[11px] border border-[rgba(120,200,255,.3)] p-[8px_16px] text-[12.5px] text-white"
+            className="mt-3 rounded-[11px] border border-[color:var(--ae-line-strong)] p-[8px_16px] text-[12.5px] text-[color:var(--ae-ink)]"
             onClick={() => void contentStore.loadContent({ force: true })}
             type="button"
           >
@@ -66,7 +66,7 @@ export function ContentScreen() {
       <div className="flex items-center justify-between">
         <div className="text-[13px] uppercase tracking-[.16em] text-[color:var(--ae-azure-soft)]">Content engine</div>
         <button
-          className="rounded-[11px] border border-[rgba(120,200,255,.3)] p-[6px_14px] text-[12px] text-white"
+          className="rounded-[11px] border border-[color:var(--ae-line-strong)] p-[6px_14px] text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-content-refresh"
           onClick={() => void contentStore.loadContent({ force: true })}
           type="button"
@@ -82,9 +82,9 @@ export function ContentScreen() {
         ) : (
           content.calendar.map(c => (
             <div className="flex items-center gap-2.5 text-[12px]" data-testid="ae-content-calendar-row" key={c.id}>
-              <span className="w-14 flex-none font-semibold text-[#D7ECFA]">{c.at}</span>
-              <span className="rounded-[8px] border border-[rgba(120,200,255,.2)] px-2 py-0.5 text-[10.5px] text-[color:var(--ae-azure-soft)]">{c.channel}</span>
-              <span className="min-w-0 flex-1 text-white">{c.title}</span>
+              <span className="w-14 flex-none font-semibold text-[color:var(--ae-ink)]">{c.at}</span>
+              <span className="rounded-[8px] border border-[color:var(--ae-line)] px-2 py-0.5 text-[10.5px] text-[color:var(--ae-azure-soft)]">{c.channel}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{c.title}</span>
               {c.status && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{c.status}</span>}
             </div>
           ))
@@ -98,8 +98,8 @@ export function ContentScreen() {
         ) : (
           content.ideas.map(i => (
             <div className="flex items-center gap-2.5 text-[12px]" data-testid="ae-content-idea-row" key={i.id}>
-              <span className="rounded-[8px] border border-[rgba(120,200,255,.2)] px-2 py-0.5 text-[10.5px] text-[color:var(--ae-azure-soft)]">{IDEA_STAGE_LABEL[i.stage]}</span>
-              <span className="min-w-0 flex-1 text-white">{i.title}</span>
+              <span className="rounded-[8px] border border-[color:var(--ae-line)] px-2 py-0.5 text-[10.5px] text-[color:var(--ae-azure-soft)]">{IDEA_STAGE_LABEL[i.stage]}</span>
+              <span className="min-w-0 flex-1 text-[color:var(--ae-ink)]">{i.title}</span>
               {i.channel && <span className="text-[10.5px] text-[color:var(--ae-dim)]">{i.channel}</span>}
             </div>
           ))

@@ -5,12 +5,16 @@ import { Icon } from '@/aether/ui/components/icon/icon'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
 import { GEOMETRY } from '@/aether/ui/theme/geometry'
 import { HUD_ROUTE } from '@/app/routes'
+import { persistBoolean, storedBoolean } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 
 import { AETHER_NAV_GROUPS, AETHER_NAV_ITEMS, type NavItem } from './nav-items'
 import { useTitlebarInset } from './use-titlebar-inset'
 
 const ITEM_H = GEOMETRY.nav.item
+// Collapse/expand is an explicit user choice (default collapsed), persisted across
+// sessions. Replaces the old hover-to-expand, which felt jumpy as the cursor crossed it.
+const NAV_EXPANDED_KEY = 'aether-nav-expanded'
 
 export interface NavRailProps {
   items?: NavItem[]
@@ -19,8 +23,16 @@ export interface NavRailProps {
 }
 
 export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: NavRailProps) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(() => storedBoolean(NAV_EXPANDED_KEY, false))
   const titlebarInset = useTitlebarInset()
+
+  const toggleExpanded = () =>
+    setExpanded(prev => {
+      const next = !prev
+      persistBoolean(NAV_EXPANDED_KEY, next)
+
+      return next
+    })
 
   // The sliding "focus pill" tracks the REAL position of the highlighted button by
   // measuring its offsetTop within the column. This stays correct regardless of the
@@ -39,8 +51,6 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
       aria-label="HYPERTEK - AGENT PLATFORM"
       className="ae-rail relative flex flex-none flex-col gap-1.5 pb-3.5"
       data-expanded={expanded || undefined}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
       style={{
         width: expanded ? 'var(--ae-nav-w-expanded)' : 'var(--ae-nav-w)',
         paddingTop: `${titlebarInset}px`,
@@ -96,8 +106,8 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
                     aria-current={active ? 'page' : undefined}
                     aria-label={item.label}
                     className={cn(
-                      'relative z-[1] flex h-[38px] items-center gap-2.5 rounded-[11px] px-2 transition-colors',
-                      active ? 'text-white' : 'text-[color:var(--ae-dim)] hover:text-[color:var(--ae-azure-soft)]',
+                      'relative z-[1] flex h-[38px] cursor-pointer items-center gap-2.5 rounded-[11px] px-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]',
+                      active ? 'font-semibold text-[color:var(--ae-ink)]' : 'text-[color:var(--ae-dim)] hover:text-[color:var(--ae-azure-soft)]',
                     )}
                     key={item.id}
                     onClick={() => onNavigate(item.route)}
@@ -128,6 +138,29 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
       </div>
 
       <div className="flex-1" />
+
+      {/* explicit collapse/expand — replaces hover-to-expand (default collapsed, persisted) */}
+      <button
+        aria-expanded={expanded}
+        aria-label={expanded ? 'Thu gọn thanh điều hướng' : 'Mở rộng thanh điều hướng'}
+        className="mb-1 grid h-[34px] w-[34px] flex-none cursor-pointer place-items-center self-center rounded-[10px] text-[color:var(--ae-dim)] transition-colors hover:bg-[var(--ae-fill)] hover:text-[color:var(--ae-azure-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]"
+        onClick={toggleExpanded}
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        title={expanded ? 'Thu gọn' : 'Mở rộng'}
+        type="button"
+      >
+        <svg
+          aria-hidden
+          fill="none"
+          height={18}
+          style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s var(--ae-ease)' }}
+          viewBox="0 0 24 24"
+          width={18}
+        >
+          <path d="M9 6l6 6-6 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} />
+        </svg>
+      </button>
+
       <div className="self-center" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
         <Avatar />
       </div>

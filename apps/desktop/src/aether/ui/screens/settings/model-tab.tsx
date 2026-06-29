@@ -43,7 +43,7 @@ export function ModelTab({ onApplyMain }: { onApplyMain?: (provider: string, mod
       <GlassSlab size="md">
         <div className="text-[12px] text-[color:var(--ae-warn)]">Không tải được cấu hình mô hình.</div>
         <button
-          className="mt-2 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white"
+          className="mt-2 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)]"
           onClick={() => void loadModel()}
           style={{ background: 'var(--ae-azure)' }}
           type="button"
@@ -72,14 +72,14 @@ export function ModelTab({ onApplyMain }: { onApplyMain?: (provider: string, mod
   return (
     <GlassSlab className="flex flex-col gap-3" size="md">
       <div className="text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">MÔ HÌNH CHÍNH</div>
-      <div className="text-[12.5px] text-[#D7ECFA]">
-        Hiện tại: <b className="text-white">{providers.find(p => p.slug === info?.provider)?.name ?? info?.provider}</b>
+      <div className="text-[12.5px] text-[color:var(--ae-ink)]">
+        Hiện tại: <b className="text-[color:var(--ae-ink)]">{providers.find(p => p.slug === info?.provider)?.name ?? info?.provider}</b>
         {' · '}
         <span className="font-mono">{info?.model}</span>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <select
-          className="rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-[12px] text-white"
+          className="rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-model-provider"
           onChange={e => {
             setProvider(e.target.value)
@@ -94,7 +94,7 @@ export function ModelTab({ onApplyMain }: { onApplyMain?: (provider: string, mod
           ))}
         </select>
         <select
-          className="rounded-[10px] bg-[rgba(120,195,245,.07)] px-2.5 py-1.5 text-[12px] text-white"
+          className="rounded-[10px] bg-[var(--ae-fill)] px-2.5 py-1.5 text-[12px] text-[color:var(--ae-ink)]"
           data-testid="ae-model-model"
           onChange={e => setModel(e.target.value)}
           value={model}
@@ -106,7 +106,7 @@ export function ModelTab({ onApplyMain }: { onApplyMain?: (provider: string, mod
           ))}
         </select>
         <button
-          className="rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-white disabled:opacity-50"
+          className="rounded-[10px] px-3 py-1.5 text-[12px] font-semibold text-[color:var(--ae-on-azure)] disabled:opacity-50"
           disabled={!provider || !model}
           onClick={apply}
           style={{ background: 'var(--ae-azure)' }}

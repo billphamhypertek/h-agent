@@ -12,6 +12,25 @@
   --ae-error: #ff5d6c;
   --ae-glass: rgba(150, 205, 245, 0.1);
   --ae-glass-2: rgba(120, 190, 240, 0.06);
+  /* mode-aware surfaces/fills/lines/glows — dark "Spatial Depth" defaults; the
+     light "Arctic Glass" block below overrides every one of these. Components
+     reference ONLY these tokens (no hardcoded hex/rgba) so they flip cleanly. */
+  --ae-well: rgba(8, 24, 48, 0.5);          /* input / textarea / inset well */
+  --ae-fill: rgba(120, 200, 255, 0.08);     /* subtle interactive surface */
+  --ae-fill-2: rgba(120, 195, 245, 0.03);   /* lower stop for fill gradients */
+  --ae-fill-strong: rgba(120, 200, 255, 0.18);
+  --ae-line-strong: rgba(120, 200, 255, 0.32); /* emphasis border / ring */
+  --ae-glow: rgba(74, 163, 255, 0.18);      /* accent box/text-shadow */
+  --ae-glow-strong: rgba(74, 163, 255, 0.42);
+  --ae-on-azure: #06283c;                   /* dark icon/text ON a bright azure chip */
+  --ae-azure-hi: #d7f4ff;                   /* bright highlight stop in azure-chip radial */
+  --ae-text-grad: linear-gradient(180deg, #ffffff, #8fc0ff); /* wordmark / hero text */
+  --ae-warn-soft: rgba(255, 176, 32, 0.1);
+  --ae-warn-soft-2: rgba(255, 176, 32, 0.03);
+  --ae-warn-line: rgba(255, 176, 32, 0.3);
+  --ae-ok-soft: rgba(61, 231, 160, 0.2);
+  --ae-ok-soft-2: rgba(61, 231, 160, 0.05);
+  --ae-ok-line: rgba(61, 231, 160, 0.4);
   --ae-font-display: 'Orbitron', system-ui, sans-serif;
   /* geometry — titlebar + nav (mirrors geometry.ts; geometry.test.ts pins CSS == TS) */
   --ae-titlebar-inset: 0px; /* runtime hook overrides via inline style on the rail */
@@ -80,10 +99,27 @@
 }
 [data-aether-theme='aether'][data-aether-mode='light'] {
   --ae-ink: #0c2444;
-  --ae-dim: #4d6694;
+  --ae-dim: #3c5074; /* deeper slate — 8.1:1 on white (was #4d6694, read too light) */
+  /* azure-soft doubles as heading/label TEXT; #8fc0ff fails contrast on white
+     (1.9:1) → a readable mid-azure (6.2:1) for light. Glows/borders read fine too. */
+  --ae-azure-soft: #1f5fb8;
   --ae-line: rgba(7, 57, 125, 0.16);
-  --ae-glass: rgba(255, 255, 255, 0.62);
-  --ae-glass-2: rgba(255, 255, 255, 0.42);
+  /* More opaque than dark mode so cards stay readable over the ambient wash. */
+  --ae-glass: rgba(255, 255, 255, 0.8);
+  --ae-glass-2: rgba(255, 255, 255, 0.62);
+  /* Arctic Glass: frosted white surfaces, navy ink, azure accents kept. */
+  --ae-well: rgba(255, 255, 255, 0.58);
+  --ae-fill: rgba(7, 57, 125, 0.05);
+  --ae-fill-2: rgba(7, 57, 125, 0.02);
+  --ae-fill-strong: rgba(7, 57, 125, 0.1);
+  --ae-line-strong: rgba(7, 57, 125, 0.22);
+  --ae-glow: rgba(74, 163, 255, 0.16);
+  --ae-glow-strong: rgba(22, 89, 181, 0.22);
+  --ae-text-grad: linear-gradient(180deg, #1659b5, #07397d);
+  --ae-warn-soft: rgba(255, 176, 32, 0.16);
+  --ae-warn-soft-2: rgba(255, 176, 32, 0.05);
+  --ae-ok-soft: rgba(61, 231, 160, 0.16);
+  /* --ae-on-azure / --ae-azure-hi / --ae-warn-line / --ae-ok-* stay mode-independent */
 }
 
 /* full-bleed cinematic background for AETHER screens (Boot overlay still uses this) */
@@ -160,6 +196,10 @@
   pointer-events: none;
   background: radial-gradient(110% 90% at 50% 30%, transparent 52%, rgba(3, 9, 16, 0.62) 100%);
 }
+/* Arctic Glass softens the dark cinematic vignette to a faint navy edge. */
+[data-aether-mode='light'] .ae-vignette {
+  background: radial-gradient(120% 95% at 50% 30%, transparent 60%, rgba(7, 57, 125, 0.08) 100%);
+}
 
 /* glass slab surface */
 .ae-slab {
@@ -182,6 +222,14 @@
   border-radius: inherit;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 32%);
+}
+/* Arctic Glass: swap the heavy black drop-shadow for a soft navy lift + a
+   crisper white top-highlight so frosted slabs read on a bright background. */
+[data-aether-mode='light'] .ae-slab {
+  box-shadow:
+    0 18px 38px -20px rgba(7, 57, 125, 0.22),
+    0 4px 12px -6px rgba(7, 57, 125, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
 }
 
 /* Living Orb (driven by living-orb.tsx; sizes via --ae-orb-size) */
@@ -222,6 +270,26 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.92), transparent 70%);
   filter: blur(2px);
+}
+/* Arctic Glass: a blown-out white core washes out on a bright bg. Light mode uses a
+   navy-dominant sphere with a small azure highlight so the orb reads dark + present
+   (matching the small nav orb), per user feedback. */
+[data-aether-mode='light'] .ae-orb {
+  background: radial-gradient(
+    circle at 34% 28%,
+    #cfe6ff 0%,
+    var(--ae-azure) 20%,
+    var(--ae-azure-bright) 52%,
+    var(--ae-navy) 100%
+  );
+  box-shadow:
+    inset -14px -16px 36px rgba(2, 16, 40, 0.55),
+    inset 11px 13px 26px rgba(255, 255, 255, 0.45),
+    0 0 44px rgba(74, 163, 255, 0.32),
+    0 18px 34px -12px rgba(7, 57, 125, 0.4);
+}
+[data-aether-mode='light'] .ae-orb::after {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.7), transparent 70%);
 }
 .ae-orb-ring {
   position: absolute;
@@ -333,6 +401,12 @@
   background: linear-gradient(90deg, var(--ae-warn), #ffd27a);
   box-shadow: 0 0 12px var(--ae-warn);
 }
+/* Arctic Glass: navy-tinted track (white-on-white is invisible on a light bg). */
+[data-aether-mode='light'] .ae-bar,
+[data-aether-mode='light'] .ae-gauge {
+  background: rgba(7, 57, 125, 0.1);
+  box-shadow: inset 0 1px 2px rgba(7, 57, 125, 0.18);
+}
 
 /* command bar */
 .ae-cmd {
@@ -345,6 +419,11 @@
   border: 1px solid rgba(120, 210, 255, 0.3);
   box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.25),
     0 0 30px rgba(74, 163, 255, 0.18);
+}
+/* Arctic Glass: lighter lift so the command bar floats on a bright surface. */
+[data-aether-mode='light'] .ae-cmd {
+  box-shadow: 0 16px 36px -18px rgba(7, 57, 125, 0.24), inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    0 0 24px rgba(74, 163, 255, 0.12);
 }
 
 /* form field — token-only surface for inputs/textareas/selects on AETHER screens */

@@ -22,16 +22,16 @@ function HubRow({ result }: { result: SkillHubResult }) {
       className="flex items-center gap-3 rounded-[11px] p-[9px_11px]"
       data-testid="ae-hub-row"
       style={{
-        background: 'linear-gradient(160deg,rgba(120,195,245,.06),rgba(120,195,245,.02))',
-        border: '1px solid rgba(120,200,255,.1)',
+        background: 'linear-gradient(160deg,var(--ae-fill),var(--ae-fill-2))',
+        border: '1px solid var(--ae-line)',
       }}
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-[12.5px] font-semibold text-white">{result.name}</span>
+          <span className="truncate text-[12.5px] font-semibold text-[color:var(--ae-ink)]">{result.name}</span>
           <span
             className="flex-none rounded-full px-1.5 py-[1px] text-[9.5px] font-semibold uppercase tracking-[.1em]"
-            style={{ background: 'rgba(120,195,245,.07)', color: 'var(--ae-azure-soft)' }}
+            style={{ background: 'var(--ae-fill)', color: 'var(--ae-azure-soft)' }}
           >
             {result.trust_level}
           </span>
@@ -45,8 +45,8 @@ function HubRow({ result }: { result: SkillHubResult }) {
         disabled={installing}
         onClick={() => void installFromHub(result.identifier)}
         style={{
-          background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))',
-          border: '1px solid rgba(120,210,255,.34)',
+          background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+          border: '1px solid var(--ae-line-strong)',
           color: 'var(--ae-azure-soft)',
         }}
         type="button"
@@ -73,7 +73,7 @@ export function SkillsHubPanel() {
           className="flex-none rounded-[9px] px-2.5 py-1 text-[11px] font-semibold disabled:opacity-50"
           disabled={busy === '__update__'}
           onClick={() => void updateHub()}
-          style={{ background: 'rgba(120,195,245,.06)', border: '1px solid rgba(120,200,255,.18)' }}
+          style={{ background: 'var(--ae-fill)', border: '1px solid var(--ae-line)' }}
           type="button"
         >
           {busy === '__update__' ? 'Đang cập nhật…' : 'Cập nhật tất cả'}
@@ -89,17 +89,17 @@ export function SkillsHubPanel() {
         }}
       >
         <input
-          className="min-w-0 flex-1 rounded-[10px] px-3 py-1.5 text-[12px] text-white outline-none"
+          className="min-w-0 flex-1 rounded-[10px] px-3 py-1.5 text-[12px] text-[color:var(--ae-ink)] outline-none"
           onChange={e => setQuery(e.target.value)}
           placeholder="Tìm skill trong Hub…"
-          style={{ background: 'rgba(8,24,46,.55)', border: '1px solid rgba(120,200,255,.16)' }}
+          style={{ background: 'var(--ae-well)', border: '1px solid var(--ae-line)' }}
           value={query}
         />
         <button
           className="flex-none rounded-[10px] px-3 py-1.5 text-[12px] font-semibold"
           style={{
-            background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))',
-            border: '1px solid rgba(120,210,255,.34)',
+            background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+            border: '1px solid var(--ae-line-strong)',
             color: 'var(--ae-azure-soft)',
           }}
           type="submit"

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import type { GraphSpec } from '@/aether/domain/engine/graph-model'
 import { $graphSpec } from '@/aether/domain/motion/graph-store'
 import { $motionActive, $orbState } from '@/aether/domain/motion/motion-store'
+import { useTheme } from '@/themes/context'
 
 import { AmbientField } from './ambient-field'
 import { GraphView } from './graph/graph-view'
@@ -30,6 +31,11 @@ export function shouldRenderGraph(spec: GraphSpec | null): boolean {
 export function AetherCanvas({ enabled }: { enabled: boolean }) {
   const orbState = useStore($orbState)
   const graph = useStore($graphSpec)
+  // Read the mode HERE (outside <Canvas>): react-three-fiber runs the canvas in a
+  // separate reconciler that does NOT inherit React context, so in-canvas useTheme()
+  // would always read the default. Pass the resolved mode down as a prop instead.
+  const { renderedMode } = useTheme()
+  const light = renderedMode === 'light'
   // Hooks must run before the early return; visibility drives the frameloop.
   const [visible, setVisible] = useState(!document.hidden)
 
@@ -59,14 +65,19 @@ export function AetherCanvas({ enabled }: { enabled: boolean }) {
         frameloop={shouldRenderFrame(!visible, false) ? 'always' : 'never'}
         gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
       >
-        <AmbientField />
-        <group position={[0, 0, 1.5]}>
-          <LivingOrbGL size={0.6} state={orbState} />
-        </group>
+        <AmbientField light={light} />
+        {/* The lone centred orb glares through the frosted cards on the bright
+            backdrop and hurts readability, so light mode drops it. The constellation
+            (real sessions) still renders. Dark keeps the cinematic core orb. */}
+        {!light && (
+          <group position={[0, 0, 1.5]}>
+            <LivingOrbGL size={0.6} state={orbState} />
+          </group>
+        )}
         {shouldRenderGraph(graph) && graph && (
           <group position={[0, 0, 1.5]}>
             <GraphView spec={graph} />
-            <GraphLabels nodes={graph.nodes} />
+            <GraphLabels light={light} nodes={graph.nodes} />
           </group>
         )}
       </Canvas>

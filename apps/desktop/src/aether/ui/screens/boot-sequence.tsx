@@ -25,13 +25,13 @@ export function BootSequence() {
           const status = bootStepStatus(progress, step.phase)
 
           return (
-            <div className="flex items-center gap-[11px] font-mono text-[12.5px] text-[#D7ECFA]" key={step.phase}>
+            <div className="flex items-center gap-[11px] font-mono text-[12.5px] text-[color:var(--ae-ink)]" key={step.phase}>
               <span
                 className="grid h-[18px] w-[18px] flex-none place-items-center rounded-[6px] text-[11px]"
                 style={{
                   color: status === 'pending' ? 'var(--ae-dim)' : 'var(--ae-ok)',
-                  background: status === 'pending' ? 'transparent' : 'linear-gradient(180deg,rgba(61,231,160,.22),rgba(61,231,160,.06))',
-                  border: `1px solid ${status === 'pending' ? 'var(--ae-line)' : 'rgba(61,231,160,.4)'}`,
+                  background: status === 'pending' ? 'transparent' : 'linear-gradient(180deg,var(--ae-ok-soft),var(--ae-ok-soft-2))',
+                  border: `1px solid ${status === 'pending' ? 'var(--ae-line)' : 'var(--ae-ok-line)'}`,
                 }}
               >
                 {status === 'pending' ? '·' : status === 'active' ? '…' : '✓'}
@@ -46,7 +46,7 @@ export function BootSequence() {
       <div className="z-[2] flex flex-col items-center">
         <LivingOrb label="AETHER" size={300} state="thinking" />
         <div className="mt-7 font-[family-name:var(--ae-font-display)] text-[52px] font-bold tracking-[.22em] pl-[.22em]"
-          style={{ background: 'linear-gradient(180deg,#fff,var(--ae-azure-soft))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', textShadow: '0 0 30px rgba(74,163,255,.45)' }}>
+          style={{ background: 'var(--ae-text-grad)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', textShadow: '0 0 30px var(--ae-glow-strong)' }}>
           AETHER
         </div>
         <div className="mt-2 pl-[.42em] text-[11px] font-semibold uppercase tracking-[.42em] text-[color:var(--ae-azure-soft)] opacity-85">
@@ -77,7 +77,7 @@ export function BootSequence() {
           <>
             <div className="flex items-baseline justify-between font-mono text-[11px] tracking-[.08em] text-[color:var(--ae-dim)]">
               <span>{progress?.message ?? 'Đang khởi động…'}</span>
-              <b className="text-white">{pct}%</b>
+              <b className="text-[color:var(--ae-ink)]">{pct}%</b>
             </div>
             <div className="ae-bar"><i style={{ width: `${pct}%` }} /></div>
           </>

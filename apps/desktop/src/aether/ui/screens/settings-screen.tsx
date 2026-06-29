@@ -32,7 +32,7 @@ export function SettingsScreen() {
               onClick={() => setTab(t.id)}
               style={
                 tab === t.id
-                  ? { background: 'var(--ae-azure)', color: '#fff' }
+                  ? { background: 'var(--ae-azure)', color: 'var(--ae-on-azure)' }
                   : { background: 'transparent', color: 'var(--ae-azure-soft)' }
               }
               type="button"

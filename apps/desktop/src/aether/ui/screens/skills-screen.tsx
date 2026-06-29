@@ -15,7 +15,7 @@ function SkillCard({ skill }: { skill: SkillInfo }) {
     <GlassSlab className="flex flex-col gap-2" data-testid="ae-skill-card" size="sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[13px] font-semibold text-white">{skill.name}</div>
+          <div className="truncate text-[13px] font-semibold text-[color:var(--ae-ink)]">{skill.name}</div>
           <div className="mt-1 line-clamp-2 text-[11.5px] leading-[1.35] text-[color:var(--ae-dim)]">
             {skill.description}
           </div>
@@ -23,8 +23,8 @@ function SkillCard({ skill }: { skill: SkillInfo }) {
         <span
           className="flex-none rounded-full px-2 py-[2px] text-[10px] font-semibold uppercase tracking-[.1em]"
           style={{
-            background: 'rgba(120,195,245,.07)',
-            border: '1px solid rgba(120,200,255,.18)',
+            background: 'var(--ae-fill)',
+            border: '1px solid var(--ae-line)',
             color: 'var(--ae-azure-soft)',
           }}
         >
@@ -40,9 +40,9 @@ function SkillCard({ skill }: { skill: SkillInfo }) {
           role="switch"
           style={{
             background: skill.enabled
-              ? 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))'
-              : 'rgba(120,195,245,.04)',
-            border: `1px solid ${skill.enabled ? 'rgba(120,210,255,.34)' : 'rgba(120,200,255,.12)'}`,
+              ? 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))'
+              : 'var(--ae-fill-2)',
+            border: `1px solid ${skill.enabled ? 'var(--ae-line-strong)' : 'var(--ae-line)'}`,
             color: skill.enabled ? 'var(--ae-azure-soft)' : 'var(--ae-dim)',
           }}
           type="button"
@@ -59,7 +59,7 @@ function SkillCard({ skill }: { skill: SkillInfo }) {
         <button
           className="rounded-[9px] px-2.5 py-1 text-[11px] font-semibold"
           onClick={() => void openEditor(skill.name)}
-          style={{ background: 'rgba(120,195,245,.05)', border: '1px solid rgba(120,200,255,.14)', color: 'var(--ae-dim)' }}
+          style={{ background: 'var(--ae-fill)', border: '1px solid var(--ae-line)', color: 'var(--ae-dim)' }}
           type="button"
         >
           Sửa
@@ -115,8 +115,8 @@ export function SkillsScreen() {
             className="flex-none rounded-[10px] px-3 py-1.5 text-[12px] font-semibold"
             onClick={() => void loadSkills()}
             style={{
-              background: 'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))',
-              border: '1px solid rgba(120,210,255,.34)',
+              background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+              border: '1px solid var(--ae-line-strong)',
             }}
             type="button"
           >
@@ -127,7 +127,7 @@ export function SkillsScreen() {
 
       {status === 'empty' && (
         <GlassSlab className="z-[2] mt-4 text-center" size="lg">
-          <div className="text-[13px] font-semibold text-white">Chưa có skill nào</div>
+          <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">Chưa có skill nào</div>
           <div className="mt-1 text-[11.5px] text-[color:var(--ae-dim)]">
             Cài thêm skill từ Hub bên dưới.
           </div>

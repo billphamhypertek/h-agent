@@ -7,7 +7,11 @@ import { HUD_ROUTE } from '@/app/routes'
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  // Collapse state is persisted to localStorage; clear it so tests don't leak.
+  localStorage.clear()
+})
 
 describe('NavRail', () => {
   it('never translates "Agent" to "Đại lý"', () => {
@@ -30,12 +34,28 @@ describe('NavRail', () => {
     expect(screen.queryByTestId('ae-online-dot')).toBeNull()
   })
 
-  it('shows group headers only when expanded (hover)', () => {
-    const { container } = render(<NavRail activeRoute="/" onNavigate={vi.fn()} />)
+  it('is collapsed by default and expands via the explicit toggle (no hover dependency)', () => {
+    render(<NavRail activeRoute="/" onNavigate={vi.fn()} />)
+    // Default collapsed → group headers hidden.
     expect(screen.queryByText('Trụ cột')).toBeNull()
-    fireEvent.mouseEnter(container.querySelector('nav') as HTMLElement)
+    const toggle = screen.getByRole('button', { name: 'Mở rộng thanh điều hướng' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+
+    fireEvent.click(toggle)
     expect(screen.getByText('Trụ cột')).toBeTruthy()
     expect(screen.getByText('Hệ agent')).toBeTruthy()
+    // Toggle now offers to collapse.
+    expect(screen.getByRole('button', { name: 'Thu gọn thanh điều hướng' }).getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('persists the expanded choice across remounts', () => {
+    const { unmount } = render(<NavRail activeRoute="/" onNavigate={vi.fn()} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Mở rộng thanh điều hướng' }))
+    unmount()
+    render(<NavRail activeRoute="/" onNavigate={vi.fn()} />)
+    // Remembered as expanded → headers visible immediately, toggle shows collapse.
+    expect(screen.getByText('Trụ cột')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Thu gọn thanh điều hướng' })).toBeTruthy()
   })
 
   it('marks the active item and fires onNavigate on click', () => {

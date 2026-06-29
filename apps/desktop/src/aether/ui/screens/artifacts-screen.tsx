@@ -68,8 +68,8 @@ export function ArtifactsScreen() {
           className="flex-none rounded-full px-3 py-1 text-[11px] font-semibold"
           data-testid="ae-readonly-badge"
           style={{
-            background: 'linear-gradient(180deg,rgba(120,195,245,.12),rgba(120,195,245,.03))',
-            border: '1px solid rgba(120,200,255,.28)',
+            background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill-2))',
+            border: '1px solid var(--ae-line-strong)',
             color: 'var(--ae-azure-soft)',
           }}
         >
@@ -79,10 +79,10 @@ export function ArtifactsScreen() {
 
       <div className="z-[2] mt-4">
         <input
-          className="w-full rounded-[12px] bg-[rgba(8,22,44,.5)] px-4 py-2.5 text-[13px] text-white outline-none"
+          className="w-full rounded-[12px] bg-[var(--ae-well)] px-4 py-2.5 text-[13px] text-[color:var(--ae-ink)] outline-none"
           onChange={e => void searchArtifacts(e.target.value)}
           placeholder="Tìm trong artifacts…"
-          style={{ border: '1px solid rgba(120,200,255,.18)' }}
+          style={{ border: '1px solid var(--ae-line)' }}
           type="search"
           value={query}
         />
@@ -94,9 +94,9 @@ export function ArtifactsScreen() {
           <div className="mt-2 flex flex-wrap gap-2">
             {fileOutputs.map(f => (
               <span
-                className="rounded-[10px] px-3 py-1.5 text-[11.5px] text-[#D7ECFA]"
+                className="rounded-[10px] px-3 py-1.5 text-[11.5px] text-[color:var(--ae-ink)]"
                 key={f.path}
-                style={{ background: 'rgba(120,195,245,.06)', border: '1px solid rgba(120,200,255,.12)' }}
+                style={{ background: 'var(--ae-fill)', border: '1px solid var(--ae-line)' }}
               >
                 {f.name}
               </span>
@@ -111,7 +111,7 @@ export function ArtifactsScreen() {
           <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
-                className="h-[96px] animate-pulse rounded-[14px] bg-[rgba(120,195,245,.06)]"
+                className="h-[96px] animate-pulse rounded-[14px] bg-[var(--ae-fill)]"
                 data-testid="ae-artifact-skeleton"
                 key={i}
               />
@@ -132,11 +132,11 @@ export function ArtifactsScreen() {
           <GlassSlab className="flex flex-col items-center gap-3 text-center" size="lg">
             <div className="text-sm text-[color:var(--ae-warn)]">Không tải được thư viện artifacts.</div>
             <button
-              className="rounded-[11px] px-4 py-2 text-[13px] font-semibold text-white"
+              className="rounded-[11px] px-4 py-2 text-[13px] font-semibold text-[color:var(--ae-ink)]"
               onClick={() => void searchArtifacts($artifactQuery.get())}
               style={{
-                background: 'linear-gradient(180deg,rgba(74,163,255,.18),rgba(120,195,245,.05))',
-                border: '1px solid rgba(120,210,255,.34)',
+                background: 'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+                border: '1px solid var(--ae-line-strong)',
               }}
               type="button"
             >
@@ -154,12 +154,12 @@ export function ArtifactsScreen() {
                 key={a.id}
                 onClick={() => void openArtifact(a.id)}
                 style={{
-                  background: 'linear-gradient(160deg,rgba(120,195,245,.07),rgba(120,195,245,.02))',
-                  border: '1px solid rgba(120,200,255,.12)',
+                  background: 'linear-gradient(160deg,var(--ae-fill),var(--ae-fill-2))',
+                  border: '1px solid var(--ae-line)',
                 }}
                 type="button"
               >
-                <div className="truncate text-[13px] font-semibold text-white">
+                <div className="truncate text-[13px] font-semibold text-[color:var(--ae-ink)]">
                   {a.title ?? 'Phiên không tên'}
                 </div>
                 <div className="line-clamp-2 text-[11.5px] text-[color:var(--ae-dim)]">
@@ -193,13 +193,13 @@ export function ArtifactsScreen() {
           )}
           {previewStatus === 'ready' && (
             <div className="flex min-h-0 flex-col gap-2" data-testid="ae-artifact-preview">
-              <div className="text-[13px] font-semibold text-white">
+              <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">
                 {selected?.title ?? 'Phiên không tên'}
               </div>
               <div className="text-[10.5px] text-[color:var(--ae-azure-soft)]">
                 {selected?.model} · {selected?.message_count ?? 0} tin nhắn
               </div>
-              <div className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-[12px] leading-[1.5] text-[#CFE2F7]">
+              <div className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-[12px] leading-[1.5] text-[color:var(--ae-ink)]">
                 {(preview ?? []).map((m, i) => (
                   <p className="mb-2" key={i}>
                     <b className="text-[color:var(--ae-azure-soft)]">{m.role}: </b>

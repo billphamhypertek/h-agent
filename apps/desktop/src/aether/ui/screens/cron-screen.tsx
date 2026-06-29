@@ -81,7 +81,7 @@ export function CronScreen() {
       <div className="ae-vignette" />
 
       <div className="z-[2] mt-[18px] flex items-end justify-between gap-4">
-        <div className="text-[22px] font-semibold leading-tight text-white">Tác vụ định kỳ</div>
+        <div className="text-[22px] font-semibold leading-tight text-[color:var(--ae-ink)]">Tác vụ định kỳ</div>
         <div className="flex items-center gap-3">
           <div className="text-[12px] text-[color:var(--ae-dim)]">{jobs?.length ?? 0} tác vụ</div>
           <button
@@ -134,12 +134,12 @@ export function CronScreen() {
               <GlassSlab className="flex items-start justify-between gap-4" data-testid="ae-cron-row" key={job.id} size="sm">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <button className="truncate text-left text-[13.5px] font-semibold text-white" onClick={() => void cronStore.loadCronRuns(job.id)} type="button">
+                    <button className="truncate text-left text-[13.5px] font-semibold text-[color:var(--ae-ink)]" onClick={() => void cronStore.loadCronRuns(job.id)} type="button">
                       {jobTitle(job)}
                     </button>
                     <span
                       className="rounded-full px-2 py-[2px] text-[10px] font-semibold"
-                      style={{ background: 'rgba(120,200,255,.08)', color: stateColor(state) }}
+                      style={{ background: 'var(--ae-fill)', color: stateColor(state) }}
                     >
                       {stateLabel(state)}
                     </span>
@@ -201,7 +201,7 @@ export function CronScreen() {
             {runsStatus === 'ready' &&
               (runs ?? []).map(run => (
                 <div className="flex items-center justify-between text-[11px]" key={run.id}>
-                  <span className="truncate text-[#D7ECFA]">{run.title ?? run.id}</span>
+                  <span className="truncate text-[color:var(--ae-ink)]">{run.title ?? run.id}</span>
                   <span className="flex-none text-[color:var(--ae-dim)]">
                     {run.is_active ? 'đang chạy' : `${run.message_count} tin`} · {formatTime(new Date(run.started_at * 1000).toISOString())}
                   </span>

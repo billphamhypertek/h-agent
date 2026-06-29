@@ -28,17 +28,17 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
             Chào buổi sáng,{' '}
             <b
               style={{
-                background: 'linear-gradient(180deg,#fff,var(--ae-azure-soft))',
+                background: 'var(--ae-text-grad)',
                 backgroundClip: 'text',
                 color: 'transparent',
-                textShadow: '0 0 22px rgba(74,163,255,.35)',
+                textShadow: '0 0 22px var(--ae-glow-strong)',
                 WebkitBackgroundClip: 'text',
               }}
             >
               {briefing?.greetingName ?? 'bạn'}
             </b>
           </div>
-          <div className="text-[13px] text-[#CFE2F7]">
+          <div className="text-[13px] text-[color:var(--ae-ink)]">
             {briefing?.priorities.length ?? 0} ưu tiên hôm nay
             {worstServer && (
               <span style={{ color: 'var(--ae-warn)', fontWeight: 600 }}>
@@ -53,9 +53,9 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
           onClick={() => onPlayVoice?.()}
           style={{
             background:
-              'linear-gradient(180deg,rgba(74,163,255,.16),rgba(120,195,245,.05))',
-            border: '1px solid rgba(120,210,255,.34)',
-            boxShadow: '0 0 26px rgba(74,163,255,.18)',
+              'linear-gradient(180deg,var(--ae-fill-strong),var(--ae-fill))',
+            border: '1px solid var(--ae-line-strong)',
+            boxShadow: '0 0 26px var(--ae-glow)',
           }}
           type="button"
         >
@@ -63,10 +63,10 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
             className="grid h-[30px] w-[30px] place-items-center rounded-full"
             style={{
               background:
-                'radial-gradient(circle at 35% 30%,#d7f4ff,var(--ae-azure) 70%,var(--ae-azure-bright))',
+                'radial-gradient(circle at 35% 30%,var(--ae-azure-hi),var(--ae-azure) 70%,var(--ae-azure-bright))',
             }}
           >
-            <svg fill="#06283c" height={12} viewBox="0 0 24 24" width={12}>
+            <svg fill="var(--ae-on-azure)" height={12} viewBox="0 0 24 24" width={12}>
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
@@ -92,9 +92,9 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
                 style={{
                   background:
                     p.severity === 'warn'
-                      ? 'linear-gradient(160deg,rgba(255,176,32,.08),rgba(255,176,32,.02))'
-                      : 'linear-gradient(160deg,rgba(120,195,245,.07),rgba(120,195,245,.02))',
-                  border: `1px solid ${p.severity === 'warn' ? 'rgba(255,176,32,.28)' : 'rgba(120,200,255,.1)'}`,
+                      ? 'linear-gradient(160deg,var(--ae-warn-soft),var(--ae-warn-soft-2))'
+                      : 'linear-gradient(160deg,var(--ae-fill),var(--ae-fill-2))',
+                  border: `1px solid ${p.severity === 'warn' ? 'var(--ae-warn-line)' : 'var(--ae-line)'}`,
                 }}
               >
                 <span
@@ -104,7 +104,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
                     boxShadow: `0 0 8px ${p.severity === 'warn' ? 'var(--ae-warn)' : 'var(--ae-azure)'}`,
                   }}
                 />
-                <div className="min-w-0 flex-1 text-[12.5px] font-semibold leading-[1.2] text-white">
+                <div className="min-w-0 flex-1 text-[12.5px] font-semibold leading-[1.2] text-[color:var(--ae-ink)]">
                   {p.title}
                 </div>
               </div>
@@ -119,7 +119,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
           <div className="flex flex-col gap-2">
             {(briefing?.servers ?? []).map(s => (
               <div className="flex items-center gap-[9px] text-[11.5px]" key={s.name}>
-                <span className="flex-1 font-semibold text-[#D7ECFA]">{s.name}</span>
+                <span className="flex-1 font-semibold text-[color:var(--ae-ink)]">{s.name}</span>
                 <span
                   className="text-[10px] font-semibold"
                   style={{ color: s.status === 'ok' ? 'var(--ae-ok)' : 'var(--ae-warn)' }}
@@ -138,7 +138,7 @@ export function MorningBrief({ onPlayVoice }: { onPlayVoice?: () => void }) {
           <div className="mb-[11px] text-[11px] font-semibold tracking-[.16em] text-[color:var(--ae-azure-soft)]">
             LỊCH HÔM NAY
           </div>
-          <div className="text-[13px] font-semibold text-white">
+          <div className="text-[13px] font-semibold text-[color:var(--ae-ink)]">
             {briefing?.bento.calendar?.count ?? 0} sự kiện
           </div>
           <div className="mt-1 text-[11px] text-[color:var(--ae-dim)]">
