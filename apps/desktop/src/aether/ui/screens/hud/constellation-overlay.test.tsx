@@ -34,6 +34,22 @@ describe('ConstellationOverlay', () => {
     fireEvent.click(screen.getByRole('button', { name: /Mở phiên: Phiên A/ }))
     expect(screen.getByTestId('loc').textContent).toBe('/s1')
   })
+  it('renders no hit-target button for an exit ghost (decoration-only)', () => {
+    const spec = createGraph({
+      nodes: [
+        { id: 's1', label: 'Phiên A', state: 'online', x: 0, y: 0 },
+        { id: 's2', label: 'Phiên B', exit: true, state: 'dormant', x: 0.2, y: 0.2 },
+      ],
+    })
+
+    render(
+      <MemoryRouter>
+        <ConstellationOverlay spec={spec} />
+      </MemoryRouter>,
+    )
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.queryByRole('button', { name: /Mở phiên: Phiên B/ })).toBeNull()
+  })
   it('renders the empty skeleton hint when there are no nodes', () => {
     render(
       <MemoryRouter>

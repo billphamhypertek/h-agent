@@ -1,7 +1,7 @@
 import type { GraphSpec } from '@/aether/domain/engine/graph-model'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
 
-import { linkPoints, stateColor } from './graph-geometry'
+import { linkPoints, nodeOpacity, stateColor } from './graph-geometry'
 
 // Static constellation for the GPU-off / reduced-motion / probe-fail path.
 // Maps the [-1,1] model space into a 0..100 SVG viewBox (center 50,50).
@@ -34,6 +34,7 @@ export function GraphFallback({ spec }: { spec: GraphSpec }) {
             cy={toView(n.y)}
             data-ae-node
             fill={stateColor(n.state)}
+            fillOpacity={nodeOpacity(n)}
             key={n.id}
             r={n.state === 'dormant' ? 1.4 : 2}
           />

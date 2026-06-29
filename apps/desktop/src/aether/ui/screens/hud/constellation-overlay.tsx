@@ -28,12 +28,14 @@ export function ConstellationOverlay({ spec }: { spec: GraphSpec }) {
     )
   }
 
+  // Exit ghosts are decoration-only (the GL/SVG fade still shows them) — they get no
+  // DOM hit-target, so a just-pruned session can't be clicked into a dead route.
   return (
-    <div className="absolute inset-0">
-      {spec.nodes.map(n => (
+    <div className="pointer-events-none absolute inset-0">
+      {spec.nodes.filter(n => !n.exit).map(n => (
         <button
           aria-label={`Mở phiên: ${n.label}`}
-          className="absolute h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]"
+          className="pointer-events-auto absolute h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--ae-azure)]"
           data-ae-hit
           data-verb={verbById.get(n.id) ?? undefined}
           key={n.id}

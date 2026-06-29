@@ -59,4 +59,15 @@ describe('useHudGraph', () => {
     const s2 = $graphSpec.get()?.nodes.find(n => n.id === 's2')
     expect(s2?.enter).toBe(true)
   })
+  it('keeps a pruned session as an exit ghost for one cycle only', () => {
+    $agents.set(view([session({ id: 's1' }), session({ id: 's2' })]))
+    render(<Host />)
+    // Cycle 1: prune s2 → it comes back once as an exit ghost (decoration).
+    act(() => { $agents.set(view([session({ id: 's1' })])) })
+    const ghost = $graphSpec.get()?.nodes.find(n => n.id === 's2')
+    expect(ghost?.exit).toBe(true)
+    // Cycle 2: still absent → the ghost is gone (prevReal advanced, no accumulation).
+    act(() => { $agents.set(view([session({ id: 's1' })])) })
+    expect($graphSpec.get()?.nodes.some(n => n.id === 's2')).toBe(false)
+  })
 })
