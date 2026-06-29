@@ -64,7 +64,6 @@ import { ClarifyTool } from '@/components/assistant-ui/clarify-tool'
 import { DirectiveContent, aetherDirectiveFormatter } from '@/components/assistant-ui/directive-text'
 import { MarkdownText, MarkdownTextContent } from '@/components/assistant-ui/markdown-text'
 import { ThreadMessageList } from '@/components/assistant-ui/thread-list'
-import { ThreadTimeline } from '@/components/assistant-ui/thread-timeline'
 import { ToolFallback, ToolGroupSlot } from '@/components/assistant-ui/tool-fallback'
 import { TooltipIconButton } from '@/components/assistant-ui/tooltip-icon-button'
 import { UserMessageText } from '@/components/assistant-ui/user-message-text'
@@ -213,7 +212,6 @@ export const Thread: FC<{
         sessionKey={sessionKey}
       />
       {loading === 'session' && <CenteredThreadSpinner />}
-      <ThreadTimeline />
     </div>
   )
 }
@@ -314,7 +312,7 @@ const AssistantMessage: FC<{
         )}
         <MessagePrimitive.Error>
           <ErrorPrimitive.Root
-            className="mt-1.5 flex items-start gap-1.5 text-[0.78rem] leading-5 text-[color-mix(in_srgb,var(--dt-destructive)_78%,var(--ui-text-secondary))]"
+            className="mt-1.5 flex items-start gap-1.5 text-[0.78rem] leading-5 text-[color:var(--ae-error)]"
             role="alert"
           >
             <ErrorPrimitive.Message className="min-w-0 flex-1" />
@@ -515,7 +513,7 @@ const ThinkingDisclosure: FC<{
 
   return (
     <div
-      className="text-[length:var(--conversation-tool-font-size)] text-(--ui-text-tertiary)"
+      className="border-l-2 border-[color:var(--ae-azure)] bg-[color-mix(in_srgb,var(--ae-azure)_8%,transparent)] pl-2 text-[length:var(--conversation-tool-font-size)] text-(--ui-text-tertiary)"
       data-slot="aui_thinking-disclosure"
       ref={enterRef}
     >
