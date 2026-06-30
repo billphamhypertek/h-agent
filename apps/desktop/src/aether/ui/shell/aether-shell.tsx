@@ -27,7 +27,7 @@ import { SettingsScreen } from '@/aether/ui/screens/settings-screen'
 import { SkillsScreen } from '@/aether/ui/screens/skills-screen'
 import { VoiceScreen } from '@/aether/ui/screens/voice-screen'
 import { CommandPalette } from '@/app/command-palette'
-import { ARTIFACTS_ROUTE, BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PLAYGROUND_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
+import { appViewForPath, ARTIFACTS_ROUTE, BRIEF_ROUTE, CONTENT_ROUTE, DEV_ROUTE, HUD_ROUTE, INBOX_ROUTE, MEMORY_ROUTE, MESSAGING_ROUTE, NEW_CHAT_ROUTE, OPS_ROUTE, PLAYGROUND_ROUTE, PROFILES_ROUTE, VOICE_ROUTE } from '@/app/routes'
 
 import { AETHER_NAV_ITEMS } from './nav-items'
 import { NavRail } from './nav-rail'
@@ -67,8 +67,15 @@ export function AetherShell({ chatView }: { chatView: React.ReactNode }) {
       <NavRail activeRoute={location.pathname} onNavigate={r => navigate(r)} />
       <div className="relative z-[1] flex min-w-0 flex-1 flex-col p-[var(--ae-page-t)_var(--ae-page-x)_var(--ae-page-b)]">
         <TopBar title={title} />
-        <div className="relative mt-3 min-h-0 flex-1">
-          <PageTransition routeKey={location.pathname}>
+        <div className="relative mt-6 min-h-0 flex-1">
+          {/* Key the depth-enter transition on the VIEW, not the raw pathname:
+              sending the first message navigates /  →  /:sessionId (both the Chat
+              view), and switching sessions hops /:a → /:b. Keying on pathname
+              replayed the whole transition + remounted ChatScreen/ChatView on
+              every one of those — the "it jumped to another page" bug. View
+              keying keeps Chat mounted across session changes; only a real
+              screen switch (chat ↔ hud ↔ …) re-animates. */}
+          <PageTransition routeKey={appViewForPath(location.pathname)}>
             <Routes location={location}>
               <Route element={<ChatScreen chatView={chatView} />} index />
               <Route element={<ChatScreen chatView={chatView} />} path=":sessionId" />

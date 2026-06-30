@@ -12,6 +12,9 @@
   --ae-error: #ff5d6c;
   --ae-glass: rgba(150, 205, 245, 0.1);
   --ae-glass-2: rgba(120, 190, 240, 0.06);
+  /* Opaque reading surface for the conversation pane — a clean "paper" the
+     thread sits on (light = pure white; dark = deep panel). Flips with mode. */
+  --ae-surface: #06142e;
   /* mode-aware surfaces/fills/lines/glows — dark "Spatial Depth" defaults; the
      light "Arctic Glass" block below overrides every one of these. Components
      reference ONLY these tokens (no hardcoded hex/rgba) so they flip cleanly. */
@@ -23,6 +26,7 @@
   --ae-glow: rgba(74, 163, 255, 0.18);      /* accent box/text-shadow */
   --ae-glow-strong: rgba(74, 163, 255, 0.42);
   --ae-on-azure: #06283c;                   /* dark icon/text ON a bright azure chip */
+  --ae-on-accent: #ffffff;                  /* light text ON a solid deep-azure selection fill */
   --ae-azure-hi: #d7f4ff;                   /* bright highlight stop in azure-chip radial */
   --ae-text-grad: linear-gradient(180deg, #ffffff, #8fc0ff); /* wordmark / hero text */
   --ae-warn-soft: rgba(255, 176, 32, 0.1);
@@ -76,10 +80,10 @@
   /* typography scale (mirrors AETHER_TYPE in tokens.ts) */
   --ae-text-xs: 11px;
   --ae-text-sm: 12px;
-  --ae-text-base: 13px;
-  --ae-text-md: 15px;
-  --ae-text-lg: 17px;
-  --ae-text-xl: 22px;
+  --ae-text-base: 14px;
+  --ae-text-md: 16px;
+  --ae-text-lg: 19px;
+  --ae-text-xl: 24px;
   --ae-tracking-tight: 0.01em;
   --ae-tracking-wide: 0.04em;
   --ae-tracking-wider: 0.16em;
@@ -107,6 +111,8 @@
   /* More opaque than dark mode so cards stay readable over the ambient wash. */
   --ae-glass: rgba(255, 255, 255, 0.8);
   --ae-glass-2: rgba(255, 255, 255, 0.62);
+  /* Arctic Glass conversation pane = pure white paper. */
+  --ae-surface: #ffffff;
   /* Arctic Glass: frosted white surfaces, navy ink, azure accents kept. */
   --ae-well: rgba(255, 255, 255, 0.58);
   --ae-fill: rgba(7, 57, 125, 0.05);
@@ -230,6 +236,25 @@
     0 18px 38px -20px rgba(7, 57, 125, 0.22),
     0 4px 12px -6px rgba(7, 57, 125, 0.12),
     inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+/* Floating pane — a soft, large-radius "card" surface (Liquid-Glass feel) for the
+   cockpit panes that aren't translucent .ae-slab glass (e.g. the white conversation
+   paper). Soft lifted shadow + hairline + generous radius so a pane reads as a
+   calm card floating on the ambient wash, not a hard-edged box. Mode-aware. */
+.ae-pane {
+  border-radius: 20px;
+  border: 1px solid var(--ae-line);
+  box-shadow:
+    0 24px 48px -22px rgba(0, 0, 0, 0.6),
+    0 8px 20px -10px rgba(0, 0, 0, 0.42),
+    inset 0 1px 1px rgba(255, 255, 255, 0.14);
+}
+[data-aether-mode='light'] .ae-pane {
+  box-shadow:
+    0 22px 46px -24px rgba(7, 57, 125, 0.22),
+    0 6px 16px -8px rgba(7, 57, 125, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 /* Living Orb (driven by living-orb.tsx; sizes via --ae-orb-size) */

@@ -1,48 +1,49 @@
 // apps/desktop/src/aether/ui/screens/chat-screen.tsx
 import { useStore } from '@nanostores/react'
+import { useEffect } from 'react'
 
 import { $readerPanel } from '@/aether/domain/chat/reader-store'
-import { $graphSpec } from '@/aether/domain/motion/graph-store'
-import { GlassSlab } from '@/aether/ui/components/glass-slab'
-import { GraphFallback } from '@/aether/ui/motion/graph/fallback'
-import { useMotionEnabled } from '@/aether/ui/motion/use-motion-enabled'
+import { clearGraphSpec } from '@/aether/domain/motion/graph-store'
 
-import { LivingDock } from './chat/living-dock'
+import { HistoryRail } from './chat/history-rail'
 import { ReaderPanel } from './chat/reader-panel'
-import { useChatGraph } from './chat/use-chat-graph'
 
-// Chat = Light · C · Side companion living cockpit. The shared shell-root AetherCanvas
-// renders the dock GL from $graphSpec (composed by useChatGraph from $turnActivity —
-// the coarse, prompt-cache-safe stream). The thread column is the injected legacy
-// runtime; the reader panel opens on demand and the dock co-slims while it's open.
+// Chat = a calm two-pane reading cockpit:
+//   • History rail (left)   — past conversations, search, new-chat.
+//   • Conversation (center) — the injected legacy thread+composer runtime, on a
+//                             white "paper" surface, taking the full width.
+// Chat deliberately does NOT drive the shared living engine: scattering GL nodes
+// across the conversation read as noise, so we clear the shared $graphSpec here
+// (the reader still opens on demand and the rail steps aside to give it room).
 export function ChatScreen({ chatView }: { chatView: React.ReactNode }) {
-  const spec = useStore($graphSpec)
   const reader = useStore($readerPanel)
-  const motionEnabled = useMotionEnabled()
-
-  useChatGraph()
-
   const readerOpen = reader.open
 
-  return (
-    <div className="ae-screen-bare relative flex h-full min-h-0 min-w-0" data-testid="ae-chat">
-      {/* GPU-off / reduced-motion / probe-fail → static SVG dock from the same spec. */}
-      {!motionEnabled && spec && <div className="pointer-events-none absolute inset-0 z-0"><GraphFallback spec={spec} /></div>}
+  useEffect(() => {
+    clearGraphSpec()
 
-      {/* Thread column — narrows when the reader is open. */}
-      <div className={readerOpen ? 'flex min-h-0 w-[268px] shrink-0 flex-col' : 'flex min-h-0 flex-1 flex-col'}>
+    return () => clearGraphSpec()
+  }, [])
+
+  return (
+    <div className="ae-screen-bare relative flex h-full min-h-0 min-w-0 gap-6" data-testid="ae-chat">
+      {/* History rail (left) — steps aside while the reader is open. */}
+      {!readerOpen && <HistoryRail />}
+
+      {/* Conversation thread (center) — a soft white "paper" card floating on the
+          ambient wash (.ae-pane = large radius + soft lift). The override flips
+          the legacy ChatView's own grey chrome background to --ae-surface too. */}
+      <div
+        className={readerOpen
+          ? 'ae-pane relative z-[1] flex min-h-0 w-[320px] shrink-0 flex-col overflow-hidden'
+          : 'ae-pane relative z-[1] flex min-h-0 flex-1 flex-col overflow-hidden'}
+        style={{ background: 'var(--ae-surface)', ['--ui-chat-surface-background' as string]: 'var(--ae-surface)' }}
+      >
         {chatView}
       </div>
 
-      {/* Reader panel (middle) — only mounted while reading a file. */}
+      {/* Reader panel (right) — only mounted while reading a file. */}
       {readerOpen && <ReaderPanel />}
-
-      {/* Living dock (right) — full vs slim. The GL shows through the translucent slab. */}
-      <div className={readerOpen ? 'relative ml-2 shrink-0' : 'relative ml-2 w-[228px] shrink-0'}>
-        <GlassSlab className="h-full" size="sm">
-          {spec && <LivingDock onToggle={() => { /* expand handled by closing the reader for MVP */ }} slim={readerOpen} spec={spec} />}
-        </GlassSlab>
-      </div>
     </div>
   )
 }

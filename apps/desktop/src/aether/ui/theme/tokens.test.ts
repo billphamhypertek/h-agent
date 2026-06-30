@@ -48,7 +48,7 @@ describe('aether theme preset', () => {
 
 describe('AETHER typography + motion scales', () => {
   it('exposes a typography scale (sizes px, tracking em, leading unitless)', () => {
-    expect(AETHER_TYPE.text).toEqual({ xs: 11, sm: 12, base: 13, md: 15, lg: 17, xl: 22 })
+    expect(AETHER_TYPE.text).toEqual({ xs: 11, sm: 12, base: 14, md: 16, lg: 19, xl: 24 })
     expect(AETHER_TYPE.tracking).toEqual({ tight: 0.01, wide: 0.04, wider: 0.16, widest: 0.2 })
     expect(AETHER_TYPE.leading).toEqual({ tight: 1.2, snug: 1.35, normal: 1.5 })
   })

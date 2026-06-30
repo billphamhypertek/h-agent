@@ -4,7 +4,7 @@ import { Avatar } from '@/aether/ui/components/avatar'
 import { Icon } from '@/aether/ui/components/icon/icon'
 import { LivingOrb } from '@/aether/ui/orb/living-orb'
 import { GEOMETRY } from '@/aether/ui/theme/geometry'
-import { HUD_ROUTE } from '@/app/routes'
+import { appViewForPath, HUD_ROUTE } from '@/app/routes'
 import { persistBoolean, storedBoolean } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +25,12 @@ export interface NavRailProps {
 export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: NavRailProps) {
   const [expanded, setExpanded] = useState(() => storedBoolean(NAV_EXPANDED_KEY, false))
   const titlebarInset = useTitlebarInset()
+  // Active state tracks the SCREEN, not the exact URL: a chat session route
+  // (/:sessionId) is still the Chat view, so the Chat item must stay lit after
+  // the first message auto-navigates /  →  /:sessionId. Comparing by
+  // appViewForPath() keeps the highlight (and sliding pill) on Chat instead of
+  // dropping it the moment a session id appears in the URL.
+  const activeView = appViewForPath(activeRoute)
 
   const toggleExpanded = () =>
     setExpanded(prev => {
@@ -99,7 +105,7 @@ export function NavRail({ items = AETHER_NAV_ITEMS, activeRoute, onNavigate }: N
                 </div>
               )}
               {groupItems.map(item => {
-                const active = item.route === activeRoute
+                const active = appViewForPath(item.route) === activeView
 
                 return (
                   <button

@@ -74,11 +74,18 @@ describe('NavRail', () => {
     expect(screen.getByRole('button', { name: 'Agents' }).getAttribute('aria-current')).toBe('page')
     expect(container.querySelector('.ae-nav-indicator')).toBeTruthy()
 
-    // A route that maps to no RENDERED button (HUD/home is filtered out of the list,
-    // its affordance is the living glyph) → no highlighted button → indicator hidden.
-    rerender(<NavRail activeRoute="/no-such-route" onNavigate={vi.fn()} />)
+    // The HUD/home view maps to no RENDERED list button (home is the living glyph,
+    // filtered out of the column) → no highlighted button → indicator hidden.
+    rerender(<NavRail activeRoute={HUD_ROUTE} onNavigate={vi.fn()} />)
     expect(container.querySelector('[aria-current="page"]')).toBeNull()
     expect(container.querySelector('.ae-nav-indicator')).toBeNull()
+  })
+
+  it('keeps the Chat item active on a session route (/:sessionId), not just on /', () => {
+    // After the first message the URL becomes /:sessionId — still the Chat view.
+    // Active state is computed by appViewForPath, so the Chat item stays lit.
+    render(<NavRail activeRoute="/abc123session" onNavigate={vi.fn()} />)
+    expect(screen.getByRole('button', { name: 'Trò chuyện' }).getAttribute('aria-current')).toBe('page')
   })
 
   it('renders a numeric badge when an item provides one', () => {

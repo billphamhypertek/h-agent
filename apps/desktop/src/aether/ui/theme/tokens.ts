@@ -38,8 +38,10 @@ export type AetherPalette = typeof AETHER
 
 // Typography scale — kills literal text-[17px]/tracking-[.01em] across the shell.
 // Sizes in px, tracking in em, leading unitless. CSS mirrors in aether.css.
+// Bumped one notch up (base 13→14, md 15→16, lg 17→19, xl 22→24) so the desktop
+// chrome reads larger/heavier — the "chữ to hơn + đậm hơn" feedback.
 export const AETHER_TYPE = {
-  text: { xs: 11, sm: 12, base: 13, md: 15, lg: 17, xl: 22 },
+  text: { xs: 11, sm: 12, base: 14, md: 16, lg: 19, xl: 24 },
   tracking: { tight: 0.01, wide: 0.04, wider: 0.16, widest: 0.2 },
   leading: { tight: 1.2, snug: 1.35, normal: 1.5 },
 } as const

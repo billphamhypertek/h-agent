@@ -297,7 +297,7 @@ const AssistantMessage: FC<{
       ref={enterRef}
     >
       <div
-        className="wrap-anywhere min-w-0 max-w-full overflow-hidden text-pretty text-[length:var(--conversation-text-font-size)] leading-(--dt-line-height) text-foreground"
+        className="wrap-anywhere min-w-0 max-w-full overflow-hidden text-pretty text-[length:var(--conversation-text-font-size)] [font-weight:var(--conversation-text-weight)] leading-(--dt-line-height) text-foreground"
         data-slot="aui_assistant-message-content"
       >
         {/* Todos render in the composer status stack now, not inline. */}
@@ -978,7 +978,7 @@ const UserMessage: FC<{
 
   const bubbleClassName = cn(
     USER_BUBBLE_BASE_CLASS,
-    'cursor-pointer pr-9 text-[length:var(--conversation-text-font-size)] leading-(--dt-line-height) text-foreground/95 transition-colors',
+    'cursor-pointer pr-9 text-[length:var(--conversation-text-font-size)] [font-weight:var(--conversation-text-weight)] leading-(--dt-line-height) text-foreground/95 transition-colors',
     'border-(--ui-stroke-tertiary) hover:border-(--ui-stroke-secondary)'
   )
 
