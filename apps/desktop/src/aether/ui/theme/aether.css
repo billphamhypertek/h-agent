@@ -341,29 +341,19 @@
   opacity: 0.35;
 }
 
-/* nav active indicator (transform set by JS) */
+/* nav active indicator (transform set by JS) — a quiet selected-chip, not a glow.
+   Active emphasis comes from the button's bolder navy label; the pill is just a
+   soft navy-tint fill behind it (no gradient/border/halo). */
 .ae-nav-indicator {
   position: absolute;
   left: 6px;
   right: 6px;
   height: var(--ae-nav-item-h, 38px);
   border-radius: 11px;
-  background: linear-gradient(180deg, rgba(74, 163, 255, 0.28), rgba(74, 163, 255, 0.08));
-  border: 1px solid rgba(120, 210, 255, 0.5);
-  box-shadow: 0 0 18px rgba(74, 163, 255, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  transition: transform 0.44s cubic-bezier(0.5, 0.05, 0.1, 1);
+  background: var(--ae-fill-strong);
+  transition: transform 0.28s var(--ae-ease);
   pointer-events: none;
   z-index: 0;
-}
-.ae-nav-edge {
-  position: absolute;
-  left: -5px;
-  width: 3px;
-  height: 18px;
-  border-radius: 3px;
-  background: var(--ae-azure);
-  box-shadow: 0 0 8px var(--ae-azure);
-  transition: transform 0.44s cubic-bezier(0.5, 0.05, 0.1, 1);
 }
 
 /* nav-rail expand-on-hover (62 ↔ 172). Reduced-motion drops the width transition. */
@@ -513,8 +503,7 @@
   [data-aether-theme='aether'] [data-testid='ae-online-dot']::after,
   [data-aether-theme='aether'] .ae-orb-ring { animation: none !important; }
   [data-aether-theme='aether'] .ae-vital { animation: none !important; }
-  [data-aether-theme='aether'] .ae-nav-indicator,
-  [data-aether-theme='aether'] .ae-nav-edge { transition: none !important; }
+  [data-aether-theme='aether'] .ae-nav-indicator { transition: none !important; }
   [data-aether-theme='aether'] .ae-depth-enter { animation: ae-fade 0.2s ease both; }
   [data-aether-theme='aether'] .ae-palette[data-state='open'] { animation: ae-fade 0.18s ease both; }
   [data-aether-theme='aether'] .ae-palette[data-state='closed'] { animation: none !important; }
